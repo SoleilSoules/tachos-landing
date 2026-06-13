@@ -80,11 +80,13 @@ export function FloatingCompose() {
       onClick={() => open()}
       aria-label="Собрать письмо в студию"
       style={{
-        maxWidth: maxW,
+        // small state hugs its content (icon flush right); expanded states stretch
+        width: zone === 'draft' ? 'max-content' : 'calc(100vw - 32px)',
+        maxWidth: zone === 'draft' ? 'calc(100vw - 32px)' : maxW,
         opacity: visible ? 1 : 0,
         transform: `translateX(-50%) translateY(${visible ? 0 : 20}px)`,
       }}
-      className={`group fixed bottom-[24px] left-1/2 z-[110] w-[calc(100vw-32px)] cursor-pointer overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+      className={`group fixed bottom-[24px] left-1/2 z-[110] cursor-pointer overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
         visible ? 'pointer-events-auto' : 'pointer-events-none'
       } ${
         expanded
