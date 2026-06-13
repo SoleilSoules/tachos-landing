@@ -1,0 +1,66 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
+
+type UseRevealOptions = {
+  stagger?: number; // ms between siblings
+  threshold?: number;
+  duration?: number; // ms
+  variant?: string; // extra class, e.g. 'reveal-fade'
+  rootMargin?: string;
+};
+
+// Attach the returned ref to a container; every descendant with `.reveal-hidden`
+// animates in (staggered) when the container first enters the viewport. Respects
+// prefers-reduced-motion (no delay; CSS shortens the animation).
+export function useReveal<T extends HTMLElement = HTMLElement>({
+  stagger = 80,
+  threshold = 0.12,
+  duration = 550,
+  variant,
+  rootMargin = '-80px 0px',
+}: UseRevealOptions = {}) {
+  const ref = useRef<T>(null);
+
+  useEffect(() => {
+    const container = ref.current;
+    if (!container) return;
+
+    const items = Array.from(
+      container.querySelectorAll<HTMLElement>('.reveal-hidden'),
+    );
+    if (items.length === 0) return;
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let done = false;
+    const reveal = () => {
+      if (done) return;
+      done = true;
+      items.forEach((el, i) => {
+        el.style.setProperty('--reveal-delay', `${reduced ? 0 : i * stagger}ms`);
+        el.style.setProperty('--reveal-dur', `${duration}ms`);
+        el.classList.add('reveal-visible');
+        if (variant) el.classList.add(variant);
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) reveal();
+      },
+      { threshold, rootMargin },
+    );
+    observer.observe(container);
+
+    // Failsafe: never leave content hidden if the observer doesn't fire.
+    const fallback = setTimeout(reveal, 1200);
+
+    return () => {
+      clearTimeout(fallback);
+      observer.disconnect();
+    };
+  }, [stagger, threshold, duration, variant, rootMargin]);
+
+  return ref;
+}

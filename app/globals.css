@@ -1,40 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Tachos palette as RGB channels so Tailwind's `/opacity` works (see tailwind.config.ts).
+   Single light theme — the design is dark hero + light body, controlled per-section,
+   not a runtime theme switch. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-html {
-  height: 100%;
+  --c-bg: 4 4 4; /* #040404 */
+  --c-ink: 17 10 15; /* #110a0f */
+  --c-surface: 245 247 251; /* #f5f7fb */
+  --c-surface2: 240 241 243; /* #f0f1f3 */
+  --c-fg: 4 4 4; /* #040404 */
+  --c-inverted: 255 255 255;
+  --c-accent: 240 81 56; /* #f05138 */
+  --c-accent-bright: 255 82 44; /* #ff522c */
+  --c-accent-hot: 254 74 0; /* #fe4a00 */
+  --c-accent-warm: 240 97 31; /* #f0611f */
+  --c-canvas: 4 4 4; /* side margins — match the page black so the dark zone reads full-bleed */
 }
 
 html,
 body {
-  max-width: 100vw;
-  overflow-x: hidden;
+  padding: 0;
+  margin: 0;
+  overscroll-behavior: none;
 }
 
 body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background: rgb(var(--c-canvas));
+  color: rgb(var(--c-fg));
+  font-family: var(--font-onest), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+  text-rendering: optimizeLegibility;
 }
 
 a {
@@ -42,8 +39,114 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+* {
+  box-sizing: border-box;
+}
+
+/* lining + proportional figures — matches Figma number styling on chips/stats */
+.nums {
+  font-feature-settings: 'lnum' 1, 'pnum' 1;
+}
+
+/* Cursor companion (ported from v2): orange plectrum with blinking eyes */
+.companion .lid {
+  transform-origin: center;
+  transform: scaleY(0);
+}
+.companion.blink .lid {
+  animation: blink-once 0.2s ease;
+}
+@keyframes blink-once {
+  0%,
+  100% {
+    transform: scaleY(0);
+  }
+  45%,
+  55% {
+    transform: scaleY(1);
+  }
+}
+.bubble {
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.2s, transform 0.2s;
+}
+.bubble.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── Animation keyframes & scroll-reveal ─── */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+/* blinking input caret (the orange bar in the hero prompt) */
+@keyframes caret-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* hero device — slow vertical float (keeps the horizontal centring) */
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-10px);
+  }
+}
+
+/* logo wall — seamless leftward marquee (row is duplicated, so -50% loops) */
+@keyframes logo-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.reveal-hidden {
+  opacity: 0;
+  transform: translateY(28px);
+}
+.reveal-visible {
+  animation: fade-up var(--reveal-dur, 0.55s)
+    var(--reveal-ease, cubic-bezier(0.16, 1, 0.3, 1)) both;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+.reveal-visible.reveal-fade {
+  animation-name: fade-in;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-hidden {
+    opacity: 0;
+    transform: none;
+  }
+  .reveal-visible {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
   }
 }
