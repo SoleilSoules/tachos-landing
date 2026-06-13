@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
+import { asset } from '@/lib/asset';
 import { footer, type Social } from '@/lib/content';
 import { validateContact } from '@/lib/compose';
 
@@ -20,7 +21,7 @@ function SocialCard({ s }: { s: Social }) {
       className="flex items-center gap-[10px] rounded-full py-[5px] pl-[5px] pr-[16px] transition hover:bg-white/[0.05]"
     >
       {icon ? (
-        <Image src={icon} alt="" width={48} height={48} className="size-[48px] shrink-0" />
+        <Image src={asset(icon)} alt="" width={48} height={48} className="size-[48px] shrink-0" />
       ) : (
         <span className="size-[48px] shrink-0 rounded-full bg-[#d3d3d3]/20" />
       )}
@@ -96,7 +97,7 @@ export function Footer() {
       <div className="relative mx-auto max-w-page px-[96px] pb-[54px] pt-[100px]">
         {/* brand fire — the tachos flame, oversized on the right */}
         <div className="pointer-events-none absolute right-[10px] top-[40px] h-[700px] w-[560px]">
-          <Image src="/figma/footer-fire.svg" alt="" fill className="object-contain" priority={false} />
+          <Image src={asset('/figma/footer-fire.svg')} alt="" fill className="object-contain" priority={false} />
         </div>
 
         <div className="relative grid grid-cols-[677px_1fr] gap-[40px]">
@@ -179,14 +180,14 @@ export function Footer() {
           <div className="relative flex items-end justify-center pb-[40px]">
             <div className="flex items-center gap-[10px]">
               <span className="size-[54px] shrink-0 overflow-hidden rounded-full">
-                <Image src="/figma/mgr-anna.png" alt={footer.manager.name} width={54} height={54} className="size-full object-cover" />
+                <Image src={asset('/figma/mgr-anna.png')} alt={footer.manager.name} width={54} height={54} className="size-full object-cover" />
               </span>
               <span className="leading-tight">
                 <span className="block text-[16px] tracking-[0.03em] text-[#f5f7f6]">{footer.manager.name}</span>
                 <span className="block text-[14px] text-[#b9b9b9]">{footer.manager.role}</span>
               </span>
               <span className="ml-[6px] grid size-[58px] place-items-center rounded-full bg-accent">
-                <Image src="/figma/mgr-tg.svg" alt="" width={26} height={26} />
+                <Image src={asset('/figma/mgr-tg.svg')} alt="" width={26} height={26} />
               </span>
             </div>
           </div>

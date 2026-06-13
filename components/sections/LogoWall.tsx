@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { asset } from '@/lib/asset';
 import { clients } from '@/lib/content';
 
 // Seamless leftward marquee: the row is rendered twice so a -50% translate
@@ -12,7 +13,7 @@ export function LogoWall() {
         {row.map((client, i) => (
           <div key={i} className="shrink-0">
             <Image
-              src={client.logo}
+              src={asset(client.logo)}
               alt={client.name}
               width={180}
               height={client.height}

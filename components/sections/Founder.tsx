@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useRef } from 'react';
+import { asset } from '@/lib/asset';
 import { useReveal } from '@/hooks/useReveal';
 import { founder } from '@/lib/content';
 
@@ -52,7 +53,7 @@ export function Founder() {
     <div ref={ref} className="relative z-10 mt-[168px] flex justify-center px-6 pb-[150px]">
       <div className="reveal-hidden relative h-[414px] w-[1030px] overflow-hidden rounded-founder bg-ink">
         <Image
-          src="/figma/founder-card-bg.png"
+          src={asset('/figma/founder-card-bg.png')}
           alt=""
           fill
           sizes="1030px"
@@ -64,7 +65,7 @@ export function Founder() {
 
         <div className="absolute inset-y-0 right-0 w-[472px] overflow-hidden rounded-l-[28px]">
           <Image
-            src="/figma/founder-container.jpg"
+            src={asset('/figma/founder-container.jpg')}
             alt="Вадим — основатель студии"
             fill
             sizes="480px"

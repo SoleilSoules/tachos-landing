@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { asset } from '@/lib/asset';
 import type { CaseItem } from '@/lib/content';
 
 // Per-project cover theming. Real case stills come from Vadim later; until then
@@ -36,7 +37,7 @@ export function CaseCard({ item }: { item: CaseItem }) {
         {/* oversized faded logo as cover art */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <Image
-            src={theme.logo}
+            src={asset(theme.logo)}
             alt=""
             width={460}
             height={140}
@@ -48,7 +49,7 @@ export function CaseCard({ item }: { item: CaseItem }) {
         <div className="relative flex items-start justify-between">
           <span className="grid size-[60px] shrink-0 place-items-center rounded-full bg-white/10 p-[14px] backdrop-blur-md">
             <Image
-              src={theme.logo}
+              src={asset(theme.logo)}
               alt={item.client}
               width={64}
               height={24}

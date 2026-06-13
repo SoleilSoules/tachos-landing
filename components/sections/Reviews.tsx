@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { asset } from '@/lib/asset';
 import { useReveal } from '@/hooks/useReveal';
 import { reviews, type Review } from '@/lib/content';
 
@@ -33,7 +34,7 @@ function Avatar({ src, size = 54 }: { src: string; size?: number }) {
 function Author({ r, light }: { r: Review; light?: boolean }) {
   return (
     <div className="flex items-center gap-[10px]">
-      <Avatar src="/figma/rev-avatar.png" />
+      <Avatar src={asset('/figma/rev-avatar.png')} />
       <div className="leading-tight">
         <div className={`text-[16px] tracking-[0.03em] ${light ? 'text-[#05010d]' : 'text-white'}`}>
           {r.author}
@@ -106,7 +107,7 @@ function VideoCard({ r }: { r: Review }) {
   return (
     <div className="reveal-hidden relative h-[502px] w-full overflow-hidden rounded-[40px] p-[36px] text-white">
       <Image
-        src="/figma/founder-isaac.png"
+        src={asset('/figma/founder-isaac.png')}
         alt=""
         fill
         sizes="400px"
@@ -139,7 +140,7 @@ function PortraitCard({ r }: { r: Review }) {
         <PlayIcon size={14} />
       </span>
       <div className="relative size-[290px] overflow-hidden rounded-full ring-2 ring-accent/70">
-        <Image src="/figma/founder-jennifer.png" alt="" fill sizes="290px" className="object-cover" />
+        <Image src={asset('/figma/founder-jennifer.png')} alt="" fill sizes="290px" className="object-cover" />
       </div>
       <div className="relative">
         <p className="text-[26px] font-medium leading-[1.2] text-[#f5f7f6]">

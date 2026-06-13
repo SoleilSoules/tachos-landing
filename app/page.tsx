@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { asset } from '@/lib/asset';
 import { ComposeProvider } from '@/components/compose/ComposeProvider';
 import { Nav } from '@/components/sections/Nav';
 import { Hero } from '@/components/sections/Hero';
@@ -30,7 +31,7 @@ export default function Home() {
               centre so the stock white backdrop falls outside the frame */}
           <div className="absolute left-1/2 top-0 h-[1340px] w-[1120px] -translate-x-1/2 overflow-hidden [animation:float-y_7s_ease-in-out_infinite] motion-reduce:[animation:none]">
             <Image
-              src="/figma/hero-bg.png"
+              src={asset('/figma/hero-bg.png')}
               alt=""
               fill
               priority

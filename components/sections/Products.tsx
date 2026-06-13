@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { asset } from '@/lib/asset';
 import { useReveal } from '@/hooks/useReveal';
 import { products, productsIntro } from '@/lib/content';
 
@@ -50,7 +51,7 @@ function ProductSwitcher({
                 isActive ? 'bg-[#040404]' : 'bg-white/30'
               }`}
             >
-              <Image src={ICONS[p.id]} alt="" width={26} height={26} />
+              <Image src={asset(ICONS[p.id])} alt="" width={26} height={26} />
             </span>
             <span className="relative min-w-0">
               <span className="block text-[16px] font-medium leading-[1.15] text-white">
@@ -138,7 +139,7 @@ export function Products() {
               object-cover crops the transparent margins so the device reads large. */}
           <div className="pointer-events-none absolute -top-[68px] right-[-20px] h-[562px] w-[803px]">
             <Image
-              src="/figma/doki-mockup.png"
+              src={asset('/figma/doki-mockup.png')}
               alt="Интерфейс doki на планшете"
               fill
               sizes="803px"

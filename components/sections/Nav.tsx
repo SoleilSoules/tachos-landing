@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { asset } from '@/lib/asset';
 import { nav } from '@/lib/content';
 
 export function Nav() {
@@ -7,7 +8,7 @@ export function Nav() {
       <div className="relative flex h-[84px] w-full items-center px-[48px]">
         <a href="#" className="absolute left-[48px]" aria-label="tachos — на главную">
           <Image
-            src="/logos/tachos.svg"
+            src={asset('/logos/tachos.svg')}
             alt="tachos"
             width={118}
             height={28}
