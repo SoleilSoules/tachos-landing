@@ -243,6 +243,28 @@ export function Footer() {
             </div>
           </div>
         </div>
+
+        {/* legal requisites — required for РКН / 152-ФЗ once the form is live */}
+        <div className="mt-[40px] grid grid-cols-1 gap-[20px] border-t border-white/10 pt-[28px] text-[13px] leading-[1.6] text-white/35 md:grid-cols-2">
+          <div>
+            ООО «Тачос»
+            <br />
+            ОГРН 1133443024032
+            <br />
+            ИНН 3460009833 · КПП 344401001
+            <br />
+            Дата регистрации 03.09.2013
+            <br />
+            Основной вид деятельности — ОКВЭД 62.01
+          </div>
+          <div className="md:text-right">
+            400131, г. Волгоград, наб. 62-й Армии, д. 6
+            <br />
+            +7 988 002 3545
+            <br />
+            vadim@tachos.ru
+          </div>
+        </div>
       </div>
     </footer>
   );

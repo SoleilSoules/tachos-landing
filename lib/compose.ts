@@ -5,6 +5,7 @@ export type LetterType = 'site' | 'app' | 'shop' | 'game' | 'idk';
 
 export type ComposeState = {
   type: LetterType;
+  name: string;
   have: string;
   when: string;
   budget: string;
@@ -13,6 +14,7 @@ export type ComposeState = {
 
 export const initialCompose: ComposeState = {
   type: 'idk',
+  name: '',
   have: '',
   when: '',
   budget: '',
@@ -26,6 +28,9 @@ export const typeChips: { type: LetterType; label: string }[] = [
   { type: 'game', label: 'Игра' },
   { type: 'idk', label: 'Не знаю — разберитесь' },
 ];
+
+// Three common first names offered as quick-pick in the letter's name slot.
+export const nameOptions = ['Александр', 'Мария', 'Дмитрий'];
 
 // Heuristic from free text → chip highlight + default type on submit.
 export function guessType(raw: string): LetterType | null {
@@ -64,8 +69,10 @@ const bodies: Record<LetterType, (s: ComposeState) => string> = {
 };
 
 export function buildLetter(s: ComposeState): { subject: string; body: string } {
-  const body =
+  let body =
     bodies[s.type](s) + (s.budget ? `\n\nОриентир по бюджету: ${s.budget}.` : '');
+  // Personalise the greeting with the name slot when the visitor filled it.
+  if (s.name) body = body.replace('Здравствуйте!', `Здравствуйте! Меня зовут ${s.name}.`);
   return { subject: subjects[s.type], body };
 }
 

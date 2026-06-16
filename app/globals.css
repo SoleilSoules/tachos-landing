@@ -53,6 +53,47 @@ a {
   transform-origin: center;
   transform: scaleY(0);
 }
+/* Idle "tricks" — applied to the inner <svg> (NOT the root, whose transform is
+   driven each frame by rAF) so the playful flip/morph composes cleanly. */
+.companion.spin svg {
+  animation: companion-spin 0.85s cubic-bezier(0.5, 0, 0.2, 1);
+}
+.companion.squish svg {
+  animation: companion-squish 0.6s ease-in-out;
+}
+.companion.shatter svg {
+  animation: companion-shatter 0.9s ease-in-out;
+}
+@keyframes companion-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes companion-squish {
+  40% {
+    transform: scale(1.35, 0.62) rotate(10deg);
+    border-radius: 6px;
+  }
+  70% {
+    transform: scale(0.78, 1.28) rotate(-6deg);
+  }
+}
+/* "shatter": a quick scatter-and-regroup pulse standing in for splitting into
+   pieces and coming back together (full 9-shard morph is a later pass). */
+@keyframes companion-shatter {
+  20% {
+    transform: scale(1.4) rotate(-18deg);
+    opacity: 0.7;
+  }
+  45% {
+    transform: scale(0.5) rotate(24deg);
+    opacity: 0.85;
+  }
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
 .companion.blink .lid {
   animation: blink-once 0.2s ease;
 }

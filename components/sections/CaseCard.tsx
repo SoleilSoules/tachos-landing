@@ -2,19 +2,24 @@ import Image from 'next/image';
 import { asset } from '@/lib/asset';
 import type { CaseItem } from '@/lib/content';
 
+// Local UI copy (kept out of content.ts per task scope). The sparkle marks the
+// "method" tag (e.g. ML) the way the reference shows "✦ ML".
+const SPARKLE = '✦';
+
 // Per-project cover theming. Real case stills come from Vadim later; until then
-// each card gets its own brand-tinted gradient + the project's logo (instead of
-// the shared S7 placeholder), so cards read as distinct projects.
-const THEME: Record<string, { grad: string; logo: string }> = {
-  skladno: { grad: 'from-[#27405a] via-[#16273a] to-[#0b1620]', logo: '/logos/skladno.svg' },
-  hais: { grad: 'from-[#0e5240] via-[#073227] to-[#031a14]', logo: '/logos/hais-mono.svg' },
-  maginary: { grad: 'from-[#3d2060] via-[#241241] to-[#130a26]', logo: '/logos/maginary-grunge.svg' },
-  dobry: { grad: 'from-[#7c3314] via-[#4a1d0b] to-[#250e05]', logo: '/logos/dobry-color.svg' },
+// each card keeps its own brand-tinted gradient that sits UNDER the cover photo
+// — so even if a still is missing the card reads as a distinct project rather
+// than an empty box. The photo (item.cover) is layered on top with object-cover.
+const TINT: Record<string, string> = {
+  skladno: 'from-[#27405a] via-[#16273a] to-[#0b1620]',
+  hais: 'from-[#0e5240] via-[#073227] to-[#031a14]',
+  maginary: 'from-[#3d2060] via-[#241241] to-[#130a26]',
+  dobry: 'from-[#7c3314] via-[#4a1d0b] to-[#250e05]',
 };
 
 function ArrowIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
       <path
         d="M7 17 17 7M9 7h8v8"
         stroke="currentColor"
@@ -27,63 +32,79 @@ function ArrowIcon() {
 }
 
 export function CaseCard({ item }: { item: CaseItem }) {
-  const theme = THEME[item.id] ?? THEME.skladno;
+  const tint = TINT[item.id] ?? TINT.skladno;
+  // Tags arrive as [domain, method]; the method pill gets the sparkle prefix.
+  const [domainTag, methodTag] = item.tags;
 
   return (
     <article
-      className="group flex flex-col gap-[12px]"
+      className="group flex flex-col gap-[14px]"
       data-hint={`Кейс: ${item.client}`}
       data-hint-sub={item.tags.join(' · ')}
     >
-      <div
-        className={`relative h-[420px] overflow-hidden rounded-card bg-gradient-to-br p-[32px] transition-[transform,box-shadow,filter] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-2 group-hover:shadow-[0_24px_60px_-12px_rgba(0,0,0,0.45)] group-hover:brightness-110 ${theme.grad}`}
+      <a
+        href="#cases"
+        aria-label={`Кейс: ${item.client}`}
+        className="relative block h-[420px] overflow-hidden rounded-[44px] transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:-translate-y-[6px] motion-safe:group-hover:scale-[1.012] motion-safe:group-hover:shadow-[0_28px_64px_-16px_rgba(0,0,0,0.45)]"
       >
-        {/* oversized faded logo as cover art */}
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <Image
-            src={asset(theme.logo)}
-            alt=""
-            width={460}
-            height={140}
-            className="w-[62%] opacity-[0.08] brightness-0 invert"
-          />
-        </div>
+        {/* brand tint fallback layer — sits under the photo */}
+        <div className={`absolute inset-0 bg-gradient-to-br ${tint}`} aria-hidden />
 
-        {/* top row: project logo avatar + tags */}
-        <div className="relative flex items-start justify-between">
-          <span className="grid size-[60px] shrink-0 place-items-center rounded-full bg-white/10 p-[14px] backdrop-blur-md">
-            <Image
-              src={asset(theme.logo)}
-              alt={item.client}
-              width={64}
-              height={24}
-              style={{ height: 'auto', width: '100%' }}
-              className="object-contain brightness-0 invert"
+        {/* full-bleed cover photo (real still from Vadim; placeholder for now) */}
+        <Image
+          src={asset(item.cover)}
+          alt=""
+          fill
+          sizes="(max-width: 1024px) 100vw, 668px"
+          className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:scale-[1.04]"
+        />
+
+        {/* top + bottom scrims so the glass chips and arrow stay legible on any photo */}
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/25"
+          aria-hidden
+        />
+
+        {/* inner padded frame for the overlay controls */}
+        <div className="relative flex h-full flex-col justify-between p-[24px]">
+          {/* top row: frosted avatar circle (left) + frosted dark tag pills (right) */}
+          <div className="flex items-start justify-between gap-[12px]">
+            <span
+              className="size-[56px] shrink-0 rounded-full bg-white/15 ring-1 ring-inset ring-white/25 backdrop-blur-md"
+              aria-hidden
             />
-          </span>
-          <div className="flex max-w-[286px] flex-wrap justify-end gap-[8px]">
-            {item.tags.map((tag) => (
-              <span
-                key={tag}
-                className="rounded-tag bg-black/20 px-[12px] py-[9px] text-[14px] font-medium tracking-[0.03em] text-white backdrop-blur-md"
-              >
-                {tag}
+            <div className="flex max-w-[78%] flex-wrap justify-end gap-[8px]">
+              <span className="rounded-pill bg-black/30 px-[14px] py-[8px] text-[14px] font-medium tracking-[0.01em] text-white backdrop-blur-md">
+                {domainTag}
               </span>
-            ))}
+              <span className="inline-flex items-center gap-[6px] rounded-pill bg-black/30 px-[14px] py-[8px] text-[14px] font-medium tracking-[0.01em] text-white backdrop-blur-md">
+                <span aria-hidden className="text-white/80">
+                  {SPARKLE}
+                </span>
+                {methodTag}
+              </span>
+            </div>
+          </div>
+
+          {/* bottom row: arrow affordance in a ROUNDED SQUARE (not a circle),
+              frosted light fill. Pinned right; nudges up-right on hover.
+              motion-safe gates the translate so reduced-motion users see no shift. */}
+          <div className="flex justify-end">
+            <span className="grid size-[56px] place-items-center rounded-[18px] bg-white/20 text-white ring-1 ring-inset ring-white/15 backdrop-blur-md transition-[transform,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:bg-white/30 motion-safe:group-hover:translate-x-[3px] motion-safe:group-hover:-translate-y-[3px]">
+              <ArrowIcon />
+            </span>
           </div>
         </div>
+      </a>
 
-        {/* arrow affordance, bottom-right */}
-        <div className="absolute bottom-[32px] right-[32px] flex size-[60px] items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition group-hover:bg-white/30">
-          <ArrowIcon />
-        </div>
-      </div>
-
-      <div className="pl-[8px]">
-        <p className="text-[18px] font-medium tracking-[0.04em] text-black/50">{item.client}</p>
-        <p className="mt-[8px] text-[26px] font-medium leading-[1.2] text-black">
+      {/* caption/meta — pinned to its own card with a small left inset (#33) */}
+      <div className="pl-[6px] pr-[10px]">
+        <p className="text-[18px] font-medium tracking-[0.02em] text-black/50">{item.client}</p>
+        <p className="mt-[6px] text-[26px] font-medium leading-[1.22] text-black">
           {item.desc.lead && <>{item.desc.lead} </>}
-          <span className="box-decoration-clone bg-accent px-[2px] text-white">
+          {/* #31: accent underlay gets real padding + tag radius, cloned across
+              line wraps so each line keeps rounded corners. .nums for figures. */}
+          <span className="nums box-decoration-clone rounded-tag bg-accent px-[8px] py-[2px] text-white">
             {item.desc.highlight}
           </span>
           {item.desc.tail && <> {item.desc.tail}</>}

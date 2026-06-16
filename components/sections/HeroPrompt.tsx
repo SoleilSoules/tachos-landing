@@ -21,6 +21,17 @@ function WaveIcon() {
   );
 }
 
+function EnterIcon() {
+  // return/enter glyph — replaces the voice icon once the field has text,
+  // signalling that Enter (or a click) submits the description.
+  return (
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M9 10l-4 4 4 4" />
+      <path d="M5 14h11a4 4 0 0 0 4-4V6" />
+    </svg>
+  );
+}
+
 export function HeroPrompt() {
   const { open } = useCompose();
   const [value, setValue] = useState('');
@@ -99,16 +110,22 @@ export function HeroPrompt() {
           aria-label="Опишите задачу"
           className="min-w-0 flex-1 bg-transparent text-[18px] text-black caret-transparent outline-none placeholder:text-black/40"
         />
+        {/* Empty field → voice affordance; once there's text the button flips to
+            an Enter glyph and goes accent — both submit (open the letter). */}
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             submit();
           }}
-          aria-label="Голосовой ввод"
-          className="grid h-[88px] w-[107px] shrink-0 place-items-center rounded-input bg-white text-black shadow-[-14px_0_28px_rgba(0,0,0,0.06)] transition hover:bg-accent hover:text-white"
+          aria-label={value.trim() ? 'Отправить — Enter' : 'Голосовой ввод'}
+          className={`grid h-[88px] w-[107px] shrink-0 place-items-center rounded-input shadow-[-14px_0_28px_rgba(0,0,0,0.06)] transition ${
+            value.trim()
+              ? 'bg-accent text-white'
+              : 'bg-white text-black hover:bg-accent hover:text-white'
+          }`}
         >
-          <WaveIcon />
+          {value.trim() ? <EnterIcon /> : <WaveIcon />}
         </button>
       </div>
 

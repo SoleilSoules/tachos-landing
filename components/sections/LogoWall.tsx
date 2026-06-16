@@ -2,12 +2,13 @@ import Image from 'next/image';
 import { asset } from '@/lib/asset';
 import { clients } from '@/lib/content';
 
-// Seamless leftward marquee. The row is repeated 4× so that one half (the loop
-// unit the -50% animation travels) is always wider than any viewport — otherwise
-// a gap opens at the loop point on wide screens. Duration scales with the extra
-// width to keep the same visual speed. Pauses for prefers-reduced-motion.
+// Seamless leftward marquee. The row is repeated 8× so that one half (the loop
+// unit the -50% animation travels, ≈4 sets ≈ 4800px) always exceeds the viewport
+// — even on a 4K/ultrawide screen — so no empty gap ever opens at the loop point
+// and the reset is invisible. Duration scales with width to keep the same visual
+// speed. Pauses for prefers-reduced-motion.
 export function LogoWall() {
-  const row = [...clients, ...clients, ...clients, ...clients];
+  const row = Array.from({ length: 8 }, () => clients).flat();
 
   return (
     <div className="relative z-10 mt-[120px]">

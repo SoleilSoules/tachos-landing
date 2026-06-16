@@ -4,9 +4,11 @@ import { useEffect, useRef } from 'react';
 import { useCompose } from './ComposeProvider';
 
 // Second cursor (Clicky model): a non-interactive plectrum that strolls near the
-// real cursor, perches on the open form, and lives in the bottom-right corner.
+// real cursor, perches on the open form, lives in the bottom-right corner — and
+// now also flies out to centre-stage to announce things (scroll hint, CTA, more
+// cases) and does idle "tricks" so it reads as a living character (Vadim).
 export function CursorCompanion() {
-  const { isOpen } = useCompose();
+  const { isOpen, open } = useCompose();
   const openRef = useRef(isOpen);
   const root = useRef<HTMLDivElement>(null);
   const rot = useRef<SVGGElement>(null);
@@ -15,6 +17,9 @@ export function CursorCompanion() {
   const bubble = useRef<HTMLDivElement>(null);
   const bTitle = useRef<HTMLElement>(null);
   const bSub = useRef<HTMLElement>(null);
+  // Action fired when the (occasionally clickable) bubble is tapped — set while
+  // the mascot is mid-announce with a call-to-action (e.g. open the letter).
+  const actionRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     openRef.current = isOpen;
@@ -31,7 +36,7 @@ export function CursorCompanion() {
     const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
     const easeIO = (t: number) =>
       t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-    const dockPt = () => ({ x: innerWidth - 46, y: innerHeight - 46 });
+    const dockPt = () => ({ x: innerWidth - 50, y: innerHeight - 50 });
     const formPt = () => ({ x: innerWidth / 2, y: innerHeight * 0.13 });
 
     let mx = innerWidth / 2,
@@ -39,7 +44,7 @@ export function CursorCompanion() {
       moved = 0,
       lastMove = performance.now();
     let pos = dockPt();
-    let mode: 'dock' | 'stroll' | 'flying' | 'form' = 'dock';
+    let mode: 'dock' | 'stroll' | 'flying' | 'form' | 'announce' = 'dock';
     let fly: {
       p0: { x: number; y: number };
       p1: { x: number; y: number };
@@ -54,6 +59,15 @@ export function CursorCompanion() {
       prevOpen = false,
       bubbleTimer: ReturnType<typeof setTimeout>;
     let alive = true;
+    let scrolled = false;
+    let scrollHintShown = false;
+    let carried = false;
+    // announce mode: hold at a point and speak for a while, then go home.
+    let announcePt: { x: number; y: number } | null = null;
+    let announceUntil = 0;
+    let ctaShown = false;
+    let casesShown = false;
+    let lastTrick = performance.now();
 
     const say = (title: string, sub: string, ms?: number) => {
       if (bTitle.current) bTitle.current.textContent = title;
@@ -65,6 +79,8 @@ export function CursorCompanion() {
     const hush = () => {
       clearTimeout(bubbleTimer);
       bubble.current?.classList.remove('show');
+      bubble.current?.classList.remove('actionable');
+      actionRef.current = null;
     };
 
     const flyTo = (x: number, y: number, dur: number, then?: () => void) => {
@@ -99,6 +115,54 @@ export function CursorCompanion() {
       });
     };
 
+    // Generic "fly out and announce": land at (x,y), speak, hold for `ms`, then
+    // return to the dock. If `action` is given the bubble becomes clickable.
+    const announce = (
+      x: number,
+      y: number,
+      title: string,
+      sub: string,
+      ms: number,
+      action?: () => void,
+    ) => {
+      if (openRef.current) return;
+      actionRef.current = action ?? null;
+      bubble.current?.classList.toggle('actionable', !!action);
+      flyTo(x, y, 720, () => {
+        mode = 'announce';
+        announcePt = { x, y };
+        announceUntil = performance.now() + ms;
+        say(title, sub);
+      });
+    };
+
+    // #16 scroll hint: instead of a static "scroll down" plate, the mascot flies
+    // to where that text used to sit — the bottom-centre of the hero — and calls
+    // the visitor down. Fires once, only while still at the top of the page.
+    const scrollHint = () => {
+      if (scrollHintShown || scrolled || openRef.current || mode === 'form') return;
+      scrollHintShown = true;
+      announce(innerWidth / 2, innerHeight - 120, 'Листайте вниз 👇', 'там кейсы и живая форма', 4500);
+    };
+
+    // #45 carry: footer brief field scrolls into view pre-filled → fly down onto
+    // it "carrying" the hero text, then home. Once.
+    const carryToBrief = (el: Element) => {
+      if (carried || openRef.current) return;
+      const v = (el as HTMLTextAreaElement).value;
+      if (!v || !v.trim()) return;
+      carried = true;
+      const r = el.getBoundingClientRect();
+      const target = { x: r.left + Math.min(64, r.width / 2), y: r.top + 26 };
+      pos = { x: target.x, y: Math.max(80, target.y - 240) };
+      say('Перенёс, что вы написали ✍️', 'допишите, если нужно', 3600);
+      flyTo(target.x, target.y, 760, () => {
+        setTimeout(() => {
+          if (!openRef.current) goHome();
+        }, 900);
+      });
+    };
+
     const onMove = (e: MouseEvent) => {
       moved += Math.hypot(e.clientX - mx, e.clientY - my);
       mx = e.clientX;
@@ -113,12 +177,9 @@ export function CursorCompanion() {
     };
     addEventListener('mousemove', onMove, { passive: true });
 
-    // Contextual hints: hovering anything tagged with data-hint makes the
-    // companion pipe up (Vadim wanted it to point things out — the input, each
-    // case, etc.). Tracking the element dedupes the bubbling mouseover.
     let hintEl: Element | null = null;
     const onOver = (e: MouseEvent) => {
-      if (openRef.current) return;
+      if (openRef.current || mode === 'announce') return;
       const el = (e.target as HTMLElement).closest?.('[data-hint]') ?? null;
       if (el === hintEl) return;
       hintEl = el;
@@ -126,6 +187,55 @@ export function CursorCompanion() {
         say(el.getAttribute('data-hint') || '', el.getAttribute('data-hint-sub') || '', 2800);
     };
     addEventListener('mouseover', onOver, { passive: true });
+
+    const onScroll = () => {
+      if (!scrolled) scrolled = true;
+      // #24/#30: at the CTA zone / end of cases the mascot flies to screen centre
+      // and speaks the message the floating plates used to show. Each fires once.
+      if (openRef.current || mode === 'flying' || mode === 'form' || mode === 'announce') return;
+      const focus = innerHeight * 0.6;
+      if (!ctaShown) {
+        const el = document.getElementById('cta-zone');
+        if (el) {
+          const r = el.getBoundingClientRect();
+          if (r.top <= focus && r.bottom >= focus) {
+            ctaShown = true;
+            announce(
+              innerWidth / 2,
+              innerHeight / 2,
+              'Обсудить проект?',
+              'посчитаем и предложим состав работ — нажмите',
+              6000,
+              () => open(),
+            );
+            return;
+          }
+        }
+      }
+      if (!casesShown) {
+        const el = document.getElementById('cases-end');
+        if (el) {
+          const r = el.getBoundingClientRect();
+          if (r.top > innerHeight * 0.2 && r.top < innerHeight * 0.9) {
+            casesShown = true;
+            announce(innerWidth / 2, innerHeight / 2, 'Ещё кейсы?', '40+ цифровых продуктов в портфолио', 5000);
+          }
+        }
+      }
+    };
+    addEventListener('scroll', onScroll, { passive: true });
+
+    let briefObserver: IntersectionObserver | null = null;
+    const briefTarget = document.querySelector('[data-brief-target]');
+    if (briefTarget && 'IntersectionObserver' in window) {
+      briefObserver = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) if (entry.isIntersecting) carryToBrief(entry.target);
+        },
+        { threshold: 0.6 },
+      );
+      briefObserver.observe(briefTarget);
+    }
 
     const blink = () => {
       root.current?.classList.add('blink');
@@ -150,8 +260,10 @@ export function CursorCompanion() {
       }
     }, 4000);
 
+    const scrollHintTimer = setTimeout(scrollHint, 6000);
+
     const render = (scale: number) => {
-      root.current!.style.transform = `translate3d(${pos.x - 13}px,${pos.y - 13}px,0) scale(${scale})`;
+      root.current!.style.transform = `translate3d(${pos.x - 16.5}px,${pos.y - 16.5}px,0) scale(${scale})`;
       rot.current?.setAttribute('transform', `rotate(${(faceAng * 180) / Math.PI} 13 13)`);
       const k = Math.atan2(my - pos.y, mx - pos.x) - faceAng;
       const ex = Math.cos(k) * 1.3,
@@ -160,9 +272,21 @@ export function CursorCompanion() {
       if (eyeR.current) eyeR.current.style.transform = `translate(${ex}px,${ey}px)`;
     };
 
+    // Idle "tricks": when docked and untouched for a while, the mascot does a
+    // playful flip / squish / scatter-regroup so it feels alive. CSS classes on
+    // the root drive the inner <svg> (root transform itself is owned by rAF).
+    const TRICKS = ['spin', 'squish', 'shatter'];
+    const maybeTrick = (now: number) => {
+      if (mode !== 'dock' || openRef.current) return;
+      if (now - lastMove < 4000 || now - lastTrick < 10000) return;
+      lastTrick = now;
+      const t = TRICKS[Math.floor(Math.random() * TRICKS.length)];
+      root.current?.classList.add(t);
+      setTimeout(() => root.current?.classList.remove(t), 950);
+    };
+
     let raf = 0;
     const loop = () => {
-      // react to form open/close
       if (openRef.current && !prevOpen) {
         prevOpen = true;
         hush();
@@ -173,6 +297,7 @@ export function CursorCompanion() {
       }
 
       const now = performance.now();
+
       if (mode === 'flying' && fly) {
         const k = Math.min((now - fly.t0) / fly.dur, 1),
           e = easeIO(k);
@@ -191,6 +316,19 @@ export function CursorCompanion() {
           fly = null;
           cb?.();
         }
+      } else if (mode === 'announce') {
+        // Hold near the announce point with a gentle breathing scale; face the
+        // real cursor. Leave for home when the time's up.
+        if (announcePt) {
+          pos.x = lerp(pos.x, announcePt.x, 0.16);
+          pos.y = lerp(pos.y, announcePt.y, 0.16);
+        }
+        faceAng = lerp(faceAng, Math.atan2(my - pos.y, mx - pos.x), 0.1);
+        render(1 + Math.sin(now * 0.004) * 0.04);
+        if (now > announceUntil) {
+          announcePt = null;
+          goHome();
+        }
       } else if (mode === 'form') {
         const p = formPt();
         pos.x = lerp(pos.x, p.x, 0.18);
@@ -201,8 +339,8 @@ export function CursorCompanion() {
         orbit += 0.004 + Math.sin(now * 0.0004) * 0.002;
         let tx = mx + Math.cos(orbit) * 120,
           ty = my + Math.sin(orbit) * 84;
-        tx = Math.max(28, Math.min(innerWidth - 40, tx));
-        ty = Math.max(70, Math.min(innerHeight - 46, ty));
+        tx = Math.max(32, Math.min(innerWidth - 44, tx));
+        ty = Math.max(72, Math.min(innerHeight - 50, ty));
         pos.x = lerp(pos.x, tx, 0.045);
         pos.y = lerp(pos.y, ty, 0.045);
         const dd = Math.hypot(pos.x - mx, pos.y - my);
@@ -219,6 +357,7 @@ export function CursorCompanion() {
         pos.y = lerp(pos.y, p.y, 0.2);
         faceAng = lerp(faceAng, Math.atan2(my - pos.y, mx - pos.x), 0.08);
         render(1);
+        maybeTrick(now);
       }
 
       if (bubble.current?.classList.contains('show')) {
@@ -234,11 +373,14 @@ export function CursorCompanion() {
       alive = false;
       cancelAnimationFrame(raf);
       clearTimeout(introTimer);
+      clearTimeout(scrollHintTimer);
       clearTimeout(bubbleTimer);
       removeEventListener('mousemove', onMove);
       removeEventListener('mouseover', onOver);
+      removeEventListener('scroll', onScroll);
+      briefObserver?.disconnect();
     };
-  }, []);
+  }, [open]);
 
   return (
     <>
@@ -248,7 +390,7 @@ export function CursorCompanion() {
         className="companion pointer-events-none fixed left-0 top-0 z-[120]"
         style={{ filter: 'drop-shadow(0 4px 10px rgba(248,72,0,.4))' }}
       >
-        <svg width="26" height="26" viewBox="0 0 26 26">
+        <svg width="33" height="33" viewBox="0 0 26 26">
           <g ref={rot}>
             <path
               d="M22.5 13 L6.5 4.5 Q3.5 3 3.9 6.3 L5.8 19.7 Q6.2 23 9.2 21.5 Z"
@@ -270,6 +412,7 @@ export function CursorCompanion() {
       <div
         ref={bubble}
         aria-hidden
+        onClick={() => actionRef.current?.()}
         className="bubble pointer-events-none fixed left-0 top-0 z-[121] w-[246px] rounded-[16px] bg-ink px-[16px] py-[12px] text-inverted shadow-[0_14px_40px_rgba(0,0,0,0.4)]"
       >
         <b ref={bTitle} className="block text-[14px] font-semibold">

@@ -11,7 +11,6 @@ import { Products } from '@/components/sections/Products';
 import { Blog } from '@/components/sections/Blog';
 import { Footer } from '@/components/sections/Footer';
 import { Services } from '@/components/sections/Services';
-import { Letters } from '@/components/sections/Letters';
 
 export default function Home() {
   return (
@@ -57,7 +56,6 @@ export default function Home() {
       <div id="cta-zone" aria-hidden className="h-[220px] bg-bg" />
       <Services />
       <Products />
-      <Letters />
       <Blog />
       <Footer />
     </main>

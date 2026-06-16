@@ -1,26 +1,94 @@
 'use client';
 
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import {
   buildLetter,
   composeQuestions,
   typeChips,
   validateContact,
-  type ComposeState,
+  type LetterType,
   type ContactError,
 } from '@/lib/compose';
 import { useFocusTrap } from '@/lib/useFocusTrap';
 import { useCompose } from './ComposeProvider';
 
-const prefersReducedMotion = () =>
-  typeof window !== 'undefined' &&
-  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const typeWord: Record<LetterType, string> = {
+  site: 'сайт',
+  app: 'приложение',
+  shop: 'магазин',
+  game: 'игру',
+  idk: '',
+};
+
+type SlotKey = 'type' | 'have' | 'when' | 'budget';
+const SLOT_ORDER: SlotKey[] = ['type', 'have', 'when', 'budget'];
+type Segment = { text: string } | { slot: SlotKey };
+
+function CopyGlyph({ className = '' }: { className?: string }) {
+  return (
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden className={className}>
+      <rect x="5.5" y="5.5" width="8" height="8" rx="1.6" stroke="currentColor" strokeWidth="1.3" />
+      <path
+        d="M3.5 10.5h-.5A1.5 1.5 0 0 1 1.5 9V3A1.5 1.5 0 0 1 3 1.5h6A1.5 1.5 0 0 1 10.5 3v.5"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function Slot({
+  value,
+  ph,
+  showPopup,
+  options,
+  onPick,
+}: {
+  value?: string;
+  ph: string;
+  showPopup: boolean;
+  options: { v: string; label: string }[];
+  onPick: (v: string) => void;
+}) {
+  return (
+    <span className="relative inline-block align-baseline">
+      <span
+        className={
+          value
+            ? 'font-medium text-accent underline decoration-accent/40 underline-offset-[6px]'
+            : showPopup
+              ? 'rounded-[4px] bg-accent/15 px-[4px] text-accent/90 underline decoration-dotted decoration-accent/50 underline-offset-[6px]'
+              : 'text-inverted/35 underline decoration-dotted decoration-inverted/25 underline-offset-[6px]'
+        }
+      >
+        {value || ph}
+      </span>
+      {showPopup && (
+        <span className="absolute left-0 top-[calc(100%+10px)] z-30 flex gap-[6px] whitespace-nowrap rounded-[14px] border border-white/10 bg-[#2a2627] p-[7px] text-[14px] shadow-[0_18px_50px_rgba(0,0,0,0.55)] motion-safe:[animation:compose-pop-in_.22s_ease-out]">
+          <span aria-hidden className="absolute -top-[5px] left-[18px] size-[10px] rotate-45 border-l border-t border-white/10 bg-[#2a2627]" />
+          {options.map((o) => (
+            <button
+              key={o.label}
+              type="button"
+              onClick={() => onPick(o.v)}
+              className="relative rounded-[9px] bg-white/8 px-[12px] py-[7px] font-normal text-inverted/85 transition hover:bg-accent hover:text-inverted"
+            >
+              {o.label}
+            </button>
+          ))}
+        </span>
+      )}
+    </span>
+  );
+}
+
+const reducedMotion = () =>
+  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export function ComposeOverlay() {
-  const { isOpen, state, sendStatus, setField, close, submitLetter, resetSend } =
-    useCompose();
+  const { isOpen, state, sendStatus, setField, close, submitLetter, resetSend } = useCompose();
   const trapRef = useFocusTrap<HTMLDivElement>(isOpen);
-  const letterRef = useRef<HTMLTextAreaElement>(null);
   const contactRef = useRef<HTMLInputElement>(null);
 
   const [contact, setContact] = useState('');
@@ -28,16 +96,10 @@ export function ComposeOverlay() {
   const [contactError, setContactError] = useState<ContactError>(null);
   const [agreeError, setAgreeError] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
-
-  // Whether the user hand-edited the letter — if so, chip changes don't rewrite it.
-  const edited = useRef(false);
-  const prevChips = useRef({
-    type: state.type,
-    have: state.have,
-    when: state.when,
-    budget: state.budget,
-    freeText: state.freeText,
-  });
+  const [mailCopied, setMailCopied] = useState(false);
+  const [done, setDone] = useState<SlotKey[]>([]);
+  const doneRef = useRef<SlotKey[]>([]);
+  doneRef.current = done;
 
   const { subject, body } = buildLetter(state);
   const contactErrId = useId();
@@ -47,61 +109,100 @@ export function ComposeOverlay() {
   const isSuccess = sendStatus === 'success';
   const isError = sendStatus === 'error';
 
-  // Reset edited flag each time the form opens.
-  useEffect(() => {
-    if (isOpen) edited.current = false;
-  }, [isOpen]);
+  const segments = useMemo<Segment[]>(
+    () => [
+      { text: 'Здравствуйте! У меня запрос на ' },
+      { slot: 'type' },
+      { text: state.freeText ? `. Своими словами: «${state.freeText}». Сейчас ` : '. Сейчас ' },
+      { slot: 'have' },
+      { text: '. Сроки — ' },
+      { slot: 'when' },
+      { text: '.\n\nОриентир по бюджету — ' },
+      { slot: 'budget' },
+      { text: '.\n\nРасскажите, как вы работаете и что нужно от нас для оценки.' },
+    ],
+    [state.freeText],
+  );
 
-  // Clear transient send status when the form closes.
+  // Step-by-step typewriter: types prose until it hits an UNFILLED slot, then
+  // STOPS and shows that slot's popup. Picking an option fills it and typing
+  // resumes to the next slot. The loop polls done via a ref, so a pick advances
+  // it without re-running the effect (which would restart the letter).
+  const segRef = useRef(0);
+  const charRef = useRef(0);
+  const [, forceTick] = useState(0);
+  const rerender = () => forceTick((t) => t + 1);
+
+  useEffect(() => {
+    if (!isOpen) {
+      segRef.current = 0;
+      charRef.current = 0;
+      setDone([]);
+      return;
+    }
+    segRef.current = 0;
+    charRef.current = 0;
+    rerender();
+
+    if (reducedMotion()) {
+      segRef.current = segments.length;
+      rerender();
+      return;
+    }
+
+    let id: ReturnType<typeof setTimeout>;
+    let stop = false;
+    const step = () => {
+      if (stop) return;
+      const cur = segments[segRef.current];
+      if (!cur) {
+        rerender();
+        return; // letter finished — stop scheduling
+      }
+      let delay = 22;
+      if ('text' in cur) {
+        if (charRef.current < cur.text.length) {
+          charRef.current = Math.min(cur.text.length, charRef.current + 2);
+        } else {
+          segRef.current += 1;
+          charRef.current = 0;
+          delay = 45;
+        }
+        rerender();
+      } else if (doneRef.current.includes(cur.slot)) {
+        segRef.current += 1; // slot already chosen — type past it
+        delay = 140;
+        rerender();
+      } else {
+        delay = 130; // unfilled slot — wait (poll), don't advance or rerender
+      }
+      id = setTimeout(step, delay);
+    };
+    id = setTimeout(step, 360);
+    return () => {
+      stop = true;
+      clearTimeout(id);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, segments]);
+
   useEffect(() => {
     if (!isOpen) resetSend();
   }, [isOpen, resetSend]);
 
-  // Typewriter: rewrite the letter on chip change — unless the user edited it.
-  useEffect(() => {
-    if (!isOpen) return;
-    const el = letterRef.current;
-    if (!el) return;
+  const typing = segRef.current < segments.length;
+  const curSeg = segments[segRef.current];
+  const awaiting = curSeg && 'slot' in curSeg && !done.includes(curSeg.slot) ? curSeg.slot : null;
 
-    const prev = prevChips.current;
-    const chipsChanged =
-      prev.type !== state.type ||
-      prev.have !== state.have ||
-      prev.when !== state.when ||
-      prev.budget !== state.budget ||
-      prev.freeText !== state.freeText;
-    prevChips.current = {
-      type: state.type,
-      have: state.have,
-      when: state.when,
-      budget: state.budget,
-      freeText: state.freeText,
-    };
-
-    if (edited.current && chipsChanged) return;
-
-    if (prefersReducedMotion()) {
-      el.value = body;
-      return;
-    }
-    let i = 0;
-    let timer: ReturnType<typeof setTimeout>;
-    el.value = '';
-    const tick = () => {
-      el.value = body.slice(0, i);
-      i += 2 + Math.round(Math.random() * 2);
-      if (i <= body.length + 2) timer = setTimeout(tick, 16);
-    };
-    tick();
-    return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, state.type, state.have, state.when, state.budget, state.freeText]);
+  const pick = (key: SlotKey, v: string) => {
+    setField(key, v);
+    setDone((d) => (d.includes(key) ? d : [...d, key]));
+  };
 
   const flash = (msg: string) => {
     setToast(msg);
     setTimeout(() => setToast(null), 1800);
   };
-
   const send = () => {
     const ce = validateContact(contact);
     const ae = !agreed;
@@ -114,19 +215,29 @@ export function ComposeOverlay() {
     if (ae) return;
     submitLetter(contact);
   };
-
-  const copy = (text: string, msg: string) => {
-    navigator.clipboard?.writeText(text).then(() => flash(msg));
+  const copy = (text: string, msg: string) => navigator.clipboard?.writeText(text).then(() => flash(msg));
+  const copyMail = () => {
+    copy('hello@tachos.ru', 'Почта скопирована');
+    setMailCopied(true);
+    setTimeout(() => setMailCopied(false), 1400);
   };
 
-  const groups: { key: keyof typeof composeQuestions; field: keyof ComposeState }[] = [
-    { key: 'have', field: 'have' },
-    { key: 'when', field: 'when' },
-    { key: 'budget', field: 'budget' },
-  ];
+  const slotValue = (key: SlotKey): string =>
+    key === 'type' ? (state.type !== 'idk' ? typeWord[state.type] : '') : state[key];
+  const slotOptions = (key: SlotKey) =>
+    key === 'type'
+      ? typeChips.map((c) => ({ v: c.type, label: c.label }))
+      : [...composeQuestions[key].options];
+  const slotPh = (key: SlotKey) => (key === 'budget' ? 'по запросу' : '…');
 
   return (
     <>
+      <style>{`
+        @keyframes compose-hint-in { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes compose-pop-in { from { opacity: 0; transform: translateY(-6px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes compose-caret { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+      `}</style>
+
       <div
         aria-hidden
         onClick={close}
@@ -149,7 +260,7 @@ export function ComposeOverlay() {
             ? 'transform .44s cubic-bezier(.2,.9,.25,1.12), opacity .26s ease-out'
             : 'transform .5s cubic-bezier(.6,0,.85,.35), opacity .46s ease-in .06s',
         }}
-        className={`fixed left-1/2 top-1/2 z-[113] flex max-h-[88vh] w-[min(940px,calc(100vw-32px))] flex-col overflow-auto rounded-[28px] bg-ink text-inverted shadow-[0_50px_140px_rgba(0,0,0,0.55)] ${
+        className={`fixed left-1/2 top-1/2 z-[113] flex max-h-[90vh] w-[min(900px,calc(100vw-32px))] flex-col overflow-auto rounded-[28px] bg-ink text-inverted shadow-[0_50px_140px_rgba(0,0,0,0.55)] ${
           isOpen ? '' : 'pointer-events-none'
         }`}
       >
@@ -161,9 +272,7 @@ export function ComposeOverlay() {
             <i className="size-[10px] rounded-full bg-white/20" />
             <i className="size-[10px] rounded-full bg-white/20" />
           </span>
-          <span className="text-[13px] text-inverted/55">
-            Новое письмо — само напишется, вы только выбирайте
-          </span>
+          <span className="text-[13px] text-inverted/55">Новое письмо</span>
           <button
             type="button"
             onClick={close}
@@ -174,141 +283,112 @@ export function ComposeOverlay() {
           </button>
         </div>
 
-        <div
-          role="group"
-          aria-label="Тип запроса"
-          className="flex flex-wrap items-center gap-[8px] px-[20px] pt-[18px]"
-        >
-          <span className="text-[13px] text-inverted/45">Про что письмо</span>
-          {typeChips.map((c) => (
+        <div className="flex flex-col gap-[24px] p-[34px_40px]">
+          <div className="flex flex-wrap items-center gap-x-[20px] gap-y-[4px] text-[13px] text-inverted/45">
+            <span>
+              От: <b className="font-medium text-inverted/80">вы</b>
+            </span>
             <button
-              key={c.type}
               type="button"
-              onClick={() => setField('type', c.type)}
-              aria-pressed={state.type === c.type}
-              className={`rounded-full px-[14px] py-[7px] text-[14px] transition ${
-                state.type === c.type
-                  ? 'bg-accent text-inverted'
-                  : 'bg-white/8 text-inverted/80 hover:bg-white/15'
-              }`}
+              onClick={copyMail}
+              aria-label="Скопировать почту hello@tachos.ru"
+              className="group/mail relative inline-flex items-center gap-[6px] rounded-[6px] px-[2px] py-[1px] outline-none transition hover:text-inverted/70 focus-visible:ring-1 focus-visible:ring-white/40"
             >
-              {c.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="grid gap-0 md:grid-cols-[1.25fr_.75fr]">
-          <div className="border-b border-white/10 p-[26px_30px] md:border-b-0 md:border-r">
-            <div className="mb-[14px] flex flex-wrap gap-x-[18px] gap-y-[4px] text-[12.5px] text-inverted/45">
               <span>
-                От: <b className="font-medium text-inverted/80">вы</b>
-              </span>
-              <button
-                type="button"
-                onClick={() => copy('hello@tachos.ru', 'Почта скопирована')}
-                className="transition hover:text-inverted/70"
-              >
                 Кому:{' '}
                 <b className="font-medium text-inverted/80 underline decoration-dotted underline-offset-2">
                   hello@tachos.ru
                 </b>
-              </button>
-              <span>
-                Тема: <b className="font-medium text-inverted/80">{subject}</b>
               </span>
-            </div>
-            <textarea
-              ref={letterRef}
-              spellCheck={false}
-              aria-label="Текст письма (можно редактировать)"
-              onChange={() => {
-                edited.current = true;
-              }}
-              className="h-[260px] w-full resize-none rounded-[14px] border border-white/10 bg-black/20 p-[16px] font-sans text-[15px] leading-[1.5] text-inverted/90 outline-none focus:border-white/25"
-            />
+              <CopyGlyph className="text-inverted/40 opacity-0 transition group-hover/mail:opacity-100 group-focus-visible/mail:opacity-100" />
+              <span
+                aria-hidden
+                className="pointer-events-none absolute -top-[28px] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-[8px] bg-black/85 px-[8px] py-[4px] text-[11px] text-inverted opacity-0 transition group-hover/mail:opacity-100 group-focus-visible/mail:opacity-100 motion-safe:[animation:compose-hint-in_.18s_ease-out]"
+              >
+                {mailCopied ? 'Скопировано ✓' : 'Нажмите, чтобы скопировать'}
+              </span>
+            </button>
+            <span>
+              Тема: <b className="font-medium text-inverted/80">{subject}</b>
+            </span>
           </div>
 
-          <div className="flex flex-col gap-[18px] p-[26px]">
-            {groups.map(({ key, field }) => (
-              <div key={key} role="group" aria-labelledby={`q-${key}`}>
-                <div id={`q-${key}`} className="mb-[8px] text-[13px] text-inverted/55">
-                  {composeQuestions[key].label}
-                </div>
-                <div className="flex flex-wrap gap-[8px]">
-                  {composeQuestions[key].options.map((o) => (
-                    <button
-                      key={o.label}
-                      type="button"
-                      onClick={() => setField(field, o.v)}
-                      aria-pressed={state[field] === o.v}
-                      className={`rounded-full px-[13px] py-[7px] text-[13.5px] transition ${
-                        state[field] === o.v
-                          ? 'bg-accent text-inverted'
-                          : 'bg-white/8 text-inverted/80 hover:bg-white/15'
-                      }`}
-                    >
-                      {o.label}
-                    </button>
-                  ))}
-                </div>
+          {/* THE LETTER — types step by step, stopping at each empty slot */}
+          <div className="whitespace-pre-line text-[20px] leading-[2.2] text-inverted/90">
+            {segments.map((s, i) => {
+              if (i > segRef.current) return null;
+              if ('text' in s) {
+                const txt = i < segRef.current ? s.text : s.text.slice(0, charRef.current);
+                const showCaret = typing && i === segRef.current && !awaiting;
+                return (
+                  <span key={i}>
+                    {txt}
+                    {showCaret && (
+                      <span
+                        aria-hidden
+                        className="ml-[1px] inline-block h-[1em] w-[2px] -translate-y-[1px] bg-accent-hot align-middle [animation:compose-caret_1s_step-end_infinite]"
+                      />
+                    )}
+                  </span>
+                );
+              }
+              const key = s.slot;
+              return (
+                <Slot
+                  key={i}
+                  value={slotValue(key)}
+                  ph={slotPh(key)}
+                  showPopup={awaiting === key && i === segRef.current}
+                  options={slotOptions(key)}
+                  onPick={(v) => pick(key, v)}
+                />
+              );
+            })}
+          </div>
+
+          <div className="mt-[10px] border-t border-white/10 pt-[22px]">
+            <div className="mb-[12px] text-[14px] font-medium text-inverted/90">Куда вам ответить</div>
+
+            {isError && (
+              <div role="alert" className="mb-[12px] rounded-[10px] border border-accent/30 bg-accent/10 px-[14px] py-[10px] text-[13px] text-accent">
+                Не удалось отправить — попробуйте ещё раз или скопируйте письмо.
               </div>
-            ))}
+            )}
 
-          </div>
-        </div>
-
-        {/* action bar spans the full modal width — Vadim: the send button got
-            lost in the side column, so contact + send + copy live here on a soft
-            accent wash that draws the eye to the actual action. */}
-        <div className="border-t border-white/10 bg-accent/[0.06] px-[30px] py-[20px]">
-          {isError && (
-            <div
-              role="alert"
-              className="mb-[12px] rounded-[10px] border border-accent/30 bg-accent/10 px-[14px] py-[10px] text-[13px] text-accent"
-            >
-              Не удалось отправить — попробуйте ещё раз или скопируйте письмо.
-            </div>
-          )}
-          <div className="flex flex-col gap-[12px] md:flex-row md:items-start">
-            <div className="min-w-0 flex-1">
-              <input
-                ref={contactRef}
-                data-autofocus
-                type="text"
-                value={contact}
-                onChange={(e) => {
-                  setContact(e.target.value);
-                  setContactError(null);
-                }}
-                placeholder="Телефон, почта или @telegram — ответим сюда"
-                autoComplete="off"
-                aria-invalid={contactError !== null}
-                aria-describedby={contactError ? contactErrId : undefined}
-                className={`h-[52px] w-full rounded-[14px] border bg-black/30 px-[16px] text-[15px] text-inverted outline-none transition placeholder:text-inverted/40 focus:border-white/25 ${
-                  contactError ? 'border-accent' : 'border-white/10'
-                }`}
-              />
-              {contactError && (
-                <p id={contactErrId} role="alert" className="mt-[6px] text-[12px] text-accent">
-                  {contactError === 'empty'
-                    ? 'Оставьте контакт — ответим туда'
-                    : 'Не похоже на телефон, почту или @telegram'}
-                </p>
-              )}
-            </div>
-            <div className="flex shrink-0 items-center gap-[8px]">
+            <div className="flex flex-col gap-[10px] sm:flex-row">
+              <div className="flex-1">
+                <input
+                  ref={contactRef}
+                  data-autofocus
+                  type="text"
+                  value={contact}
+                  onChange={(e) => {
+                    setContact(e.target.value);
+                    setContactError(null);
+                  }}
+                  placeholder="Телефон, почта или @telegram"
+                  autoComplete="off"
+                  aria-invalid={contactError !== null}
+                  aria-describedby={contactError ? contactErrId : undefined}
+                  className={`h-[54px] w-full rounded-[14px] border bg-black/30 px-[16px] text-[15px] text-inverted outline-none transition placeholder:text-inverted/40 focus:border-white/25 ${
+                    contactError ? 'border-accent' : 'border-white/10'
+                  }`}
+                />
+                {contactError && (
+                  <p id={contactErrId} role="alert" className="mt-[6px] text-[12px] text-accent">
+                    {contactError === 'empty' ? 'Оставьте контакт — ответим туда' : 'Не похоже на телефон, почту или @telegram'}
+                  </p>
+                )}
+              </div>
               <button
                 type="button"
                 onClick={send}
                 disabled={isSending}
-                className="flex h-[52px] items-center gap-[8px] rounded-[14px] bg-accent px-[30px] text-[15px] font-medium text-inverted shadow-[0_10px_30px_rgba(240,81,56,0.35)] transition hover:brightness-110 disabled:opacity-60"
+                className="flex h-[54px] items-center justify-center gap-[8px] rounded-[14px] bg-accent px-[40px] text-[16px] font-medium text-inverted shadow-[0_10px_30px_rgba(240,81,56,0.35)] transition hover:brightness-110 disabled:opacity-60 sm:w-[200px]"
               >
                 {isSending ? (
                   <>
-                    <span
-                      aria-hidden
-                      className="size-[14px] animate-spin rounded-full border-2 border-inverted/30 border-t-inverted"
-                    />
+                    <span aria-hidden className="size-[14px] animate-spin rounded-full border-2 border-inverted/30 border-t-inverted" />
                     Отправляем…
                   </>
                 ) : isError ? (
@@ -317,46 +397,45 @@ export function ComposeOverlay() {
                   'Отправить'
                 )}
               </button>
+            </div>
+
+            <div className="mt-[12px] flex flex-wrap items-center gap-[18px]">
               <button
                 type="button"
-                onClick={() =>
-                  copy(letterRef.current?.value ?? body, 'Письмо в буфере — вставьте в чат')
-                }
-                className="grid h-[52px] place-items-center rounded-[14px] bg-white/8 px-[18px] text-[14px] text-inverted/85 transition hover:bg-white/15"
+                onClick={() => copy(body, 'Письмо в буфере — вставьте в чат')}
+                className="text-[13.5px] text-inverted/65 underline-offset-2 transition hover:text-inverted hover:underline"
               >
-                В Telegram
+                Скопировать в Telegram
               </button>
               <button
                 type="button"
-                onClick={() => copy(letterRef.current?.value ?? body, 'Письмо скопировано')}
-                className="grid h-[52px] place-items-center rounded-[14px] bg-white/8 px-[18px] text-[14px] text-inverted/85 transition hover:bg-white/15"
+                onClick={() => copy(body, 'Письмо скопировано')}
+                className="text-[13.5px] text-inverted/65 underline-offset-2 transition hover:text-inverted hover:underline"
               >
-                Скопировать
+                Скопировать письмо
               </button>
             </div>
-          </div>
 
-          <label className="mt-[14px] flex cursor-pointer items-start gap-[8px] text-[12px] leading-[1.4] text-inverted/55">
-            <input
-              type="checkbox"
-              checked={agreed}
-              onChange={(e) => {
-                setAgreed(e.target.checked);
-                setAgreeError(false);
-              }}
-              aria-invalid={agreeError}
-              aria-describedby={agreeError ? agreeErrId : undefined}
-              className="mt-[2px] accent-accent"
-            />
-            <span>
-              Даю согласие на обработку персональных данных. Один ответ по делу — без рассылок.
-            </span>
-          </label>
-          {agreeError && (
-            <p id={agreeErrId} role="alert" className="mt-[6px] text-[12px] text-accent">
-              Нужно согласие
-            </p>
-          )}
+            <label className="mt-[14px] flex cursor-pointer items-start gap-[8px] text-[12px] leading-[1.4] text-inverted/55">
+              <input
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => {
+                  setAgreed(e.target.checked);
+                  setAgreeError(false);
+                }}
+                aria-invalid={agreeError}
+                aria-describedby={agreeError ? agreeErrId : undefined}
+                className="mt-[2px] accent-accent"
+              />
+              <span>Даю согласие на обработку персональных данных. Один ответ по делу — без рассылок.</span>
+            </label>
+            {agreeError && (
+              <p id={agreeErrId} role="alert" className="mt-[6px] text-[12px] text-accent">
+                Нужно согласие
+              </p>
+            )}
+          </div>
         </div>
 
         {toast && (
