@@ -50,6 +50,7 @@ function Field({
   return textarea ? (
     <textarea
       rows={5}
+      data-brief-target
       placeholder={label}
       value={value}
       onChange={(e) => onChange(e.target.value)}

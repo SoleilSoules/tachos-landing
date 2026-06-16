@@ -36,23 +36,17 @@ export function FloatingCompose() {
       className="pointer-events-none fixed bottom-[24px] left-1/2 z-[110] -translate-x-1/2"
       style={{ visibility: visible ? 'visible' : 'hidden' }}
     >
-      <div
-        role="button"
+      <button
+        type="button"
         tabIndex={visible ? 0 : -1}
         onClick={() => open()}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            open();
-          }
-        }}
         aria-label="Собрать письмо в студию"
         style={{
           opacity: visible ? 1 : 0,
           transform: `translateY(${visible ? 0 : 20}px)`,
           maxWidth: 'calc(100vw - 32px)',
         }}
-        className={`group w-max cursor-pointer overflow-hidden rounded-input bg-white text-black shadow-[0_16px_48px_rgba(0,0,0,0.3)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        className={`group block w-max cursor-pointer overflow-hidden rounded-input bg-white text-left text-black shadow-[0_16px_48px_rgba(0,0,0,0.3)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           visible ? 'pointer-events-auto' : 'pointer-events-none'
         }`}
       >
@@ -68,7 +62,7 @@ export function FloatingCompose() {
             <WaveIcon size={18} />
           </span>
         </div>
-      </div>
+      </button>
     </div>
   );
 }

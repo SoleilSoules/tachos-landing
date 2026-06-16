@@ -190,4 +190,8 @@ a {
     animation-duration: 0.01ms !important;
     animation-delay: 0ms !important;
   }
+  /* stop infinite decorative loops (blinking input caret) under reduced-motion */
+  [class*='caret-blink'] {
+    animation: none !important;
+  }
 }
