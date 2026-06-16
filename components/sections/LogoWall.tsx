@@ -11,7 +11,7 @@ export function LogoWall() {
   const row = Array.from({ length: 8 }, () => clients).flat();
 
   return (
-    <div className="relative z-10 mt-[56px]">
+    <div className="relative z-10 mt-[92px]">
       {/* dark scrim: keeps the white logos legible where the row crosses the
           bright hero mockup, so the line never visually breaks */}
       <div

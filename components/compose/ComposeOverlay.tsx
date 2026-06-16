@@ -143,20 +143,29 @@ export function ComposeOverlay() {
   // it without re-running the effect (which would restart the letter).
   const segRef = useRef(0);
   const charRef = useRef(0);
+  const wasOpenRef = useRef(false);
   const [, forceTick] = useState(0);
   const rerender = () => forceTick((t) => t + 1);
 
+  // Step-by-step: type prose until an UNFILLED slot, then STOP and show only that
+  // slot's popup — the rest of the letter isn't revealed yet. Re-runs on `done`
+  // change (a pick) WITHOUT resetting segRef (only a fresh open resets), so
+  // typing resumes from where it stopped onward to the next slot.
   useEffect(() => {
     if (!isOpen) {
+      wasOpenRef.current = false;
       segRef.current = 0;
       charRef.current = 0;
       setDone([]);
       return;
     }
-    segRef.current = 0;
-    charRef.current = 0;
-    rerender();
-
+    const justOpened = !wasOpenRef.current;
+    wasOpenRef.current = true;
+    if (justOpened) {
+      segRef.current = 0;
+      charRef.current = 0;
+      rerender();
+    }
     if (reducedMotion()) {
       segRef.current = segments.length;
       rerender();
@@ -170,44 +179,43 @@ export function ComposeOverlay() {
       const cur = segments[segRef.current];
       if (!cur) {
         rerender();
-        return; // letter finished — stop scheduling
+        return; // letter finished
       }
-      let delay = 22;
       if ('text' in cur) {
         if (charRef.current < cur.text.length) {
           charRef.current = Math.min(cur.text.length, charRef.current + 2);
+          rerender();
+          id = setTimeout(step, 22);
         } else {
           segRef.current += 1;
           charRef.current = 0;
-          delay = 45;
+          rerender();
+          id = setTimeout(step, 45);
         }
+      } else if (doneRef.current.includes(cur.slot)) {
+        segRef.current += 1; // slot chosen — type past it to the next prose
         rerender();
+        id = setTimeout(step, 120);
       } else {
-        // Slot revealed instantly and typing KEEPS GOING — the whole letter
-        // writes itself; the popup for the first empty slot shows once revealed.
-        segRef.current += 1;
-        delay = 110;
-        rerender();
+        rerender(); // unfilled slot — STOP and wait for the user's pick
       }
-      id = setTimeout(step, delay);
     };
-    id = setTimeout(step, 360);
+    id = setTimeout(step, justOpened ? 360 : 90);
     return () => {
       stop = true;
       clearTimeout(id);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, segments]);
+  }, [isOpen, done, segments]);
 
   useEffect(() => {
     if (!isOpen) resetSend();
   }, [isOpen, resetSend]);
 
   const typing = segRef.current < segments.length;
-  // First unfilled slot that typing has already revealed gets the popup.
-  const firstEmpty = SLOT_ORDER.find((k) => !done.includes(k)) ?? null;
-  const slotIndexOf = (k: SlotKey) => segments.findIndex((s) => 'slot' in s && s.slot === k);
-  const showPopupFor = firstEmpty && segRef.current > slotIndexOf(firstEmpty) ? firstEmpty : null;
+  // The slot typing is currently STOPPED at (if still unfilled) shows its popup.
+  const curSeg = segments[segRef.current];
+  const awaiting = curSeg && 'slot' in curSeg && !done.includes(curSeg.slot) ? curSeg.slot : null;
 
   const pick = (key: SlotKey, v: string) => {
     setField(key, v);
@@ -334,7 +342,7 @@ export function ComposeOverlay() {
               if (i > segRef.current) return null;
               if ('text' in s) {
                 const txt = i < segRef.current ? s.text : s.text.slice(0, charRef.current);
-                const showCaret = typing && i === segRef.current;
+                const showCaret = typing && i === segRef.current && !awaiting;
                 return (
                   <span key={i}>
                     {txt}
@@ -353,7 +361,7 @@ export function ComposeOverlay() {
                   key={i}
                   value={slotValue(key)}
                   ph={slotPh(key)}
-                  showPopup={showPopupFor === key}
+                  showPopup={awaiting === key && i === segRef.current}
                   align={key === 'type' ? 'right' : 'left'}
                   options={slotOptions(key)}
                   onPick={(v) => pick(key, v)}
