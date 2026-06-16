@@ -18,7 +18,7 @@ export default function Home() {
     {/* Full-bleed dark canvas; nav + logo wall stretch to the screen edges,
         while text/founder blocks keep their fixed widths and self-centre. */}
     <main className="w-full overflow-x-hidden bg-bg">
-      <section className="relative overflow-hidden bg-bg text-inverted">
+      <section className="relative min-h-[94vh] overflow-hidden bg-bg text-inverted">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-x-0 top-0 h-[1340px] overflow-hidden"

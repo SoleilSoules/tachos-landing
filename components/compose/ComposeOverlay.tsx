@@ -44,12 +44,14 @@ function Slot({
   showPopup,
   options,
   onPick,
+  align = 'left',
 }: {
   value?: string;
   ph: string;
   showPopup: boolean;
   options: { v: string; label: string }[];
   onPick: (v: string) => void;
+  align?: 'left' | 'right';
 }) {
   return (
     <span className="relative inline-block align-baseline">
@@ -65,8 +67,19 @@ function Slot({
         {value || ph}
       </span>
       {showPopup && (
-        <span className="absolute left-0 top-[calc(100%+10px)] z-30 flex gap-[6px] whitespace-nowrap rounded-[14px] border border-white/10 bg-[#2a2627] p-[7px] text-[14px] shadow-[0_18px_50px_rgba(0,0,0,0.55)] motion-safe:[animation:compose-pop-in_.22s_ease-out]">
-          <span aria-hidden className="absolute -top-[5px] left-[18px] size-[10px] rotate-45 border-l border-t border-white/10 bg-[#2a2627]" />
+        // Anchored left or right (right for slots near the line's end) and wraps
+        // instead of running off the modal edge — max-w keeps it inside.
+        <span
+          className={`absolute top-[calc(100%+10px)] z-30 flex max-w-[min(460px,70vw)] flex-wrap gap-[6px] rounded-[14px] border border-white/10 bg-[#2a2627] p-[7px] text-[14px] shadow-[0_18px_50px_rgba(0,0,0,0.55)] motion-safe:[animation:compose-pop-in_.22s_ease-out] ${
+            align === 'right' ? 'right-0' : 'left-0'
+          }`}
+        >
+          <span
+            aria-hidden
+            className={`absolute -top-[5px] size-[10px] rotate-45 border-l border-t border-white/10 bg-[#2a2627] ${
+              align === 'right' ? 'right-[18px]' : 'left-[18px]'
+            }`}
+          />
           {options.map((o) => (
             <button
               key={o.label}
@@ -169,12 +182,12 @@ export function ComposeOverlay() {
           delay = 45;
         }
         rerender();
-      } else if (doneRef.current.includes(cur.slot)) {
-        segRef.current += 1; // slot already chosen — type past it
-        delay = 140;
-        rerender();
       } else {
-        delay = 130; // unfilled slot — wait (poll), don't advance or rerender
+        // Slot revealed instantly and typing KEEPS GOING — the whole letter
+        // writes itself; the popup for the first empty slot shows once revealed.
+        segRef.current += 1;
+        delay = 110;
+        rerender();
       }
       id = setTimeout(step, delay);
     };
@@ -191,8 +204,10 @@ export function ComposeOverlay() {
   }, [isOpen, resetSend]);
 
   const typing = segRef.current < segments.length;
-  const curSeg = segments[segRef.current];
-  const awaiting = curSeg && 'slot' in curSeg && !done.includes(curSeg.slot) ? curSeg.slot : null;
+  // First unfilled slot that typing has already revealed gets the popup.
+  const firstEmpty = SLOT_ORDER.find((k) => !done.includes(k)) ?? null;
+  const slotIndexOf = (k: SlotKey) => segments.findIndex((s) => 'slot' in s && s.slot === k);
+  const showPopupFor = firstEmpty && segRef.current > slotIndexOf(firstEmpty) ? firstEmpty : null;
 
   const pick = (key: SlotKey, v: string) => {
     setField(key, v);
@@ -319,7 +334,7 @@ export function ComposeOverlay() {
               if (i > segRef.current) return null;
               if ('text' in s) {
                 const txt = i < segRef.current ? s.text : s.text.slice(0, charRef.current);
-                const showCaret = typing && i === segRef.current && !awaiting;
+                const showCaret = typing && i === segRef.current;
                 return (
                   <span key={i}>
                     {txt}
@@ -338,7 +353,8 @@ export function ComposeOverlay() {
                   key={i}
                   value={slotValue(key)}
                   ph={slotPh(key)}
-                  showPopup={awaiting === key && i === segRef.current}
+                  showPopup={showPopupFor === key}
+                  align={key === 'type' ? 'right' : 'left'}
                   options={slotOptions(key)}
                   onPick={(v) => pick(key, v)}
                 />
