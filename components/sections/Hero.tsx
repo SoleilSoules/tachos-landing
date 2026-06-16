@@ -10,7 +10,7 @@ export function Hero() {
   return (
     <div
       ref={ref}
-      className="relative z-10 flex flex-col items-center px-6 pt-[229px] text-center"
+      className="relative z-10 flex flex-col items-center px-6 pt-[288px] text-center"
     >
       <h1 className="reveal-hidden max-w-[966px] select-none text-[82px] font-medium leading-[0.9] tracking-[-0.02em] text-inverted">
         {hero.title[0]}

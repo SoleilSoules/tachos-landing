@@ -26,10 +26,10 @@ const MOCKUPS: Record<string, { src: string; alt: string } | undefined> = {
 // behind the top sits a little lower, smaller, rotated and dimmed — a fanned
 // stack you can "deal" from. WHY a lookup not a formula: only ~3 products, so
 // hand-tuned offsets read better than linear math at this scale.
-const REST: { y: number; scale: number; rot: number; opacity: number }[] = [
-  { y: 0, scale: 1, rot: 0, opacity: 1 }, // top, flat
-  { y: 26, scale: 0.95, rot: -2.4, opacity: 0.6 }, // peeking next card
-  { y: 48, scale: 0.9, rot: 2.2, opacity: 0.32 }, // deepest
+const REST: { y: number; scale: number; opacity: number }[] = [
+  { y: 0, scale: 1, opacity: 1 }, // top, flat — the active product
+  { y: -22, scale: 0.955, opacity: 0.5 }, // peeks ABOVE the top card
+  { y: -40, scale: 0.91, opacity: 0.3 }, // deepest, furthest up
 ];
 
 // CTA anchor copy lives next to the deck so the section stays content-driven.
@@ -101,7 +101,7 @@ export function Products() {
   // card would snap to the back for a frame before the fly-out keyframe kicks
   // in (a two-render glitch). prev === index means "no transition in flight".
   const [view, setView] = useState({ index: 0, prev: 0 });
-  const { index, prev } = view;
+  const { index } = view;
   const [progress, setProgress] = useState(0);
   const ref = useReveal<HTMLDivElement>({ threshold: 0.15, rootMargin: '-40px 0px' });
 
@@ -134,38 +134,6 @@ export function Products() {
 
   return (
     <section id="products" className="overflow-hidden bg-bg pt-[130px] pb-[150px] text-inverted">
-      {/* Scoped deck keyframes — kept local (not globals.css) and prefixed deck-*.
-          Fly-out: top card lifts, tilts and drops past the bottom of the stack.
-          Fly-in: next card eases up from the peeking slot into the flat top.
-          motion-reduce handles the no-animation path via utility classes below. */}
-      <style>{`
-        /* deck-deal: top card lifts + tilts, then swings down and TUCKS into the
-           deepest rest slot (y/scale/rot/opacity here MUST match REST[last]) so a
-           'forwards' fill lands it cleanly at the back of the stack — no end pop. */
-        @keyframes deck-deal {
-          0%   { transform: translate3d(0,0,0) rotate(0deg) scale(1); opacity: 1; }
-          35%  { transform: translate3d(-30px,-36px,0) rotate(-7deg) scale(1.02); opacity: 1; }
-          70%  { transform: translate3d(14px,70px,0) rotate(8deg) scale(0.92); opacity: 0.5; }
-          100% { transform: translate3d(0,48px,0) rotate(2.2deg) scale(0.9); opacity: 0.32; }
-        }
-        /* deck-rise: the next card eases up from the peeking slot to the flat top. */
-        @keyframes deck-rise {
-          0%   { transform: translate3d(0,26px,0) rotate(-2.4deg) scale(0.95); opacity: 0.6; }
-          100% { transform: translate3d(0,0,0) rotate(0deg) scale(1); opacity: 1; }
-        }
-        @media (max-width: 640px) {
-          /* Mobile: shorter, flatter travel so the deck never overflows the stage. */
-          @keyframes deck-deal {
-            0%   { transform: translate3d(0,0,0) rotate(0deg) scale(1); opacity: 1; }
-            100% { transform: translate3d(0,48px,0) rotate(2.2deg) scale(0.9); opacity: 0.32; }
-          }
-          @keyframes deck-rise {
-            0%   { transform: translate3d(0,18px,0) rotate(0deg) scale(0.96); opacity: 0.6; }
-            100% { transform: translate3d(0,0,0) rotate(0deg) scale(1); opacity: 1; }
-          }
-        }
-      `}</style>
-
       <h2 className="mx-auto max-w-[1000px] px-6 text-center text-[52px] font-semibold leading-[1.0] tracking-[-0.01em]">
         {productsIntro.titleLead}
         <br />
@@ -184,47 +152,23 @@ export function Products() {
             const depth = (i - index + count) % count;
             const rest = REST[Math.min(depth, REST.length - 1)];
             const isActive = depth === 0;
-            // A transition is "in flight" when prev differs from index.
-            const moved = prev !== index;
-            // Only the natural forward step (and the timer's wrap) plays the full
-            // deal/rise flight. Manual jumps to a far card just CSS-slide between
-            // slots — keeps the dealt card landing exactly in the back slot and
-            // avoids two cards fighting for the deepest position.
-            const forwardStep = moved && index === (prev + 1) % count;
-            const isLeaving = forwardStep && i === prev; // top card dealt to the back
-            const isRising = forwardStep && isActive; // next card pulled to the top
             const mockup = MOCKUPS[p.id];
 
-            // Resting slot for this card (where it ends up after any transition).
-            // Cards not running a keyframe CSS-transition toward these values.
+            // Cards simply CSS-transition between their resting slots as the deck
+            // rotates — a clean "deal to the back of the stack" without a fragile
+            // keyframe flight. Stable key so the card animates rather than remounts.
             const restStyle = {
-              transform: `translate3d(0, ${rest.y}px, 0) rotate(${rest.rot}deg) scale(${rest.scale})`,
+              transform: `translate3d(0, ${rest.y}px, 0) scale(${rest.scale})`,
               opacity: rest.opacity,
-              // Leaving card stays above the deck while it arcs out, then its
-              // depth (deepest) naturally puts it at the back.
-              zIndex: count - depth + (isLeaving ? count : 0),
+              zIndex: count - depth,
             } as const;
-
-            // deck-deal lands exactly on REST[last] (the back slot), so `forwards`
-            // pins it there with no pop; deck-rise eases the new card to the top.
-            const anim = isLeaving
-              ? 'deck-deal 0.5s cubic-bezier(0.22,0.61,0.36,1) forwards'
-              : isRising
-                ? 'deck-rise 0.5s cubic-bezier(0.16,1,0.3,1) forwards'
-                : undefined;
 
             return (
               <div
-                // Remount on each step so the keyframe restarts from its 0% frame.
-                key={`${p.id}-${isLeaving ? `out-${index}` : isRising ? `top-${index}` : 'rest'}`}
+                key={p.id}
                 aria-hidden={!isActive}
-                style={{
-                  ...restStyle,
-                  // While a keyframe plays it owns transform/opacity; restStyle is
-                  // the resting/fallback value the card settles to.
-                  animation: anim,
-                }}
-                className="absolute inset-0 origin-bottom transform-gpu transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform motion-reduce:!animate-none motion-reduce:!transition-none"
+                style={restStyle}
+                className="absolute inset-0 origin-top transform-gpu transition-[transform,opacity] duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform motion-reduce:!transition-none"
               >
                 {/* Clipped panel: rounded body with text/CTA. overflow-hidden keeps
                     the glow + rounding tidy; the tablet lives OUTSIDE it (sibling)

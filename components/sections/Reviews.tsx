@@ -283,17 +283,17 @@ function TextCard({ r }: { r: Review }) {
   const light = r.tone === 'light';
   return (
     <div
-      className={`reveal-hidden relative h-[502px] w-full overflow-hidden rounded-card ${CARD_PAD} backdrop-blur-xl ${
+      className={`reveal-hidden relative flex h-full min-h-[300px] w-full flex-col justify-between overflow-hidden rounded-card ${CARD_PAD} backdrop-blur-xl ${
         light
-          ? `${CARD_BORDER} bg-gradient-to-b from-[#af9897] via-[#cddcdd] to-[#f05138] text-[#05010d]`
+          ? `${CARD_BORDER} bg-gradient-to-br from-[#3a2018] via-[#241310] to-[#f05138]/35 text-white`
           : `${CARD_BORDER} bg-black/15 text-white`
       }`}
     >
       {!light && <Glow className="-left-[40px] -top-[120px] h-[300px] w-[300px]" />}
-      {!light && <Glow className="bottom-[40px] right-[20px] h-[200px] w-[200px] bg-accent/20" />}
-      <div className="relative flex h-full flex-col justify-between">
-        <p className="text-[22px] font-medium leading-[1.25]">{r.text}</p>
-        <Author r={r} light={light} />
+      {light && <Glow className="bottom-[10px] right-[10px] h-[240px] w-[240px] bg-accent/25" />}
+      <p className="relative text-[22px] font-medium leading-[1.3]">{r.text}</p>
+      <div className="relative mt-[40px]">
+        <Author r={r} />
       </div>
     </div>
   );
@@ -304,7 +304,7 @@ function TextCard({ r }: { r: Review }) {
 function VideoCard({ r }: { r: Review }) {
   return (
     <div
-      className={`reveal-hidden group relative h-[502px] w-full overflow-hidden rounded-card ${CARD_PAD} text-white`}
+      className={`reveal-hidden group relative h-full min-h-[440px] w-full overflow-hidden rounded-card ${CARD_PAD} text-white`}
     >
       <Image
         src={asset('/figma/founder-isaac.png')}
@@ -332,15 +332,15 @@ function VideoCard({ r }: { r: Review }) {
 function PortraitCard({ r }: { r: Review }) {
   return (
     <div
-      className={`reveal-hidden group relative flex h-[520px] w-[402px] max-w-full flex-col items-center justify-center gap-[28px] overflow-hidden rounded-card ${CARD_BORDER} bg-white/[0.06] ${CARD_PAD} text-center backdrop-blur-xl`}
+      className={`reveal-hidden group relative flex h-full min-h-[440px] w-full flex-col items-center justify-center gap-[24px] overflow-hidden rounded-card ${CARD_BORDER} bg-white/[0.06] ${CARD_PAD} text-center backdrop-blur-xl`}
     >
-      <Glow className="left-[55px] top-[40px] h-[290px] w-[290px] bg-accent/20" />
-      <div className="relative size-[290px] overflow-hidden rounded-full ring-2 ring-accent/70">
+      <Glow className="left-1/2 top-[40px] h-[260px] w-[260px] -translate-x-1/2 bg-accent/20" />
+      <div className="relative size-[210px] overflow-hidden rounded-full ring-2 ring-accent/70">
         <Image
           src={asset('/figma/founder-jennifer.png')}
           alt=""
           fill
-          sizes="290px"
+          sizes="210px"
           className="object-cover transition duration-500 group-hover:scale-[1.03]"
         />
         {/* play sits centred over the portrait — glassy + smaller than Глеба's (#6) */}
@@ -454,16 +454,15 @@ export function Reviews() {
         </p>
       </div>
 
-      <div ref={ref} className="relative mx-auto mt-[56px] flex max-w-[900px] flex-col items-center gap-[40px] px-6">
+      <div ref={ref} className="relative mx-auto mt-[56px] flex max-w-[900px] flex-col gap-[28px] px-6">
         <AudioCard r={audio} />
-        <div className="grid w-full max-w-[824px] grid-cols-1 gap-[40px] md:grid-cols-2">
+        {/* balanced 2×2 mosaic: text + Глеб video on top, Дарья portrait + text below */}
+        <div className="grid grid-cols-1 items-stretch gap-[28px] md:grid-cols-2">
           <TextCard r={t1} />
           <VideoCard r={v1} />
-        </div>
-        <div className="w-[590px] max-w-full self-start md:ml-[40px]">
+          <PortraitCard r={v2} />
           <TextCard r={t2} />
         </div>
-        <PortraitCard r={v2} />
       </div>
     </section>
   );
