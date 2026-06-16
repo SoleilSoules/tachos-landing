@@ -173,7 +173,7 @@ export function Footer() {
                 type="button"
                 onClick={submit}
                 disabled={status === 'sending' || sent}
-                className="mt-[20px] h-[60px] rounded-[27px] bg-white text-[16px] font-semibold text-[#040404] transition hover:brightness-95 disabled:opacity-70"
+                className="mt-[20px] h-[60px] rounded-[27px] bg-white text-[16px] font-semibold text-fg transition hover:brightness-95 disabled:opacity-70"
               >
                 {sent ? 'Заявка отправлена ✓' : status === 'sending' ? 'Отправляем…' : footer.submit}
               </button>

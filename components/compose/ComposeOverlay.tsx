@@ -21,7 +21,6 @@ const typeWord: Record<LetterType, string> = {
 };
 
 type SlotKey = 'type' | 'have' | 'when' | 'budget';
-const SLOT_ORDER: SlotKey[] = ['type', 'have', 'when', 'budget'];
 type Segment = { text: string } | { slot: SlotKey };
 
 function CopyGlyph({ className = '' }: { className?: string }) {
@@ -156,7 +155,11 @@ export function ComposeOverlay() {
       wasOpenRef.current = false;
       segRef.current = 0;
       charRef.current = 0;
-      setDone([]);
+      // Functional bailout: return the SAME array when already empty so React's
+      // Object.is check skips the update — otherwise a fresh `[]` each closed
+      // render changes `done` identity, the effect re-runs (done is a dep), and
+      // it loops forever (CPU storm on every load while the modal is closed).
+      setDone((d) => (d.length ? [] : d));
       return;
     }
     const justOpened = !wasOpenRef.current;
@@ -238,9 +241,36 @@ export function ComposeOverlay() {
     if (ae) return;
     submitLetter(contact);
   };
-  const copy = (text: string, msg: string) => navigator.clipboard?.writeText(text).then(() => flash(msg));
-  const copyMail = () => {
-    copy('hello@tachos.ru', 'Почта скопирована');
+  // Copy with explicit feedback on every path: clipboard API → legacy textarea
+  // fallback (insecure context / in-app webviews) → error toast. Returns success
+  // so callers can gate their UI (e.g. the "Скопировано ✓" swap).
+  const copy = async (text: string, msg: string): Promise<boolean> => {
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error('no-clipboard');
+      await navigator.clipboard.writeText(text);
+      flash(msg);
+      return true;
+    } catch {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        flash(msg);
+        return true;
+      } catch {
+        flash('Не удалось скопировать — выделите текст вручную');
+        return false;
+      }
+    }
+  };
+  const copyMail = async () => {
+    const ok = await copy('hello@tachos.ru', 'Почта скопирована');
+    if (!ok) return;
     setMailCopied(true);
     setTimeout(() => setMailCopied(false), 1400);
   };
@@ -273,6 +303,8 @@ export function ComposeOverlay() {
         role="dialog"
         aria-modal="true"
         aria-label="Письмо в студию"
+        aria-hidden={!isOpen}
+        inert={!isOpen ? true : undefined}
         style={{
           transformOrigin: 'center',
           transform: isOpen

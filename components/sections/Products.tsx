@@ -74,7 +74,7 @@ function ProductSwitcher({
             )}
             <span
               className={`relative grid size-[48px] shrink-0 place-items-center rounded-[12px] ${
-                isActive ? 'bg-[#040404]' : 'bg-white/30'
+                isActive ? 'bg-bg' : 'bg-white/30'
               }`}
             >
               <Image src={asset(ICONS[p.id])} alt="" width={26} height={26} />
@@ -109,8 +109,25 @@ export function Products() {
   const pick = (next: number) =>
     setView((v) => (v.index === next ? v : { index: next, prev: v.index }));
 
+  // Only run the autoplay timer while the section is on screen — otherwise the
+  // rAF loop drives setState ~60×/sec for the whole page lifetime, off-screen.
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !('IntersectionObserver' in window)) {
+      setInView(true);
+      return;
+    }
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), {
+      rootMargin: '0px 0px -10% 0px',
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [ref]);
+
   // Drive the active card's fill; advance to the next product on completion.
   useEffect(() => {
+    if (!inView) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       setProgress(100);
       return;
@@ -130,7 +147,7 @@ export function Products() {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [index, count]);
+  }, [index, count, inView]);
 
   return (
     <section id="products" className="overflow-hidden bg-bg pt-[130px] pb-[150px] text-inverted">

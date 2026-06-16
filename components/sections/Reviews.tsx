@@ -11,7 +11,7 @@ import { reviews, type Review } from '@/lib/content';
 // same 40px radius (rounded-card), same border colour/alpha, same padding.
 const CARD_BORDER = 'border border-[#8d8d8d]/35';
 const CARD_PAD = 'p-[36px]';
-const GLASS = 'bg-black/15 backdrop-blur-xl';
+const GLASS = 'bg-black/15 backdrop-blur-md';
 
 // Local copy that isn't worth promoting to content.ts (UI affordances only).
 const COPY = {
@@ -103,15 +103,13 @@ function Avatar({ src, size = 54 }: { src: string; size?: number }) {
   );
 }
 
-function Author({ r, light }: { r: Review; light?: boolean }) {
+function Author({ r }: { r: Review }) {
   return (
     <div className="flex items-center gap-[10px]">
       <Avatar src={asset('/figma/rev-avatar.png')} />
       <div className="leading-tight">
-        <div className={`text-[16px] tracking-[0.03em] ${light ? 'text-[#05010d]' : 'text-white'}`}>
-          {r.author}
-        </div>
-        <div className={`text-[14px] ${light ? 'text-black/50' : 'text-white/50'}`}>{r.role}</div>
+        <div className="text-[16px] tracking-[0.03em] text-white">{r.author}</div>
+        <div className="text-[14px] text-white/50">{r.role}</div>
       </div>
     </div>
   );
@@ -253,10 +251,15 @@ function AudioCard({ r }: { r: Review }) {
             aria-valuenow={Math.round(progress * 100)}
             onClick={(e) => seek(e.clientX)}
             onKeyDown={(e) => {
-              if (e.key === 'ArrowRight') setProgress((p) => Math.min(1, p + 0.05));
-              if (e.key === 'ArrowLeft') setProgress((p) => Math.max(0, p - 0.05));
+              const keys = ['ArrowRight', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'Home', 'End'];
+              if (!keys.includes(e.key)) return;
+              e.preventDefault();
+              if (e.key === 'ArrowRight' || e.key === 'ArrowUp') setProgress((p) => Math.min(1, p + 0.05));
+              else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') setProgress((p) => Math.max(0, p - 0.05));
+              else if (e.key === 'Home') setProgress(0);
+              else if (e.key === 'End') setProgress(1);
             }}
-            className="flex h-full flex-1 cursor-pointer items-center justify-between focus:outline-none"
+            className="flex h-full flex-1 cursor-pointer items-center justify-between rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
             {WAVE.map((h, i) => (
               <span
@@ -283,7 +286,7 @@ function TextCard({ r }: { r: Review }) {
   const light = r.tone === 'light';
   return (
     <div
-      className={`reveal-hidden relative flex h-full min-h-[300px] w-full flex-col justify-between overflow-hidden rounded-card ${CARD_PAD} backdrop-blur-xl ${
+      className={`reveal-hidden relative flex h-full min-h-[300px] w-full flex-col justify-between overflow-hidden rounded-card ${CARD_PAD} backdrop-blur-md ${
         light
           ? `${CARD_BORDER} bg-gradient-to-br from-[#3a2018] via-[#241310] to-[#f05138]/35 text-white`
           : `${CARD_BORDER} bg-black/15 text-white`
@@ -332,7 +335,7 @@ function VideoCard({ r }: { r: Review }) {
 function PortraitCard({ r }: { r: Review }) {
   return (
     <div
-      className={`reveal-hidden group relative flex h-full min-h-[440px] w-full flex-col items-center justify-center gap-[24px] overflow-hidden rounded-card ${CARD_BORDER} bg-white/[0.06] ${CARD_PAD} text-center backdrop-blur-xl`}
+      className={`reveal-hidden group relative flex h-full min-h-[440px] w-full flex-col items-center justify-center gap-[24px] overflow-hidden rounded-card ${CARD_BORDER} bg-white/[0.06] ${CARD_PAD} text-center backdrop-blur-md`}
     >
       <Glow className="left-1/2 top-[40px] h-[260px] w-[260px] -translate-x-1/2 bg-accent/20" />
       <div className="relative size-[210px] overflow-hidden rounded-full ring-2 ring-accent/70">
