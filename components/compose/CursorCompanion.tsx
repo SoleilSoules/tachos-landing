@@ -113,6 +113,20 @@ export function CursorCompanion() {
     };
     addEventListener('mousemove', onMove, { passive: true });
 
+    // Contextual hints: hovering anything tagged with data-hint makes the
+    // companion pipe up (Vadim wanted it to point things out — the input, each
+    // case, etc.). Tracking the element dedupes the bubbling mouseover.
+    let hintEl: Element | null = null;
+    const onOver = (e: MouseEvent) => {
+      if (openRef.current) return;
+      const el = (e.target as HTMLElement).closest?.('[data-hint]') ?? null;
+      if (el === hintEl) return;
+      hintEl = el;
+      if (el)
+        say(el.getAttribute('data-hint') || '', el.getAttribute('data-hint-sub') || '', 2800);
+    };
+    addEventListener('mouseover', onOver, { passive: true });
+
     const blink = () => {
       root.current?.classList.add('blink');
       setTimeout(() => root.current?.classList.remove('blink'), 200);
@@ -222,6 +236,7 @@ export function CursorCompanion() {
       clearTimeout(introTimer);
       clearTimeout(bubbleTimer);
       removeEventListener('mousemove', onMove);
+      removeEventListener('mouseover', onOver);
     };
   }, []);
 

@@ -18,14 +18,34 @@ export function Hero() {
         {hero.title[1]}
       </h1>
 
-      <p className="reveal-hidden mt-[28px] max-w-[548px] text-[18px] leading-[1.2] text-inverted/90">
-        <span className="text-accent-warm">{hero.subhead.lead}</span>{' '}
+      <p className="reveal-hidden mt-[28px] max-w-[560px] text-[19px] leading-[1.4] text-inverted [text-shadow:0_1px_16px_rgba(0,0,0,0.55)]">
+        <span className="font-medium text-accent-warm">{hero.subhead.lead}</span>{' '}
         {hero.subhead.rest}
       </p>
 
       <div className="reveal-hidden">
         <HeroPrompt />
       </div>
+
+      {/* scroll affordance — Vadim: on the first screen it should be clear you
+          can scroll down to the cases below */}
+      <a
+        href="#cases"
+        aria-label="Листайте вниз — наши кейсы"
+        className="reveal-hidden mt-[56px] flex flex-col items-center gap-[6px] text-[12px] uppercase tracking-[0.14em] text-inverted/45 transition hover:text-inverted/80"
+      >
+        Листайте вниз
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden
+          className="animate-bounce motion-reduce:animate-none"
+        >
+          <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </a>
     </div>
   );
 }

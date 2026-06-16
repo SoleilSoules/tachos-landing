@@ -24,7 +24,7 @@ export function ComposeOverlay() {
   const contactRef = useRef<HTMLInputElement>(null);
 
   const [contact, setContact] = useState('');
-  const [agreed, setAgreed] = useState(false);
+  const [agreed, setAgreed] = useState(true);
   const [contactError, setContactError] = useState<ContactError>(null);
   const [agreeError, setAgreeError] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
@@ -203,9 +203,16 @@ export function ComposeOverlay() {
               <span>
                 От: <b className="font-medium text-inverted/80">вы</b>
               </span>
-              <span>
-                Кому: <b className="font-medium text-inverted/80">hello@tachos.ru</b>
-              </span>
+              <button
+                type="button"
+                onClick={() => copy('hello@tachos.ru', 'Почта скопирована')}
+                className="transition hover:text-inverted/70"
+              >
+                Кому:{' '}
+                <b className="font-medium text-inverted/80 underline decoration-dotted underline-offset-2">
+                  hello@tachos.ru
+                </b>
+              </button>
               <span>
                 Тема: <b className="font-medium text-inverted/80">{subject}</b>
               </span>
@@ -247,108 +254,109 @@ export function ComposeOverlay() {
               </div>
             ))}
 
-            <div className="mt-[2px] flex flex-col gap-[12px]">
-              <div>
-                <input
-                  ref={contactRef}
-                  data-autofocus
-                  type="text"
-                  value={contact}
-                  onChange={(e) => {
-                    setContact(e.target.value);
-                    setContactError(null);
-                  }}
-                  placeholder="Телефон, почта или @telegram"
-                  autoComplete="off"
-                  aria-invalid={contactError !== null}
-                  aria-describedby={contactError ? contactErrId : undefined}
-                  className={`w-full rounded-[12px] border bg-black/20 px-[14px] py-[11px] text-[14px] text-inverted outline-none transition placeholder:text-inverted/40 focus:border-white/25 ${
-                    contactError ? 'border-accent' : 'border-white/10'
-                  }`}
-                />
-                {contactError && (
-                  <p id={contactErrId} role="alert" className="mt-[6px] text-[12px] text-accent">
-                    {contactError === 'empty'
-                      ? 'Оставьте контакт — ответим туда'
-                      : 'Не похоже на телефон, почту или @telegram'}
-                  </p>
-                )}
-              </div>
+          </div>
+        </div>
 
-              <div>
-                <label className="flex cursor-pointer items-start gap-[8px] text-[12px] leading-[1.4] text-inverted/55">
-                  <input
-                    type="checkbox"
-                    checked={agreed}
-                    onChange={(e) => {
-                      setAgreed(e.target.checked);
-                      setAgreeError(false);
-                    }}
-                    aria-invalid={agreeError}
-                    aria-describedby={agreeError ? agreeErrId : undefined}
-                    className="mt-[2px] accent-accent"
-                  />
-                  <span>
-                    Даю согласие на обработку персональных данных. Один ответ по
-                    делу — без рассылок.
-                  </span>
-                </label>
-                {agreeError && (
-                  <p id={agreeErrId} role="alert" className="mt-[6px] text-[12px] text-accent">
-                    Нужно согласие
-                  </p>
-                )}
-              </div>
-
-              {isError && (
-                <div
-                  role="alert"
-                  className="rounded-[10px] border border-accent/30 bg-accent/10 px-[14px] py-[10px] text-[13px] text-accent"
-                >
-                  Не удалось отправить — попробуйте ещё раз или скопируйте письмо.
-                </div>
+        {/* action bar spans the full modal width — Vadim: the send button got
+            lost in the side column, so contact + send + copy live here on a soft
+            accent wash that draws the eye to the actual action. */}
+        <div className="border-t border-white/10 bg-accent/[0.06] px-[30px] py-[20px]">
+          {isError && (
+            <div
+              role="alert"
+              className="mb-[12px] rounded-[10px] border border-accent/30 bg-accent/10 px-[14px] py-[10px] text-[13px] text-accent"
+            >
+              Не удалось отправить — попробуйте ещё раз или скопируйте письмо.
+            </div>
+          )}
+          <div className="flex flex-col gap-[12px] md:flex-row md:items-start">
+            <div className="min-w-0 flex-1">
+              <input
+                ref={contactRef}
+                data-autofocus
+                type="text"
+                value={contact}
+                onChange={(e) => {
+                  setContact(e.target.value);
+                  setContactError(null);
+                }}
+                placeholder="Телефон, почта или @telegram — ответим сюда"
+                autoComplete="off"
+                aria-invalid={contactError !== null}
+                aria-describedby={contactError ? contactErrId : undefined}
+                className={`h-[52px] w-full rounded-[14px] border bg-black/30 px-[16px] text-[15px] text-inverted outline-none transition placeholder:text-inverted/40 focus:border-white/25 ${
+                  contactError ? 'border-accent' : 'border-white/10'
+                }`}
+              />
+              {contactError && (
+                <p id={contactErrId} role="alert" className="mt-[6px] text-[12px] text-accent">
+                  {contactError === 'empty'
+                    ? 'Оставьте контакт — ответим туда'
+                    : 'Не похоже на телефон, почту или @telegram'}
+                </p>
               )}
-
-              <div className="flex flex-wrap gap-[8px]">
-                <button
-                  type="button"
-                  onClick={send}
-                  disabled={isSending}
-                  className="flex items-center gap-[8px] rounded-full bg-accent px-[20px] py-[11px] text-[14px] text-inverted transition hover:brightness-110 disabled:opacity-60"
-                >
-                  {isSending ? (
-                    <>
-                      <span
-                        aria-hidden
-                        className="size-[14px] animate-spin rounded-full border-2 border-inverted/30 border-t-inverted"
-                      />
-                      Отправляем…
-                    </>
-                  ) : isError ? (
-                    'Повторить'
-                  ) : (
-                    'Отправить'
-                  )}
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    copy(letterRef.current?.value ?? body, 'Письмо в буфере — вставьте в чат')
-                  }
-                  className="rounded-full bg-white/8 px-[20px] py-[11px] text-[14px] text-inverted/85 transition hover:bg-white/15"
-                >
-                  В Telegram
-                </button>
-                <button
-                  type="button"
-                  onClick={() => copy(letterRef.current?.value ?? body, 'Письмо скопировано')}
-                  className="rounded-full bg-white/8 px-[20px] py-[11px] text-[14px] text-inverted/85 transition hover:bg-white/15"
-                >
-                  Скопировать
-                </button>
-              </div>
+            </div>
+            <div className="flex shrink-0 items-center gap-[8px]">
+              <button
+                type="button"
+                onClick={send}
+                disabled={isSending}
+                className="flex h-[52px] items-center gap-[8px] rounded-[14px] bg-accent px-[30px] text-[15px] font-medium text-inverted shadow-[0_10px_30px_rgba(240,81,56,0.35)] transition hover:brightness-110 disabled:opacity-60"
+              >
+                {isSending ? (
+                  <>
+                    <span
+                      aria-hidden
+                      className="size-[14px] animate-spin rounded-full border-2 border-inverted/30 border-t-inverted"
+                    />
+                    Отправляем…
+                  </>
+                ) : isError ? (
+                  'Повторить'
+                ) : (
+                  'Отправить'
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  copy(letterRef.current?.value ?? body, 'Письмо в буфере — вставьте в чат')
+                }
+                className="grid h-[52px] place-items-center rounded-[14px] bg-white/8 px-[18px] text-[14px] text-inverted/85 transition hover:bg-white/15"
+              >
+                В Telegram
+              </button>
+              <button
+                type="button"
+                onClick={() => copy(letterRef.current?.value ?? body, 'Письмо скопировано')}
+                className="grid h-[52px] place-items-center rounded-[14px] bg-white/8 px-[18px] text-[14px] text-inverted/85 transition hover:bg-white/15"
+              >
+                Скопировать
+              </button>
             </div>
           </div>
+
+          <label className="mt-[14px] flex cursor-pointer items-start gap-[8px] text-[12px] leading-[1.4] text-inverted/55">
+            <input
+              type="checkbox"
+              checked={agreed}
+              onChange={(e) => {
+                setAgreed(e.target.checked);
+                setAgreeError(false);
+              }}
+              aria-invalid={agreeError}
+              aria-describedby={agreeError ? agreeErrId : undefined}
+              className="mt-[2px] accent-accent"
+            />
+            <span>
+              Даю согласие на обработку персональных данных. Один ответ по делу — без рассылок.
+            </span>
+          </label>
+          {agreeError && (
+            <p id={agreeErrId} role="alert" className="mt-[6px] text-[12px] text-accent">
+              Нужно согласие
+            </p>
+          )}
         </div>
 
         {toast && (

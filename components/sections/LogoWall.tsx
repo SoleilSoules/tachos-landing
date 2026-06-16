@@ -2,26 +2,40 @@ import Image from 'next/image';
 import { asset } from '@/lib/asset';
 import { clients } from '@/lib/content';
 
-// Seamless leftward marquee: the row is rendered twice so a -50% translate
-// loops without a seam. Pauses for prefers-reduced-motion.
+// Seamless leftward marquee. The row is repeated 4× so that one half (the loop
+// unit the -50% animation travels) is always wider than any viewport — otherwise
+// a gap opens at the loop point on wide screens. Duration scales with the extra
+// width to keep the same visual speed. Pauses for prefers-reduced-motion.
 export function LogoWall() {
-  const row = [...clients, ...clients];
+  const row = [...clients, ...clients, ...clients, ...clients];
 
   return (
-    <div className="relative z-10 mt-[120px] overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]">
-      <div className="flex w-max items-center gap-[72px] pr-[72px] [animation:logo-marquee_38s_linear_infinite] motion-reduce:[animation:none]">
-        {row.map((client, i) => (
-          <div key={i} className="shrink-0">
-            <Image
-              src={asset(client.logo)}
-              alt={client.name}
-              width={180}
-              height={client.height}
-              style={{ height: client.height, width: 'auto' }}
-              className="opacity-50 brightness-0 invert"
-            />
-          </div>
-        ))}
+    <div className="relative z-10 mt-[120px]">
+      {/* dark scrim: keeps the white logos legible where the row crosses the
+          bright hero mockup, so the line never visually breaks */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-1/2 h-[150px] -translate-y-1/2"
+        style={{
+          background:
+            'linear-gradient(to bottom, transparent, rgba(4,4,4,0.55) 28%, rgba(4,4,4,0.55) 72%, transparent)',
+        }}
+      />
+      <div className="relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]">
+        <div className="flex w-max items-center gap-[72px] pr-[72px] [animation:logo-marquee_76s_linear_infinite] motion-reduce:[animation:none]">
+          {row.map((client, i) => (
+            <div key={i} className="shrink-0">
+              <Image
+                src={asset(client.logo)}
+                alt={client.name}
+                width={180}
+                height={client.height}
+                style={{ height: client.height, width: 'auto' }}
+                className="opacity-80 brightness-0 invert transition-opacity hover:opacity-100"
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

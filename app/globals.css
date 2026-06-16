@@ -117,6 +117,62 @@ a {
   }
 }
 
+/* hero backdrop — drifting devices. Varied paths/durations read as parallax.
+   Each device keeps its base tilt via --rot; motion-reduce disables it per-node. */
+@keyframes hero-drift-a {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--rot, 0deg));
+  }
+  50% {
+    transform: translateY(-24px) rotate(calc(var(--rot, 0deg) + 1.4deg));
+  }
+}
+@keyframes hero-drift-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(var(--rot, 0deg));
+  }
+  50% {
+    transform: translate3d(16px, -18px, 0) rotate(calc(var(--rot, 0deg) - 1.6deg));
+  }
+}
+@keyframes hero-drift-c {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(var(--rot, 0deg));
+  }
+  50% {
+    transform: translate3d(-14px, -28px, 0) rotate(calc(var(--rot, 0deg) + 1.8deg));
+  }
+}
+
+/* hero showcase — one big device at a time, cross-fading through projects.
+   Tuned for 4 layers (each ~1/4 of the cycle) with a little overlap so the swap
+   reads as a soft cross-fade rather than a cut. */
+@keyframes device-cycle {
+  0% {
+    opacity: 0;
+    transform: scale(0.965);
+  }
+  3% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  24% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  28% {
+    opacity: 0;
+    transform: scale(1.035);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.965);
+  }
+}
+
 /* logo wall — seamless leftward marquee (row is duplicated, so -50% loops) */
 @keyframes logo-marquee {
   from {

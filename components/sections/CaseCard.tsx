@@ -30,9 +30,13 @@ export function CaseCard({ item }: { item: CaseItem }) {
   const theme = THEME[item.id] ?? THEME.skladno;
 
   return (
-    <article className="group flex flex-col gap-[20px]">
+    <article
+      className="group flex flex-col gap-[12px]"
+      data-hint={`Кейс: ${item.client}`}
+      data-hint-sub={item.tags.join(' · ')}
+    >
       <div
-        className={`relative h-[420px] overflow-hidden rounded-card bg-gradient-to-br p-[32px] transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-2 group-hover:shadow-[0_24px_60px_-12px_rgba(0,0,0,0.45)] ${theme.grad}`}
+        className={`relative h-[420px] overflow-hidden rounded-card bg-gradient-to-br p-[32px] transition-[transform,box-shadow,filter] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-2 group-hover:shadow-[0_24px_60px_-12px_rgba(0,0,0,0.45)] group-hover:brightness-110 ${theme.grad}`}
       >
         {/* oversized faded logo as cover art */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">

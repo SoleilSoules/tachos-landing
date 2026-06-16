@@ -57,7 +57,7 @@ function AudioCard({ r }: { r: Review }) {
           <Author r={r} />
           <span className="size-[58px] shrink-0 rounded-full bg-white/20" />
         </div>
-        <p className="text-[21px] font-medium leading-[1.2] text-[#f5f7f6]">{r.text}</p>
+        <p className="text-[22px] font-medium leading-[1.25] text-[#f5f7f6]">{r.text}</p>
         <div className="flex h-[80px] items-center gap-[10px] rounded-full bg-white/10 p-[10px]">
           <button
             type="button"
@@ -105,7 +105,7 @@ function TextCard({ r }: { r: Review }) {
 // Video testimonial — warm orange card with a portrait still behind it.
 function VideoCard({ r }: { r: Review }) {
   return (
-    <div className="reveal-hidden relative h-[502px] w-full overflow-hidden rounded-[40px] p-[36px] text-white">
+    <div className="reveal-hidden group relative h-[502px] w-full overflow-hidden rounded-[40px] p-[36px] text-white">
       <Image
         src={asset('/figma/founder-isaac.png')}
         alt=""
@@ -113,19 +113,23 @@ function VideoCard({ r }: { r: Review }) {
         sizes="400px"
         className="object-cover object-top"
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-accent/40 to-accent" />
-      <div className="relative flex h-full flex-col justify-between">
-        <div className="flex items-start justify-between">
-          <p className="text-[26px] font-medium leading-[1.1]">
-            {r.author}
-            <br />
-            <span className="text-white/55">{r.caption}</span>
-          </p>
-          <span className="grid size-[58px] shrink-0 place-items-center rounded-full bg-white/20 backdrop-blur-md">
-            <PlayIcon size={18} />
-          </span>
-        </div>
-        <div className="text-[16px] leading-[1.3] text-white/85">{r.role}</div>
+      <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-accent/40 to-accent" />
+      {/* big round play in the centre — Vadim: the play should sit on a circle,
+          reading clearly as a video object */}
+      <button
+        type="button"
+        aria-label="Смотреть видео-отзыв"
+        className="absolute left-1/2 top-1/2 grid size-[84px] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white/95 text-accent shadow-[0_16px_44px_rgba(0,0,0,0.38)] backdrop-blur-md transition group-hover:scale-105"
+      >
+        <PlayIcon size={26} />
+      </button>
+      <div className="relative flex h-full flex-col justify-end">
+        <p className="text-[26px] font-medium leading-[1.15]">
+          {r.author}
+          <br />
+          <span className="text-white/60">{r.caption}</span>
+        </p>
+        <div className="mt-[8px] text-[16px] leading-[1.3] text-white/85">{r.role}</div>
       </div>
     </div>
   );
@@ -159,15 +163,35 @@ export function Reviews() {
   const [audio, t1, v1, t2, v2] = reviews.items;
 
   return (
-    <section id="reviews" className="bg-[#05010d] pb-[160px] pt-[120px] text-white">
-      <div className="mx-auto max-w-[861px] px-6 text-center">
+    <section id="reviews" className="relative overflow-hidden bg-[#05010d] pb-[160px] pt-[120px] text-white">
+      {/* starfield + soft accent bloom — Vadim: the bg felt empty, wanted some "космос" */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-70"
+        style={{
+          backgroundImage: `
+            radial-gradient(1.5px 1.5px at 12% 16%, rgba(255,255,255,0.7), transparent),
+            radial-gradient(1px 1px at 31% 58%, rgba(255,255,255,0.45), transparent),
+            radial-gradient(1.5px 1.5px at 57% 26%, rgba(255,255,255,0.6), transparent),
+            radial-gradient(1px 1px at 77% 70%, rgba(255,255,255,0.4), transparent),
+            radial-gradient(1px 1px at 88% 36%, rgba(255,255,255,0.55), transparent),
+            radial-gradient(1.5px 1.5px at 44% 86%, rgba(255,255,255,0.5), transparent)
+          `,
+          backgroundSize: '340px 340px',
+          backgroundRepeat: 'repeat',
+        }}
+      />
+      <div className="pointer-events-none absolute left-1/2 top-[6%] h-[540px] w-[840px] -translate-x-1/2 rounded-full bg-accent/[0.12] blur-[170px]" aria-hidden />
+      <div className="pointer-events-none absolute -right-[140px] bottom-[14%] h-[420px] w-[420px] rounded-full bg-accent/[0.10] blur-[150px]" aria-hidden />
+
+      <div className="relative mx-auto max-w-[861px] px-6 text-center">
         <h2 className="text-[52px] font-semibold leading-[0.9] tracking-[-0.02em]">{reviews.title}</h2>
-        <p className="mx-auto mt-[28px] max-w-[320px] text-[18px] leading-[1.2] text-white/70">
+        <p className="mx-auto mt-[28px] max-w-[320px] text-[19px] leading-[1.4] text-white/75">
           {reviews.subtitle}
         </p>
       </div>
 
-      <div ref={ref} className="mx-auto mt-[56px] flex max-w-[900px] flex-col items-center gap-[40px] px-6">
+      <div ref={ref} className="relative mx-auto mt-[56px] flex max-w-[900px] flex-col items-center gap-[40px] px-6">
         <AudioCard r={audio} />
         <div className="grid w-full max-w-[824px] grid-cols-1 gap-[40px] md:grid-cols-2">
           <TextCard r={t1} />

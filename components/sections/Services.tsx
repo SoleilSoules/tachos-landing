@@ -23,18 +23,18 @@ export function Services() {
   const ref = useReveal<HTMLDivElement>({ threshold: 0.08 });
 
   return (
-    <section id="services" className="bg-white pt-[120px] pb-[140px]">
+    <section id="services" className="bg-white pt-[96px] pb-[104px]">
       <div ref={ref} className="mx-auto max-w-page px-[80px]">
         <h2 className="reveal-hidden max-w-[680px] text-[44px] font-semibold leading-[1.08] tracking-[-0.02em] text-fg">
           {servicesIntro.titleLead}{' '}
           <span className="text-black/35">{servicesIntro.titleAccent}</span>
         </h2>
-        <p className="reveal-hidden mt-[20px] max-w-[520px] text-[16px] leading-[1.4] text-black/50">
+        <p className="reveal-hidden mt-[20px] max-w-[520px] text-[19px] leading-[1.4] text-black/50">
           {servicesIntro.body}
         </p>
 
         {/* feature row */}
-        <div className="reveal-hidden mt-[44px] grid grid-cols-2 gap-[18px] sm:grid-cols-3 lg:grid-cols-5">
+        <div className="reveal-hidden mt-[32px] grid grid-cols-2 gap-[14px] sm:grid-cols-3 lg:grid-cols-5">
           {serviceFeatures.map((f) => (
             <div
               key={f.label}
@@ -49,7 +49,7 @@ export function Services() {
         </div>
 
         {/* price list */}
-        <div className="reveal-hidden mt-[56px] border-t border-black/10">
+        <div className="reveal-hidden mt-[40px] border-t border-black/10">
           {services.map((s) => {
             const isOpen = open === s.name;
             return (
@@ -57,7 +57,7 @@ export function Services() {
                 <button
                   type="button"
                   onClick={() => setOpen(isOpen ? null : s.name)}
-                  className="flex w-full items-center justify-between gap-[20px] py-[28px] text-left"
+                  className="flex w-full items-center justify-between gap-[20px] py-[20px] text-left"
                 >
                   <span className="text-[26px] font-medium tracking-[-0.01em] text-fg">
                     {s.name}
@@ -79,7 +79,7 @@ export function Services() {
                 </button>
                 <div
                   className={`grid transition-all duration-300 ${
-                    isOpen ? 'grid-rows-[1fr] pb-[28px]' : 'grid-rows-[0fr]'
+                    isOpen ? 'grid-rows-[1fr] pb-[20px]' : 'grid-rows-[0fr]'
                   }`}
                 >
                   <div className="overflow-hidden">

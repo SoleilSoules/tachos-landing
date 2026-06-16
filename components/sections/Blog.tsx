@@ -114,7 +114,7 @@ export function Blog() {
         <h2 className="text-[52px] font-semibold leading-[1.0] tracking-[-0.02em] text-fg">
           {blogIntro.title}
         </h2>
-        <p className="mx-auto mt-[20px] max-w-[520px] text-[15px] leading-[1.4] text-black/45">
+        <p className="mx-auto mt-[20px] max-w-[520px] text-[19px] leading-[1.4] text-black/45">
           {blogIntro.body}
         </p>
       </div>

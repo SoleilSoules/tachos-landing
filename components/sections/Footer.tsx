@@ -1,8 +1,9 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { asset } from '@/lib/asset';
+import { useCompose } from '@/components/compose/ComposeProvider';
 import { footer, type Social } from '@/lib/content';
 import { validateContact } from '@/lib/compose';
 
@@ -66,13 +67,23 @@ function Field({
 }
 
 export function Footer() {
+  const { state } = useCompose();
   const [form, setForm] = useState({ name: '', company: '', contact: '', brief: '' });
   const [budget, setBudget] = useState('');
-  const [consent, setConsent] = useState(false);
+  const [consent, setConsent] = useState(true);
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [error, setError] = useState('');
 
   const set = (k: keyof typeof form) => (v: string) => setForm((f) => ({ ...f, [k]: v }));
+
+  // Pull the task the visitor already described (hero / letter draft) into the
+  // brief — Vadim: if it's already entered, prefill it here. Stops once edited.
+  const briefEdited = useRef(false);
+  useEffect(() => {
+    if (!briefEdited.current && state.freeText && !form.brief) {
+      setForm((f) => ({ ...f, brief: state.freeText }));
+    }
+  }, [state.freeText, form.brief]);
 
   const submit = () => {
     if (validateContact(form.contact)) {
@@ -115,7 +126,15 @@ export function Footer() {
                 <Field label={footer.fields.company} value={form.company} onChange={set('company')} />
               </div>
               <Field label={footer.fields.contact} value={form.contact} onChange={set('contact')} />
-              <Field label={footer.fields.brief} value={form.brief} onChange={set('brief')} textarea />
+              <Field
+                label={footer.fields.brief}
+                value={form.brief}
+                onChange={(v) => {
+                  briefEdited.current = true;
+                  set('brief')(v);
+                }}
+                textarea
+              />
 
               <button
                 type="button"

@@ -1,6 +1,11 @@
 // Single source of content for the landing. All copy and placeholder data lives
 // here so sections stay markup-only. Numbers/cases are placeholders until Vadim
 // confirms them (verified Tachos work: Складно, Хайс, Maginary only).
+//
+// Prose is piped through deepNbsp() so short prepositions/conjunctions never hang
+// at the end of a wrapped line (see lib/typography.ts).
+
+import { deepNbsp } from './typography';
 
 type NavLink = { label: string; href: string };
 
@@ -15,16 +20,16 @@ export const nav: { links: NavLink[]; cta: string } = {
   cta: 'Связаться',
 };
 
-export const hero = {
+export const hero = deepNbsp({
   title: ['Стоим за сильными', 'продуктами и брендами'],
   subhead: {
     lead: 'Студия инжиниринга и дизайна.',
-    rest: 'Проектируем и собираем веб-и мобильные продукты для фаундеров и компаний — от идеи ---> до релиза в проде',
+    rest: 'Проектируем и собираем веб- и мобильные продукты для фаундеров и компаний — от идеи до релиза в проде',
   },
   inputPlaceholder: 'Начните описывать задачу, мы поможем',
   needLabel: 'Мне нужен:',
   chips: ['Сайт', 'Приложение', 'Магазин', 'Игра'],
-} as const;
+} as const);
 
 export type Client = { name: string; logo: string; height: number };
 
@@ -40,7 +45,7 @@ export const clients: Client[] = [
   { name: 'Maginary', logo: '/logos/maginary-grunge.svg', height: 30 },
 ];
 
-export const founder = {
+export const founder = deepNbsp({
   heading: ['Для экстренных вопросов', 'вы можете связаться', 'с основателем студии'],
   facts: [
     'Тех лид во всех проектах — сам пишу код',
@@ -49,9 +54,9 @@ export const founder = {
   contactCta: 'Написать Вадиму',
   presentation: { label: 'Презентация Вадима', duration: '0:34' },
   person: { name: 'Вадим Вадимов', role: 'Head of product' },
-} as const;
+} as const);
 
-export const casesIntro = {
+export const casesIntro = deepNbsp({
   titleBlack: 'Успешно запустили',
   titleAccent: { prefix: 'более ', count: 40, suffix: ' цифровых продуктов' },
   body: [
@@ -59,12 +64,12 @@ export const casesIntro = {
     'Превращаем смелые гипотезы в прибыльные цифровые продукты.',
     'Ниже — истории, где это уже сработало',
   ],
-} as const;
+} as const);
 
 export type CaseTab = { label: string; count?: number; icon?: 'star'; active?: boolean };
 
 export const caseTabs: CaseTab[] = [
-  { label: 'Избранные', icon: 'star', active: true },
+  { label: 'Все', active: true },
   { label: 'Для банков', count: 12 },
   { label: 'eCommerce', count: 12 },
   { label: 'Для маркетплейсов', count: 12 },
@@ -100,7 +105,7 @@ export type Review = {
 };
 
 // Copy tied to real Tachos work (Хайс / Складно / Maginary). Names are placeholders.
-export const reviews = {
+export const reviews = deepNbsp({
   title: 'Отзывы клиентов',
   subtitle: 'С этими крутышами мы работаем уже больше 2 лет',
   items: [
@@ -150,9 +155,9 @@ export const reviews = {
       caption: 'о своём кейсе',
     },
   ] as Review[],
-};
+});
 
-export const cases: CaseItem[] = [
+export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
   {
     id: 'skladno',
     client: 'Складно',
@@ -208,7 +213,7 @@ export const cases: CaseItem[] = [
     cover,
     avatar,
   },
-];
+]);
 
 // ─── Own IT products ───────────────────────────────────────────────
 // Real studio products (doki / monte hub / bali betula). Screen + icons are
@@ -222,12 +227,12 @@ export type Product = {
   cta: string;
 };
 
-export const productsIntro = {
+export const productsIntro = deepNbsp({
   titleLead: 'Создаём собственные ИТ-продукты,',
   titleMuted: 'которыми пользуемся в работе',
-} as const;
+} as const);
 
-export const products: Product[] = [
+export const products: Product[] = deepNbsp<Product[]>([
   {
     id: 'doki',
     name: 'doki',
@@ -252,7 +257,7 @@ export const products: Product[] = [
     body: 'Меню, заказы и QR-обслуживание — всё для заведения из коробки',
     cta: 'Узнать про balibali',
   },
-];
+]);
 
 // ─── Blog ──────────────────────────────────────────────────────────
 export type Post = {
@@ -266,12 +271,12 @@ export type Post = {
   withImage?: boolean; // the wide right-hand card carries a cover
 };
 
-export const blogIntro = {
+export const blogIntro = deepNbsp({
   title: 'Наш блог',
   body: 'Делимся новостями и экспертизой в разработке. Рассказываем про нас и наш процесс, публикуем кейсы, новости и хвастаемся достижениями, показываем жизнь студии в «прямом эфире».',
-} as const;
+} as const);
 
-export const posts: Post[] = [
+export const posts: Post[] = deepNbsp<Post[]>([
   {
     id: 'p1',
     title: 'За месяц выпустили игру для Доброго',
@@ -300,7 +305,7 @@ export const posts: Post[] = [
     authorRole: 'Тех лид',
     withImage: true,
   },
-];
+]);
 
 // ─── Footer (request form + contacts + socials) ────────────────────
 export type Social = {
@@ -310,7 +315,7 @@ export type Social = {
   kind: 'tg' | 'vk' | 'yt' | 'link';
 };
 
-export const footer = {
+export const footer = deepNbsp({
   formTitle: ['Сделаем вашу задачу', 'со стратегическим', 'обоснованием'],
   fields: {
     name: 'Имя',
@@ -323,7 +328,7 @@ export const footer = {
   submit: 'Оставить заявку',
   consent:
     'Отправляя сообщение, вы соглашаетесь с политикой обработки персональных данных',
-  manager: { name: 'Анна нанана', role: 'Наш менеджер' },
+  manager: { name: 'Анна Кузнецова', role: 'Ваш менеджер проекта' },
   contacts: {
     email: { label: 'E-mail', value: 'hello@tachos.ru' },
     phone: { label: 'Позвонить', value: '+7 930 688-38-38' },
@@ -337,50 +342,50 @@ export const footer = {
     { id: 'yt', brand: 'TACHOS', label: 'Мы в Ютубе', kind: 'yt' },
     { id: 'portfolio', brand: 'TACHOS', label: 'Портфолио', kind: 'link' },
   ] as Social[],
-} as const;
+} as const);
 
 // ─── CTA banner (between Reviews and Services) ─────────────────────
-export const ctaBanner = {
+export const ctaBanner = deepNbsp({
   title: 'Обсудить проект — посчитаем и предложим состав работ',
   note: 'Ответим в течение рабочего дня · без рассылок',
   cta: 'Собрать письмо · 20 секунд',
-} as const;
+} as const);
 
 // ─── Services / price list ─────────────────────────────────────────
 // Prices and feature labels are placeholders until Vadim confirms the
 // real numbers (the concept screenshot is too small to read them).
-export const servicesIntro = {
-  titleLead: 'Не знаете, как это называется?',
-  titleAccent: 'Нормально.',
-  body: 'Мы сами поможем сформулировать задачу и подберём состав работ. Ниже — направления, в которых мы сильны, и ориентиры по бюджету.',
-} as const;
+export const servicesIntro = deepNbsp({
+  titleLead: 'Делаем сайты, приложения и сервисы',
+  titleAccent: 'под ключ.',
+  body: 'Не знаете, как назвать задачу, — поможем сформулировать и подберём состав работ. Ниже — направления, в которых мы сильны, и ориентиры по бюджету.',
+} as const);
 
-export const serviceFeatures: { label: string }[] = [
+export const serviceFeatures: { label: string }[] = deepNbsp<{ label: string }[]>([
   { label: 'Фикс-прайс в договоре' },
   { label: 'Свой штат, без подряда' },
   { label: 'Сроки закреплены' },
   { label: 'Поддержка после релиза' },
   { label: 'NDA по запросу' },
-];
+]);
 
 export type Service = { name: string; desc: string; price: string };
 
-export const services: Service[] = [
+export const services: Service[] = deepNbsp<Service[]>([
   { name: 'Web Design', desc: 'Лендинги, корпоративные сайты, веб-сервисы под ключ', price: 'от 400 000 ₽' },
   { name: 'Mobile Development', desc: 'iOS и Android — нативно и кроссплатформенно', price: 'от 1 200 000 ₽' },
   { name: 'Backend & Infrastructure', desc: 'API, базы данных, очереди, self-hosted и облако', price: 'от 800 000 ₽' },
   { name: 'Discovery & Analytics', desc: 'Исследование, прототип, метрики и аналитика продукта', price: 'от 300 000 ₽' },
-];
+]);
 
 // ─── Thank-you letters (between Products and Blog) ─────────────────
-export const lettersIntro = {
+export const lettersIntro = deepNbsp({
   title: 'Благодарственные письма',
   body: 'Официальные отзывы и рекомендательные письма от компаний, с которыми мы работали.',
-} as const;
+} as const);
 
 export type Letter = { id: string; tag: string; title: string; text: string };
 
-export const letters: Letter[] = [
+export const letters: Letter[] = deepNbsp<Letter[]>([
   {
     id: 'l1',
     tag: 'Отзыв',
@@ -399,4 +404,4 @@ export const letters: Letter[] = [
     title: 'Книга-игра вышла именно такой',
     text: 'Спасибо за вовлечённость и качество на каждом этапе работы. — Maginary',
   },
-];
+]);

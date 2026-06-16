@@ -29,7 +29,7 @@ export function Letters() {
         <h2 className="text-[52px] font-semibold leading-[1.0] tracking-[-0.02em] text-fg">
           {lettersIntro.title}
         </h2>
-        <p className="mx-auto mt-[20px] max-w-[480px] text-[15px] leading-[1.4] text-black/45">
+        <p className="mx-auto mt-[20px] max-w-[480px] text-[19px] leading-[1.4] text-black/45">
           {lettersIntro.body}
         </p>
       </div>

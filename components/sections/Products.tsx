@@ -28,8 +28,10 @@ function ProductSwitcher({
   onPick: (i: number) => void;
 }) {
   return (
-    <div className="mt-[28px] flex flex-wrap justify-center gap-[8px]">
+    <div className="mt-[28px] flex items-end justify-center">
       {products.map((p, i) => {
+        // deck-of-cards: cards overlap; the active one lifts and pops forward, so
+        // auto-advance reads as pulling a card out of the stack and tucking it back (Vadim)
         const isActive = i === index;
         return (
           <button
@@ -37,7 +39,12 @@ function ProductSwitcher({
             type="button"
             onClick={() => onPick(i)}
             aria-current={isActive}
-            className="relative flex h-[64px] w-[282px] items-center gap-[12px] overflow-hidden rounded-[16px] border border-white/8 bg-[#363636] px-[8px] text-left"
+            style={{ marginLeft: i === 0 ? 0 : -14, zIndex: isActive ? 20 : 9 - i }}
+            className={`relative flex h-[64px] w-[282px] items-center gap-[12px] overflow-hidden rounded-[16px] border px-[8px] text-left transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              isActive
+                ? '-translate-y-[10px] scale-[1.03] border-accent/40 bg-[#3d3d3d] shadow-[0_20px_44px_rgba(0,0,0,0.5)]'
+                : 'scale-[0.96] border-white/8 bg-[#2e2e2e] opacity-70'
+            }`}
           >
             {isActive && (
               <span

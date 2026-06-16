@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { hero } from '@/lib/content';
 import { guessType, type LetterType } from '@/lib/compose';
 import { useCompose } from '@/components/compose/ComposeProvider';
@@ -30,11 +30,40 @@ export function HeroPrompt() {
     open({ type: guessType(value) ?? 'idk', freeText: value.trim() });
 
   const inputRef = useRef<HTMLInputElement>(null);
-  // Put the cursor straight into the field on load (preventScroll keeps the
-  // page from jumping; harmless on touch where the keyboard stays closed).
-  useEffect(() => {
-    inputRef.current?.focus({ preventScroll: true });
+  const mirrorRef = useRef<HTMLSpanElement>(null);
+  const [caretLeft, setCaretLeft] = useState(22);
+
+  // One custom rounded caret for BOTH the empty and typing states — the native
+  // caret is hidden (caret-transparent) since its shape can't be rounded via CSS.
+  // We place ours by measuring the text up to the cursor in a hidden mirror span
+  // that shares the input's font, then offsetting by the input's scroll.
+  const syncCaret = useCallback(() => {
+    const el = inputRef.current;
+    const mirror = mirrorRef.current;
+    if (!el || !mirror) return;
+    const pos = el.selectionStart ?? el.value.length;
+    mirror.textContent = el.value.slice(0, pos);
+    const base = el.offsetLeft + el.clientLeft + parseFloat(getComputedStyle(el).paddingLeft || '0');
+    const maxLeft = (el.parentElement?.clientWidth ?? 554) - 127;
+    const x = base + mirror.offsetWidth - el.scrollLeft;
+    setCaretLeft(Math.max(base, Math.min(x, maxLeft)));
   }, []);
+
+  // Focus on load so you can type immediately (rAF makes this reliable in Safari).
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+    const id = requestAnimationFrame(() => {
+      el.focus({ preventScroll: true });
+      syncCaret();
+    });
+    return () => cancelAnimationFrame(id);
+  }, [syncCaret]);
+
+  // Re-place the caret whenever the value changes (DOM is updated by then).
+  useEffect(() => {
+    syncCaret();
+  }, [value, syncCaret]);
 
   return (
     <>
@@ -42,20 +71,33 @@ export function HeroPrompt() {
           The whole pill is clickable — it focuses the input. */}
       <div
         onClick={() => inputRef.current?.focus()}
-        className="mt-[52px] flex h-[88px] w-[554px] max-w-full cursor-text items-center gap-[24px] overflow-hidden rounded-input bg-white pl-[24px] shadow-input"
+        data-hint="Опишите задачу словами"
+        data-hint-sub="или нажмите чип — соберу письмо за вас"
+        className="relative mt-[52px] flex h-[88px] w-[554px] max-w-full cursor-text items-center gap-[12px] overflow-hidden rounded-input bg-white pl-[22px] shadow-input"
       >
-        {/* blinking caret — the orange bar reads as an active text cursor */}
-        <span className="h-[34px] w-[2.5px] shrink-0 bg-accent-hot [animation:caret-blink_1.1s_step-end_infinite]" />
+        {/* hidden mirror — measures caret x using the same font as the input */}
+        <span
+          ref={mirrorRef}
+          aria-hidden
+          className="pointer-events-none invisible absolute left-0 top-0 whitespace-pre text-[18px]"
+        />
+        {/* the single rounded caret — identical bar in empty + typing states */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute top-1/2 h-[26px] w-[2.5px] -translate-y-1/2 rounded-full bg-accent-hot [animation:caret-blink_1.1s_step-end_infinite]"
+          style={{ left: caretLeft }}
+        />
         <input
           ref={inputRef}
           value={value}
           onChange={(e) => setValue(e.target.value)}
+          onSelect={syncCaret}
           onKeyDown={(e) => {
             if (e.key === 'Enter') submit();
           }}
           placeholder={hero.inputPlaceholder}
           aria-label="Опишите задачу"
-          className="min-w-0 flex-1 bg-transparent text-[18px] text-black caret-accent-hot outline-none placeholder:text-black/40"
+          className="min-w-0 flex-1 bg-transparent text-[18px] text-black caret-transparent outline-none placeholder:text-black/40"
         />
         <button
           type="button"

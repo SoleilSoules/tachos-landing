@@ -19,7 +19,7 @@ export function CasesHeadingClient() {
           {casesIntro.titleAccent.suffix}
         </span>
       </h2>
-      <p className="mx-auto mt-[28px] max-w-[753px] text-[16px] leading-[1.2] text-fg">
+      <p className="mx-auto mt-[28px] max-w-[753px] text-[19px] leading-[1.4] text-fg">
         {casesIntro.body[0]}
         <br />
         {casesIntro.body[1]} {casesIntro.body[2]}
