@@ -20,20 +20,23 @@ export function Nav() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow] duration-300 ${
-        stuck
-          ? 'border-b border-white/5 bg-bg/80 shadow-[0_8px_30px_rgba(0,0,0,0.35)] backdrop-blur-md'
-          : 'bg-transparent'
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+        stuck ? 'px-[14px] pt-[10px]' : 'px-0 pt-0'
       }`}
     >
+      {/* once stuck, the bar detaches from the edges into a floating pill
+          (rounded, translucent, blurred) — monte-tuning style. */}
       <div
-        className={`mx-auto flex w-full max-w-page items-center justify-between px-[48px] transition-[height] duration-300 ${
-          stuck ? 'h-[60px]' : 'h-[84px]'
+        className={`mx-auto flex w-full max-w-page items-center justify-between transition-all duration-300 ${
+          stuck
+            ? 'h-[60px] rounded-full border border-white/10 bg-ink/75 px-[24px] shadow-[0_10px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl'
+            : 'h-[84px] px-[48px]'
         }`}
       >
         {/* logo alone on the left; nav + CTA grouped to the right edge */}
         <a
           href="#"
+          data-logo-mark
           className="flex -translate-y-[4px] items-center"
           aria-label="tachos — на главную"
         >

@@ -5,7 +5,7 @@ import { CaseGridClient } from './CaseGridClient';
 
 export function Cases() {
   return (
-    <section id="cases" className="bg-white pb-[160px] pt-[120px]">
+    <section id="cases" className="bg-white pb-[160px] pt-[72px]">
       <CasesHeadingClient />
 
       <div className="mx-auto mt-[44px] max-w-page px-[80px]">

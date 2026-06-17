@@ -60,6 +60,10 @@ export function Founder() {
   const panelId = useId();
   const cardRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
+  // Physics state for the draggable corner-magnet widget (kept in a ref so the
+  // rAF spring loop never triggers React re-renders — we write transform to DOM).
+  const stRef = useRef({ x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0, grabx: 0, graby: 0, dragging: false, moved: 0, raf: 0, suppressClick: false });
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     if (!expanded) return;
@@ -77,11 +81,159 @@ export function Founder() {
     if (expanded) cardRef.current?.focus();
   }, [expanded]);
 
+  // Draggable founder dot: snaps to the nearest screen corner, springs back with
+  // overshoot when thrown ("туда-сюда пам-пам" per Vadim). Default = bottom-right,
+  // lower than before. All motion via DOM transform; reduced-motion = instant snap.
+  useEffect(() => {
+    const btn = toggleRef.current;
+    if (!btn) return;
+    const s = stRef.current;
+    const W = 52; // dot diameter
+    const M = 20; // edge margin
+    const TOP = 88; // keep top corners below the fixed nav
+    const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+    const reduce = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const apply = () => {
+      btn.style.transform = `translate3d(${s.x}px, ${s.y}px, 0)`;
+    };
+    const corners = () => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      return [
+        { x: M, y: TOP, side: 'left' },
+        { x: vw - M - W, y: TOP, side: 'right' },
+        { x: M, y: vh - M - W, side: 'left' },
+        { x: vw - M - W, y: vh - M - W, side: 'right' },
+      ];
+    };
+    const nearest = () => {
+      let best = corners()[3];
+      let bd = Infinity;
+      for (const c of corners()) {
+        const d = (c.x - s.x) ** 2 + (c.y - s.y) ** 2;
+        if (d < bd) {
+          bd = d;
+          best = c;
+        }
+      }
+      return best;
+    };
+    const tick = () => {
+      // under-damped spring → a couple of visible wobbles; thrown velocity is
+      // carried in, so the harder you fling it the bigger the bounce.
+      s.vx = (s.vx + (s.tx - s.x) * 0.16) * 0.74;
+      s.vy = (s.vy + (s.ty - s.y) * 0.16) * 0.74;
+      s.x += s.vx;
+      s.y += s.vy;
+      apply();
+      if (Math.abs(s.vx) < 0.12 && Math.abs(s.vy) < 0.12 && Math.abs(s.tx - s.x) < 0.4 && Math.abs(s.ty - s.y) < 0.4) {
+        s.x = s.tx;
+        s.y = s.ty;
+        s.vx = 0;
+        s.vy = 0;
+        apply();
+        s.raf = 0;
+        return;
+      }
+      s.raf = requestAnimationFrame(tick);
+    };
+    const startLoop = () => {
+      if (!s.raf) s.raf = requestAnimationFrame(tick);
+    };
+    const stopLoop = () => {
+      if (s.raf) {
+        cancelAnimationFrame(s.raf);
+        s.raf = 0;
+      }
+    };
+
+    const init = corners()[3]; // bottom-right
+    s.x = s.tx = init.x;
+    s.y = s.ty = init.y;
+    s.vx = s.vy = 0;
+    btn.dataset.side = 'right';
+    apply();
+    setMounted(true);
+
+    const onMove = (e: PointerEvent) => {
+      if (!s.dragging) return;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const nx = clamp(e.clientX - s.grabx, 4, vw - W - 4);
+      const ny = clamp(e.clientY - s.graby, 4, vh - W - 4);
+      s.moved += Math.hypot(nx - s.x, ny - s.y);
+      s.vx = clamp(nx - s.x, -46, 46);
+      s.vy = clamp(ny - s.y, -46, 46);
+      s.x = nx;
+      s.y = ny;
+      apply();
+    };
+    const onUp = () => {
+      if (!s.dragging) return;
+      s.dragging = false;
+      btn.dataset.dragging = '0';
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      const n = nearest();
+      s.tx = n.x;
+      s.ty = n.y;
+      btn.dataset.side = n.side;
+      s.suppressClick = s.moved >= 6; // a real drag must not also open the card
+      if (reduce()) {
+        s.x = s.tx;
+        s.y = s.ty;
+        s.vx = s.vy = 0;
+        apply();
+      } else {
+        startLoop();
+      }
+    };
+    const onDown = (e: PointerEvent) => {
+      if (e.button !== 0) return;
+      stopLoop();
+      s.dragging = true;
+      s.moved = 0;
+      s.suppressClick = false;
+      s.grabx = e.clientX - s.x;
+      s.graby = e.clientY - s.y;
+      s.vx = s.vy = 0;
+      btn.dataset.dragging = '1';
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+    };
+    const onResize = () => {
+      if (s.dragging) return;
+      const n = nearest();
+      s.tx = n.x;
+      s.ty = n.y;
+      btn.dataset.side = n.side;
+      if (reduce()) {
+        s.x = s.tx;
+        s.y = s.ty;
+        apply();
+      } else {
+        startLoop();
+      }
+    };
+
+    btn.addEventListener('pointerdown', onDown);
+    window.addEventListener('resize', onResize);
+    return () => {
+      btn.removeEventListener('pointerdown', onDown);
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('resize', onResize);
+      stopLoop();
+    };
+  }, []);
+
   return (
     <>
       <style>{`
         @keyframes fnd-rise { from { opacity: 0; transform: translate(-50%,-50%) scale(0.97); } to { opacity: 1; transform: translate(-50%,-50%) scale(1); } }
         @keyframes fnd-ping { 0% { transform: scale(1); opacity: 0.55; } 70% { transform: scale(1.6); opacity: 0; } 100% { transform: scale(1.6); opacity: 0; } }
+        .fnd-dot[data-dragging="1"] { cursor: grabbing; }
+        .fnd-dot img { -webkit-user-drag: none; user-select: none; }
       `}</style>
 
       {/* ─── Collapsed: compact avatar widget pinned to the right edge ─── */}
@@ -90,21 +242,26 @@ export function Founder() {
         type="button"
         aria-expanded={expanded}
         aria-controls={panelId}
-        onClick={() => setExpanded(true)}
-        className="group fixed right-[18px] top-[44%] z-[90] flex items-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-accent-bright focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+        data-side="right"
+        title="Вадим — основатель студии. Перетащите или нажмите"
+        data-hint={widget.badge}
+        data-hint-sub={`${founder.person.name} · ${widget.online}`}
+        onDragStart={(e) => e.preventDefault()}
+        onClick={() => {
+          // a real drag set this flag in pointerup — swallow the synthetic click
+          if (stRef.current.suppressClick) {
+            stRef.current.suppressClick = false;
+            return;
+          }
+          setExpanded(true);
+        }}
+        className={`fnd-dot group fixed left-0 top-0 z-[90] flex cursor-grab touch-none select-none items-center rounded-full outline-none transition-opacity duration-500 will-change-transform focus-visible:ring-2 focus-visible:ring-accent-bright focus-visible:ring-offset-2 focus-visible:ring-offset-bg active:cursor-grabbing ${mounted ? 'opacity-100' : 'opacity-0'}`}
         style={{ visibility: expanded ? 'hidden' : 'visible' }}
       >
-        {/* hover label slides out to the left of the dot */}
-        <span className="pointer-events-none absolute right-[58px] flex flex-col items-end whitespace-nowrap rounded-pill border border-white/10 bg-ink/90 px-[16px] py-[8px] text-right opacity-0 shadow-input backdrop-blur-md transition-all duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
-          <span className="text-[13px] font-medium leading-tight text-inverted">{widget.badge}</span>
-          <span className="mt-[1px] text-[12px] text-inverted/55">
-            {founder.person.name} · {widget.online}
-          </span>
-        </span>
         <span className="relative grid size-[52px] shrink-0 place-items-center">
           <span className="absolute inset-0 rounded-full bg-accent-bright/40 [animation:fnd-ping_2.6s_ease-out_infinite] motion-reduce:hidden" />
           <span className="relative size-[52px] overflow-hidden rounded-full ring-2 ring-accent-bright/70 shadow-[0_8px_24px_rgba(0,0,0,0.4)]">
-            <Image src={asset('/figma/founder-container.jpg')} alt={founder.person.name} fill sizes="52px" className="object-cover" />
+            <Image src={asset('/figma/founder-container.jpg')} alt={founder.person.name} fill sizes="52px" draggable={false} className="object-cover" />
           </span>
           <span className="absolute -bottom-[1px] -right-[1px] size-[14px] rounded-full border-2 border-ink bg-[#3ad29f]" />
         </span>

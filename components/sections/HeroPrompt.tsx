@@ -81,10 +81,10 @@ export function HeroPrompt() {
       {/* field 554×88, voice button 107×88, 24px gap — exact Figma sizes.
           The whole pill is clickable — it focuses the input. */}
       <div
-        onClick={() => inputRef.current?.focus()}
-        data-hint="Опишите задачу словами"
-        data-hint-sub="или нажмите чип — соберу письмо за вас"
-        className="relative mt-[52px] flex h-[88px] w-[554px] max-w-full cursor-text items-center gap-[12px] overflow-hidden rounded-input bg-white pl-[22px] shadow-input"
+        onClick={submit}
+        data-hint="Нажмите — соберём письмо"
+        data-hint-sub="или выберите чип ниже"
+        className="relative mt-[40px] flex h-[88px] w-[554px] max-w-full cursor-pointer items-center gap-[12px] overflow-hidden rounded-input bg-white pl-[22px] shadow-input"
       >
         {/* hidden mirror — measures caret x using the same font as the input */}
         <span
@@ -143,7 +143,7 @@ export function HeroPrompt() {
               className={`inline-flex h-[31px] items-center rounded-chip px-[16px] text-[15px] font-semibold leading-none transition ${
                 active
                   ? 'bg-accent text-inverted'
-                  : 'bg-surface2 text-black hover:brightness-95'
+                  : 'bg-surface2 text-black hover:bg-accent hover:text-inverted'
               }`}
             >
               {chip}

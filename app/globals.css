@@ -116,6 +116,17 @@ a {
   opacity: 1;
   transform: translateY(0);
 }
+/* the mascot "talking": a blinking caret rides the line currently being typed */
+.bubble .talk-caret::after {
+  content: '';
+  display: inline-block;
+  width: 2px;
+  height: 0.95em;
+  margin-left: 2px;
+  vertical-align: -1px;
+  background: currentColor;
+  animation: caret-blink 0.8s step-end infinite;
+}
 
 /* ─── Animation keyframes & scroll-reveal ─── */
 @keyframes fade-up {

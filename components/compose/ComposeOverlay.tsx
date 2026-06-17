@@ -43,14 +43,12 @@ function Slot({
   showPopup,
   options,
   onPick,
-  align = 'left',
 }: {
   value?: string;
   ph: string;
   showPopup: boolean;
   options: { v: string; label: string }[];
   onPick: (v: string) => void;
-  align?: 'left' | 'right';
 }) {
   return (
     <span className="relative inline-block align-baseline">
@@ -66,25 +64,15 @@ function Slot({
         {value || ph}
       </span>
       {showPopup && (
-        // Anchored left or right (right for slots near the line's end) and wraps
-        // instead of running off the modal edge — max-w keeps it inside.
-        <span
-          className={`absolute top-[calc(100%+10px)] z-30 flex max-w-[min(460px,70vw)] flex-wrap gap-[6px] rounded-[14px] border border-white/10 bg-[#2a2627] p-[7px] text-[14px] shadow-[0_18px_50px_rgba(0,0,0,0.55)] motion-safe:[animation:compose-pop-in_.22s_ease-out] ${
-            align === 'right' ? 'right-0' : 'left-0'
-          }`}
-        >
-          <span
-            aria-hidden
-            className={`absolute -top-[5px] size-[10px] rotate-45 border-l border-t border-white/10 bg-[#2a2627] ${
-              align === 'right' ? 'right-[18px]' : 'left-[18px]'
-            }`}
-          />
+        // Starts at the slot and grows to the RIGHT; wraps instead of running off
+        // the modal edge — max-w keeps it inside.
+        <span className="absolute left-0 top-[calc(100%+10px)] z-30 flex w-max gap-[8px] leading-none motion-safe:[animation:compose-pop-in_.22s_ease-out]">
           {options.map((o) => (
             <button
               key={o.label}
               type="button"
               onClick={() => onPick(o.v)}
-              className="relative rounded-[9px] bg-white/8 px-[12px] py-[7px] font-normal text-inverted/85 transition hover:bg-accent hover:text-inverted"
+              className="inline-flex h-[32px] items-center whitespace-nowrap rounded-[11px] border border-accent/30 bg-accent/15 px-[13px] text-[13.5px] font-semibold text-accent transition hover:bg-accent hover:text-inverted"
             >
               {o.label}
             </button>
@@ -167,6 +155,10 @@ export function ComposeOverlay() {
     if (justOpened) {
       segRef.current = 0;
       charRef.current = 0;
+      // a type pre-picked from a hero chip counts as the first slot already
+      // answered — so the letter types straight past it to the next question
+      // instead of stopping to ask for the type again.
+      if (state.type !== 'idk') setDone((d) => (d.includes('type') ? d : ['type']));
       rerender();
     }
     if (reducedMotion()) {
@@ -394,7 +386,6 @@ export function ComposeOverlay() {
                   value={slotValue(key)}
                   ph={slotPh(key)}
                   showPopup={awaiting === key && i === segRef.current}
-                  align={key === 'type' ? 'right' : 'left'}
                   options={slotOptions(key)}
                   onPick={(v) => pick(key, v)}
                 />

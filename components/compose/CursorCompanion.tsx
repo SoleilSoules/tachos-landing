@@ -3,10 +3,12 @@
 import { useEffect, useRef } from 'react';
 import { useCompose } from './ComposeProvider';
 
-// Second cursor (Clicky model): a non-interactive plectrum that strolls near the
-// real cursor, perches on the open form, lives in the bottom-right corner — and
-// now also flies out to centre-stage to announce things (scroll hint, CTA, more
-// cases) and does idle "tricks" so it reads as a living character (Vadim).
+// Tachos Nachos — the studio mascot. On load he simply pops into existence near the
+// cursor (scale-in, no logo origin, no falling). His home is not a corner: by
+// default he just chills next to the real cursor; if the visitor sits idle on the
+// first screen he flies to centre-stage to nudge them to scroll. He also announces
+// the CTA / more-cases, perches on the open letter, and carries the hero text down
+// into the footer brief. (Vadim's brief.)
 export function CursorCompanion() {
   const { isOpen, open } = useCompose();
   const openRef = useRef(isOpen);
@@ -34,17 +36,25 @@ export function CursorCompanion() {
     }
 
     const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
-    const easeIO = (t: number) =>
-      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-    const dockPt = () => ({ x: innerWidth - 50, y: innerHeight - 50 });
+    const easeIO = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    const easeOutBack = (t: number) => {
+      const c1 = 1.70158;
+      const c3 = c1 + 1;
+      return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+    };
     const formPt = () => ({ x: innerWidth / 2, y: innerHeight * 0.13 });
 
     let mx = innerWidth / 2,
-      my = innerHeight * 0.4,
-      moved = 0,
+      my = innerHeight * 0.42,
       lastMove = performance.now();
-    let pos = dockPt();
-    let mode: 'dock' | 'stroll' | 'flying' | 'form' | 'announce' = 'dock';
+    let pos = { x: mx, y: my - 40 };
+    let mode: 'appear' | 'companion' | 'flying' | 'form' | 'announce' = 'appear';
+
+    // simple appear: a short delay, then scale up in place near the cursor — no
+    // logo origin, no falling. Then behave normally.
+    const appearStart = performance.now() + 160;
+    let scaleCur = 0;
+
     let fly: {
       p0: { x: number; y: number };
       p1: { x: number; y: number };
@@ -55,29 +65,59 @@ export function CursorCompanion() {
     } | null = null;
     let flip = 1,
       orbit = -0.6,
-      faceAng = -Math.PI / 2,
+      faceAng = Math.PI / 2,
       prevOpen = false,
       bubbleTimer: ReturnType<typeof setTimeout>;
     let alive = true;
     let scrolled = false;
     let scrollHintShown = false;
     let carried = false;
-    // announce mode: hold at a point and speak for a while, then go home.
+    // announce mode: hold at a point and speak for a while, then return to cursor.
     let announcePt: { x: number; y: number } | null = null;
     let announceUntil = 0;
     let ctaShown = false;
     let casesShown = false;
     let lastTrick = performance.now();
 
+    let typeTimer: ReturnType<typeof setTimeout>;
+    const stopTyping = () => {
+      clearTimeout(typeTimer);
+      bTitle.current?.classList.remove('talk-caret');
+      bSub.current?.classList.remove('talk-caret');
+    };
+    // Type a string into `el` one character at a time, then run `done`. A blinking
+    // caret rides the line being typed so the mascot reads as actually speaking.
+    const typeInto = (el: HTMLElement | null, text: string, speed: number, done?: () => void) => {
+      if (!el) {
+        done?.();
+        return;
+      }
+      el.textContent = '';
+      el.classList.add('talk-caret');
+      let i = 0;
+      const step = () => {
+        el.textContent = text.slice(0, i);
+        if (i < text.length) {
+          i += 1;
+          typeTimer = setTimeout(step, speed);
+        } else {
+          el.classList.remove('talk-caret');
+          done?.();
+        }
+      };
+      step();
+    };
     const say = (title: string, sub: string, ms?: number) => {
-      if (bTitle.current) bTitle.current.textContent = title;
-      if (bSub.current) bSub.current.textContent = sub;
+      stopTyping();
       bubble.current?.classList.add('show');
+      // type the title, then the sub-line — the caret hands off between them
+      typeInto(bTitle.current, title, 26, () => typeInto(bSub.current, sub, 16));
       clearTimeout(bubbleTimer);
       if (ms) bubbleTimer = setTimeout(() => bubble.current?.classList.remove('show'), ms);
     };
     const hush = () => {
       clearTimeout(bubbleTimer);
+      stopTyping();
       bubble.current?.classList.remove('show');
       bubble.current?.classList.remove('actionable');
       actionRef.current = null;
@@ -100,11 +140,11 @@ export function CursorCompanion() {
       };
       mode = 'flying';
     };
-    const goHome = () => {
+    // Default "home" is wherever the cursor is — glide back to it, then chill.
+    const backToCursor = () => {
       hush();
-      const p = dockPt();
-      flyTo(p.x, p.y, 700, () => {
-        mode = 'dock';
+      flyTo(mx + 60, my - 40, 600, () => {
+        mode = 'companion';
       });
     };
     const toForm = () => {
@@ -116,7 +156,7 @@ export function CursorCompanion() {
     };
 
     // Generic "fly out and announce": land at (x,y), speak, hold for `ms`, then
-    // return to the dock. If `action` is given the bubble becomes clickable.
+    // return to the cursor. If `action` is given the bubble becomes clickable.
     const announce = (
       x: number,
       y: number,
@@ -136,17 +176,17 @@ export function CursorCompanion() {
       });
     };
 
-    // #16 scroll hint: instead of a static "scroll down" plate, the mascot flies
-    // to where that text used to sit — the bottom-centre of the hero — and calls
-    // the visitor down. Fires once, only while still at the top of the page.
+    // Idle on the first screen → the mascot flies to screen *centre* and calls the
+    // visitor to scroll down. Fires once, only while still at the top of the page.
     const scrollHint = () => {
-      if (scrollHintShown || scrolled || openRef.current || mode === 'form') return;
+      if (scrollHintShown || scrolled || openRef.current || mode === 'form' || mode === 'appear')
+        return;
       scrollHintShown = true;
-      announce(innerWidth / 2, innerHeight - 120, 'Листайте вниз 👇', 'там кейсы и живая форма', 4500);
+      announce(innerWidth / 2, innerHeight * 0.46, 'Листайте вниз 👇', 'там кейсы и живая форма', 4500);
     };
 
-    // #45 carry: footer brief field scrolls into view pre-filled → fly down onto
-    // it "carrying" the hero text, then home. Once.
+    // Footer brief field scrolls into view pre-filled → fly down onto it "carrying"
+    // the hero text, then back to the cursor. Once.
     const carryToBrief = (el: Element) => {
       if (carried || openRef.current) return;
       const v = (el as HTMLTextAreaElement).value;
@@ -158,41 +198,34 @@ export function CursorCompanion() {
       say('Перенёс, что вы написали ✍️', 'допишите, если нужно', 3600);
       flyTo(target.x, target.y, 760, () => {
         setTimeout(() => {
-          if (!openRef.current) goHome();
+          if (!openRef.current) backToCursor();
         }, 900);
       });
     };
 
     const onMove = (e: MouseEvent) => {
-      moved += Math.hypot(e.clientX - mx, e.clientY - my);
       mx = e.clientX;
       my = e.clientY;
       lastMove = performance.now();
-      if (mode === 'dock' && moved > 320 && !openRef.current) {
-        moved = 0;
-        flyTo(mx + 90, my - 60, 650, () => {
-          mode = 'stroll';
-        });
-      }
     };
     addEventListener('mousemove', onMove, { passive: true });
 
     let hintEl: Element | null = null;
     const onOver = (e: MouseEvent) => {
-      if (openRef.current || mode === 'announce') return;
+      if (openRef.current || mode === 'announce' || mode === 'appear') return;
       const el = (e.target as HTMLElement).closest?.('[data-hint]') ?? null;
       if (el === hintEl) return;
       hintEl = el;
-      if (el)
-        say(el.getAttribute('data-hint') || '', el.getAttribute('data-hint-sub') || '', 2800);
+      if (el) say(el.getAttribute('data-hint') || '', el.getAttribute('data-hint-sub') || '', 2800);
     };
     addEventListener('mouseover', onOver, { passive: true });
 
     const onScroll = () => {
       if (!scrolled) scrolled = true;
-      // #24/#30: at the CTA zone / end of cases the mascot flies to screen centre
-      // and speaks the message the floating plates used to show. Each fires once.
-      if (openRef.current || mode === 'flying' || mode === 'form' || mode === 'announce') return;
+      // At the CTA zone / end of cases the mascot flies to screen centre and speaks
+      // the message the floating plates used to show. Each fires once.
+      if (openRef.current || mode === 'flying' || mode === 'form' || mode === 'announce' || mode === 'appear')
+        return;
       const focus = innerHeight * 0.6;
       if (!ctaShown) {
         const el = document.getElementById('cta-zone');
@@ -248,20 +281,6 @@ export function CursorCompanion() {
     };
     blinkLoop();
 
-    const introTimer = setTimeout(() => {
-      if ((mode === 'dock' || mode === 'stroll') && !openRef.current) {
-        flyTo(Math.min(mx + 80, innerWidth - 300), Math.max(my - 60, 90), 650, () => {
-          mode = 'stroll';
-          say('Я соберу письмо за вас 👋', 'кнопка снизу — когда понадоблюсь', 3200);
-          setTimeout(() => {
-            if (!openRef.current) goHome();
-          }, 3600);
-        });
-      }
-    }, 4000);
-
-    const scrollHintTimer = setTimeout(scrollHint, 6000);
-
     const render = (scale: number) => {
       root.current!.style.transform = `translate3d(${pos.x - 16.5}px,${pos.y - 16.5}px,0) scale(${scale})`;
       rot.current?.setAttribute('transform', `rotate(${(faceAng * 180) / Math.PI} 13 13)`);
@@ -272,12 +291,11 @@ export function CursorCompanion() {
       if (eyeR.current) eyeR.current.style.transform = `translate(${ex}px,${ey}px)`;
     };
 
-    // Idle "tricks": when docked and untouched for a while, the mascot does a
-    // playful flip / squish / scatter-regroup so it feels alive. CSS classes on
-    // the root drive the inner <svg> (root transform itself is owned by rAF).
+    // Idle "tricks": when chilling by the cursor and untouched for a while, the
+    // mascot does a playful flip / squish / scatter-regroup so it reads as alive.
     const TRICKS = ['spin', 'squish', 'shatter'];
     const maybeTrick = (now: number) => {
-      if (mode !== 'dock' || openRef.current) return;
+      if (mode !== 'companion' || openRef.current) return;
       if (now - lastMove < 4000 || now - lastTrick < 10000) return;
       lastTrick = now;
       const t = TRICKS[Math.floor(Math.random() * TRICKS.length)];
@@ -293,12 +311,24 @@ export function CursorCompanion() {
         toForm();
       } else if (!openRef.current && prevOpen) {
         prevOpen = false;
-        goHome();
+        backToCursor();
       }
 
       const now = performance.now();
 
-      if (mode === 'flying' && fly) {
+      if (mode === 'appear') {
+        // just pop into existence near the cursor — no logo, no falling
+        const k = Math.min(Math.max((now - appearStart) / 340, 0), 1);
+        scaleCur = Math.max(0, easeOutBack(k));
+        pos.x = lerp(pos.x, mx, 0.05);
+        pos.y = lerp(pos.y, my - 40, 0.05);
+        faceAng = lerp(faceAng, Math.atan2(my - pos.y, mx - pos.x), 0.1);
+        render(scaleCur);
+        if (k >= 1) {
+          mode = 'companion';
+          say('Это Начос 🔥', 'я рядом — помогу с письмом', 3000);
+        }
+      } else if (mode === 'flying' && fly) {
         const k = Math.min((now - fly.t0) / fly.dur, 1),
           e = easeIO(k);
         const a = lerp(fly.p0.x, fly.p1.x, e),
@@ -317,8 +347,6 @@ export function CursorCompanion() {
           cb?.();
         }
       } else if (mode === 'announce') {
-        // Hold near the announce point with a gentle breathing scale; face the
-        // real cursor. Leave for home when the time's up.
         if (announcePt) {
           pos.x = lerp(pos.x, announcePt.x, 0.16);
           pos.y = lerp(pos.y, announcePt.y, 0.16);
@@ -327,7 +355,7 @@ export function CursorCompanion() {
         render(1 + Math.sin(now * 0.004) * 0.04);
         if (now > announceUntil) {
           announcePt = null;
-          goHome();
+          backToCursor();
         }
       } else if (mode === 'form') {
         const p = formPt();
@@ -335,7 +363,14 @@ export function CursorCompanion() {
         pos.y = lerp(pos.y, p.y, 0.18);
         faceAng = lerp(faceAng, Math.PI / 2, 0.12);
         render(1);
-      } else if (mode === 'stroll') {
+      } else {
+        // companion — lazy orbit around the cursor, with a springy "you can't catch
+        // me" repulsion: as the cursor closes in, the *target* slides away (fading
+        // smoothly with distance, safe at d→0) and a single lerp eases him there.
+        // Folding repulsion into the target — instead of a second position
+        // correction fighting the orbit — kills the old jitter/stick.
+        // original feel (pre-fixes): lazy orbit + a push-away when the cursor gets
+        // within 64px, eased at 0.045. Restored verbatim per Gosha.
         orbit += 0.004 + Math.sin(now * 0.0004) * 0.002;
         let tx = mx + Math.cos(orbit) * 120,
           ty = my + Math.sin(orbit) * 84;
@@ -343,21 +378,23 @@ export function CursorCompanion() {
         ty = Math.max(72, Math.min(innerHeight - 50, ty));
         pos.x = lerp(pos.x, tx, 0.045);
         pos.y = lerp(pos.y, ty, 0.045);
+        // push-away with two anti-"stuck" guards that keep the original feel:
+        //  • floor the divisor so the direction can't flip wildly when the cursor
+        //    sits right on him (the d→0 jitter that made him vibrate in place);
+        //  • fade the strength to 0 at the 64px edge instead of a hard on/off, so
+        //    he doesn't buzz across that boundary and stick in the repel state.
         const dd = Math.hypot(pos.x - mx, pos.y - my);
         if (dd < 64) {
-          pos.x = lerp(pos.x, mx + ((pos.x - mx) / dd) * 120, 0.3);
-          pos.y = lerp(pos.y, my + ((pos.y - my) / dd) * 120, 0.3);
+          const safe = Math.max(dd, 16);
+          const k = 0.3 * ((64 - dd) / 64);
+          pos.x = lerp(pos.x, mx + ((pos.x - mx) / safe) * 120, k);
+          pos.y = lerp(pos.y, my + ((pos.y - my) / safe) * 120, k);
         }
         faceAng = lerp(faceAng, Math.atan2(my - pos.y, mx - pos.x), 0.12);
         render(1);
-        if (now - lastMove > 8000) goHome();
-      } else {
-        const p = dockPt();
-        pos.x = lerp(pos.x, p.x, 0.2);
-        pos.y = lerp(pos.y, p.y, 0.2);
-        faceAng = lerp(faceAng, Math.atan2(my - pos.y, mx - pos.x), 0.08);
-        render(1);
         maybeTrick(now);
+        // idle at the top of the page → nudge them to scroll
+        if (!scrolled && !scrollHintShown && now - lastMove > 5200) scrollHint();
       }
 
       if (bubble.current?.classList.contains('show')) {
@@ -372,9 +409,8 @@ export function CursorCompanion() {
     return () => {
       alive = false;
       cancelAnimationFrame(raf);
-      clearTimeout(introTimer);
-      clearTimeout(scrollHintTimer);
       clearTimeout(bubbleTimer);
+      clearTimeout(typeTimer);
       removeEventListener('mousemove', onMove);
       removeEventListener('mouseover', onOver);
       removeEventListener('scroll', onScroll);

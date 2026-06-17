@@ -2,24 +2,24 @@ import Image from 'next/image';
 import { asset } from '@/lib/asset';
 import { clients } from '@/lib/content';
 
-// Seamless leftward marquee. The row is repeated 8× so that one half (the loop
-// unit the -50% animation travels, ≈4 sets ≈ 4800px) always exceeds the viewport
-// — even on a 4K/ultrawide screen — so no empty gap ever opens at the loop point
-// and the reset is invisible. Duration scales with width to keep the same visual
-// speed. Pauses for prefers-reduced-motion.
+// Seamless leftward marquee right under the hero prompt. It sits over the dark
+// lower part of the device mockup, so a *soft* dark wash (much gentler than the old
+// hard scrim) keeps the white logos legible without a heavy black band. The row is
+// repeated 8× so the -50% loop unit always exceeds any viewport — even 4K — and the
+// reset stays invisible. Pauses for prefers-reduced-motion.
 export function LogoWall() {
   const row = Array.from({ length: 8 }, () => clients).flat();
 
   return (
-    <div className="relative z-10 mt-[72px] pb-[40px]">
-      {/* dark scrim: keeps the white logos legible where the row crosses the
-          bright hero mockup, so the line never visually breaks */}
+    <div className="relative z-10 mt-[124px] pb-[24px]">
+      {/* gentle dark wash, feathered top & bottom — just enough contrast for the
+          white logos, not a hard black band */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-1/2 h-[150px] -translate-y-1/2"
+        className="pointer-events-none absolute inset-x-0 top-1/2 h-[116px] -translate-y-1/2"
         style={{
           background:
-            'linear-gradient(to bottom, transparent, rgba(4,4,4,0.55) 28%, rgba(4,4,4,0.55) 72%, transparent)',
+            'linear-gradient(to bottom, transparent, rgba(4,4,4,0.34) 38%, rgba(4,4,4,0.34) 62%, transparent)',
         }}
       />
       <div className="relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]">
@@ -31,6 +31,8 @@ export function LogoWall() {
                 alt={client.name}
                 width={180}
                 height={client.height}
+                draggable={false}
+                loading="eager"
                 style={{ height: client.height, width: 'auto' }}
                 className="opacity-80 brightness-0 invert transition-opacity hover:opacity-100"
               />
