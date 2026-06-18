@@ -5,18 +5,11 @@ import { useReveal } from '@/hooks/useReveal';
 import { asset } from '@/lib/asset';
 import { posts, blogIntro, type Post } from '@/lib/content';
 
-// Short teasers per post (kept local — content.ts has no excerpt field yet).
-const EXCERPTS = [
-  'Собрали и зарелизили мерж-игру для бренда «Добрый» — от концепта до публикации за месяц.',
-  'Как доводим смелые идеи до прода без бесконечных переносов сроков и переделок.',
-  'Спроектировали и собрали железку monte GTR: телеметрия и тюнинг в одном корпусе.',
-];
-
 function ArrowSquare({ onPeach }: { onPeach?: boolean }) {
   return (
     <span
       className={`blog-arrow grid size-[46px] shrink-0 place-items-center rounded-[14px] transition ${
-        onPeach ? 'bg-black/[0.08] text-black/70' : 'bg-black/[0.05] text-black/55'
+        onPeach ? 'bg-black/[0.06] text-black/60' : 'bg-black/[0.05] text-black/55'
       }`}
       aria-hidden
     >
@@ -27,11 +20,14 @@ function ArrowSquare({ onPeach }: { onPeach?: boolean }) {
   );
 }
 
-function Meta({ post }: { post: Post }) {
+// Meta sits UNDER the title (Figma): type as a white pill, date/read as a light pill.
+function Meta({ post, peach }: { post: Post; peach?: boolean }) {
   return (
-    <div className="flex flex-wrap items-center gap-[10px] text-[13px]">
-      <span className="rounded-tag bg-black/[0.06] px-[12px] py-[5px] font-medium text-black/70">{post.tag}</span>
-      <span className="nums text-black/40">
+    <div className="mt-[16px] flex flex-wrap items-center gap-[8px] text-[14px]">
+      <span className="rounded-full bg-white px-[14px] py-[6px] font-medium text-black shadow-[0_4px_14px_rgba(0,0,0,0.06)]">
+        {post.tag}
+      </span>
+      <span className={`nums rounded-full px-[14px] py-[6px] ${peach ? 'bg-white/45 text-black/55' : 'bg-black/[0.05] text-black/45'}`}>
         {post.date} · {post.read}
       </span>
     </div>
@@ -52,24 +48,7 @@ function Author({ post }: { post: Post }) {
   );
 }
 
-// Warm gradient preview block for the hero card — fills the empty right side
-// with a branded visual + an oversized watermark tag instead of dead space.
-function HeroVisual({ label }: { label: string }) {
-  return (
-    <div className="relative hidden overflow-hidden rounded-[28px] bg-gradient-to-br from-[#f7d8c5] via-[#f4b89b] to-[#ee9f78] md:block">
-      <div className="absolute inset-0 bg-[radial-gradient(70%_80%_at_75%_25%,rgba(240,81,56,0.35),transparent_70%)]" />
-      <span className="absolute bottom-[-10px] left-[24px] text-[96px] font-bold leading-none tracking-tight text-white/25">
-        {label}
-      </span>
-      <span className="absolute right-[26px] top-[24px] rounded-full bg-black/15 px-[14px] py-[7px] text-[13px] font-medium text-black/70 backdrop-blur-sm">
-        tachos blog
-      </span>
-    </div>
-  );
-}
-
-// Clean monte GTR device — a dark rounded slab with the brand line and a couple
-// of subtle gauge dials (replaces the ugly "TAP TO ADD GAUGE" grid).
+// Clean monte GTR device placeholder (no real product photo yet) for the peach card.
 function DeviceMock() {
   return (
     <div className="relative mt-[20px] overflow-hidden rounded-[22px] bg-gradient-to-br from-[#2c2c31] to-[#141417] p-[20px] shadow-[0_22px_50px_-18px_rgba(0,0,0,0.55)]">
@@ -93,24 +72,35 @@ function DeviceMock() {
   );
 }
 
-function SmallCard({ post, excerpt, peach }: { post: Post; excerpt: string; peach?: boolean }) {
+// Title on top → meta under it → content stretches → author + arrow pinned to the
+// bottom. `big` = the full-width hero card; `peach` = the warm Новость card.
+function Card({
+  post,
+  big = false,
+  peach = false,
+  children,
+}: {
+  post: Post;
+  big?: boolean;
+  peach?: boolean;
+  children?: React.ReactNode;
+}) {
   return (
     <article
       tabIndex={0}
-      className={`reveal-hidden group flex h-full cursor-pointer flex-col rounded-card p-[32px] transition duration-300 hover:-translate-y-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 ${
+      className={`reveal-hidden group flex h-full cursor-pointer flex-col rounded-card transition duration-300 hover:-translate-y-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 ${
         peach ? 'bg-gradient-to-br from-[#f7d8c5] via-[#f6cdba] to-[#f1bda3]' : 'bg-surface hover:bg-surface2'
-      }`}
+      } ${big ? 'min-h-[440px] p-[40px] md:p-[44px]' : 'min-h-[360px] p-[34px]'}`}
     >
-      <Meta post={post} />
-      <h3 className="mt-[16px] max-w-[340px] text-[24px] font-semibold leading-[1.12] tracking-[-0.01em] text-black">
+      <h3
+        className={`font-semibold leading-[1.1] tracking-[-0.01em] text-black ${
+          big ? 'max-w-[560px] text-[34px]' : 'max-w-[300px] text-[26px]'
+        }`}
+      >
         {post.title}
       </h3>
-      <p className="mt-[12px] max-w-[360px] text-[15px] leading-[1.45] text-black/55">{excerpt}</p>
-      {peach && (
-        <div className="flex flex-1 flex-col justify-end">
-          <DeviceMock />
-        </div>
-      )}
+      <Meta post={post} peach={peach} />
+      {children && <div className="flex flex-1 flex-col justify-end">{children}</div>}
       <div className="mt-auto flex items-end justify-between gap-[16px] pt-[28px]">
         <Author post={post} />
         <ArrowSquare onPeach={peach} />
@@ -133,34 +123,18 @@ export function Blog() {
 
       <div className="mx-auto max-w-[680px] px-6 text-center">
         <h2 className="text-[52px] font-semibold leading-[1.0] tracking-[-0.02em] text-fg">{blogIntro.title}</h2>
-        <p className="mx-auto mt-[20px] max-w-[540px] text-[19px] leading-[1.4] text-black/45">{blogIntro.body}</p>
+        <p className="mx-auto mt-[20px] max-w-[640px] text-[19px] leading-[1.4] text-black/45">{blogIntro.body}</p>
       </div>
 
-      <div ref={ref} className="mx-auto mt-[56px] flex max-w-page flex-col gap-[24px] px-[80px]">
-        {/* hero card — two columns: text left, warm visual right (no dead space) */}
-        <article
-          tabIndex={0}
-          className="reveal-hidden group grid cursor-pointer grid-cols-1 gap-[28px] rounded-card bg-surface p-[34px] transition duration-300 hover:-translate-y-[3px] hover:bg-surface2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 md:grid-cols-[1fr_0.92fr] md:p-[40px]"
-        >
-          <div className="flex flex-col justify-between">
-            <div>
-              <Meta post={hero} />
-              <h3 className="mt-[18px] max-w-[420px] text-[34px] font-semibold leading-[1.08] tracking-[-0.01em] text-black">
-                {hero.title}
-              </h3>
-              <p className="mt-[16px] max-w-[420px] text-[16px] leading-[1.5] text-black/55">{EXCERPTS[0]}</p>
-            </div>
-            <div className="mt-[28px] flex items-end justify-between gap-[16px]">
-              <Author post={hero} />
-              <ArrowSquare />
-            </div>
-          </div>
-          <HeroVisual label="Добрый" />
-        </article>
+      <div ref={ref} className="mx-auto mt-[56px] flex max-w-[900px] flex-col gap-[24px] px-6">
+        {/* hero card — full width, plain light surface (no split visual) */}
+        <Card post={hero} big />
 
         <div className="grid grid-cols-1 gap-[24px] md:grid-cols-2">
-          <SmallCard post={left} excerpt={EXCERPTS[1]} />
-          <SmallCard post={right} excerpt={EXCERPTS[2]} peach />
+          <Card post={left} />
+          <Card post={right} peach>
+            <DeviceMock />
+          </Card>
         </div>
       </div>
     </section>

@@ -46,11 +46,11 @@ export function FloatingCompose() {
           transform: `translateY(${visible ? 0 : 20}px)`,
           maxWidth: 'calc(100vw - 32px)',
         }}
-        className={`group block w-max cursor-pointer overflow-hidden rounded-input bg-white text-left text-black shadow-[0_16px_48px_rgba(0,0,0,0.3)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        className={`group block w-max cursor-pointer overflow-hidden rounded-[18px] bg-white text-left text-black shadow-[0_16px_48px_rgba(0,0,0,0.3)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           visible ? 'pointer-events-auto' : 'pointer-events-none'
         }`}
       >
-        <div className="flex h-[58px] items-center gap-[10px] py-[8px] pl-[22px] pr-[8px]">
+        <div className="flex h-[58px] items-center gap-[8px] py-[8px] pl-[10px] pr-[8px]">
           <span
             className="h-[24px] w-[2.5px] shrink-0 bg-accent-hot [animation:caret-blink_1.1s_step-end_infinite] motion-reduce:animate-none"
             aria-hidden
@@ -58,7 +58,7 @@ export function FloatingCompose() {
           <span className="whitespace-nowrap pr-[4px] text-[15px] text-black/55">
             Начните описывать задачу, мы поможем
           </span>
-          <span className="grid size-[42px] shrink-0 place-items-center rounded-full bg-surface2 text-black transition group-hover:bg-accent group-hover:text-white">
+          <span className="grid size-[42px] shrink-0 place-items-center rounded-[12px] bg-surface2 text-black transition group-hover:bg-accent group-hover:text-white">
             <WaveIcon size={18} />
           </span>
         </div>

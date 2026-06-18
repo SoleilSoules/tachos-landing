@@ -29,7 +29,7 @@ export function Nav() {
       <div
         className={`mx-auto flex w-full max-w-page items-center justify-between transition-all duration-300 ${
           stuck
-            ? 'h-[60px] rounded-full border border-white/10 bg-ink/75 px-[24px] shadow-[0_10px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl'
+            ? 'h-[60px] rounded-[22px] border border-white/10 bg-ink/75 px-[24px] shadow-[0_10px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl'
             : 'h-[84px] px-[48px]'
         }`}
       >
@@ -37,7 +37,7 @@ export function Nav() {
         <a
           href="#"
           data-logo-mark
-          className="flex -translate-y-[4px] items-center"
+          className="flex items-center"
           aria-label="tachos — на главную"
         >
           <Image

@@ -28,8 +28,8 @@ const MOCKUPS: Record<string, { src: string; alt: string } | undefined> = {
 // hand-tuned offsets read better than linear math at this scale.
 const REST: { y: number; scale: number; opacity: number }[] = [
   { y: 0, scale: 1, opacity: 1 }, // top, flat — the active product
-  { y: -22, scale: 0.955, opacity: 0.5 }, // peeks ABOVE the top card
-  { y: -40, scale: 0.91, opacity: 0.3 }, // deepest, furthest up
+  { y: -34, scale: 0.95, opacity: 0.55 }, // peeks ABOVE the top card
+  { y: -62, scale: 0.9, opacity: 0.4 }, // deepest, furthest up
 ];
 
 // CTA anchor copy lives next to the deck so the section stays content-driven.
@@ -223,7 +223,7 @@ export function Products() {
                     the top-right edge like Figma. Only on the active card so the
                     deck behind stays clean (no doki tablet showing on every layer). */}
                 {isActive && mockup && (
-                  <div className="pointer-events-none absolute -top-[68px] right-[-20px] h-[562px] w-[803px]">
+                  <div className="pointer-events-none absolute -top-[58px] right-[-10px] h-[562px] w-[803px] rotate-[-7deg]">
                     <Image
                       src={asset(mockup.src)}
                       alt={mockup.alt}

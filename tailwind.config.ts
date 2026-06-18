@@ -26,6 +26,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ['var(--font-onest)', 'system-ui', 'sans-serif'],
+        script: ['var(--font-script)', 'cursive'],
       },
       borderRadius: {
         chip: '10px', // hero "Мне нужен" pills

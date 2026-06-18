@@ -107,7 +107,7 @@ export type Review = {
 // Copy tied to real Tachos work (Хайс / Складно / Maginary). Names are placeholders.
 export const reviews = deepNbsp({
   title: 'Отзывы клиентов',
-  subtitle: 'С этими крутышами мы работаем уже больше 2 лет',
+  subtitle: 'С этими командами мы работаем уже больше 2 лет',
   items: [
     {
       id: 'r1',
@@ -153,6 +153,7 @@ export const reviews = deepNbsp({
       author: 'Дарья Зайцева',
       role: 'Основатель, Maginary',
       caption: 'о своём кейсе',
+      duration: '01:48',
     },
   ] as Review[],
 });

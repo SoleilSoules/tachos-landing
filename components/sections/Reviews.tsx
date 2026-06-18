@@ -15,7 +15,6 @@ const GLASS = 'bg-black/15 backdrop-blur-md';
 
 // Local copy that isn't worth promoting to content.ts (UI affordances only).
 const COPY = {
-  videoLabel: 'Смотреть видео-отзыв',
   seekLabel: 'Перемотать запись',
 };
 
@@ -32,6 +31,18 @@ function PauseIcon({ size = 20 }: { size?: number }) {
     <svg width={size} height={size} viewBox="0 0 14 16" fill="none" aria-hidden>
       <rect x="1.5" y="1.5" width="3.6" height="13" rx="1.2" fill="currentColor" />
       <rect x="8.9" y="1.5" width="3.6" height="13" rx="1.2" fill="currentColor" />
+    </svg>
+  );
+}
+
+// Muted-speaker glyph — sits on the video cards (Глеб, Дарья) as in the Figma:
+// the clip autoplays silently, this toggles sound.
+function MuteIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M11 5 6 9H3v6h3l5 4V5Z" fill="currentColor" stroke="none" />
+      <line x1="22" y1="9" x2="16" y2="15" />
+      <line x1="16" y1="9" x2="22" y2="15" />
     </svg>
   );
 }
@@ -73,28 +84,6 @@ function Glow({ className = '' }: { className?: string }) {
   );
 }
 
-// Centred round play button — shared by both video cards (#37). Sits dead-centre
-// of the preview. Glassy (frosted) disc rather than a solid white circle so the
-// portrait reads through it (Гоша #5/#6). `size` lets Дарья's card use a smaller
-// button than Глеба's (#6).
-function CenterPlay({ label, size = 84 }: { label: string; size?: number }) {
-  // Triangle scales with the disc so its optical weight stays balanced.
-  const icon = Math.round(size * 0.31);
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      style={{ width: size, height: size }}
-      className="absolute left-1/2 top-1/2 z-10 grid -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white/15 text-white shadow-[0_16px_44px_rgba(0,0,0,0.38)] ring-1 ring-white/30 backdrop-blur-md transition hover:scale-105 hover:bg-white/20"
-    >
-      {/* nudge the triangle so its optical centre lands on the disc centre */}
-      <span className="translate-x-[2px]">
-        <PlayIcon size={icon} />
-      </span>
-    </button>
-  );
-}
-
 function Avatar({ src, size = 54 }: { src: string; size?: number }) {
   return (
     <span className="shrink-0 overflow-hidden rounded-full" style={{ width: size, height: size }}>
@@ -103,13 +92,13 @@ function Avatar({ src, size = 54 }: { src: string; size?: number }) {
   );
 }
 
-function Author({ r }: { r: Review }) {
+function Author({ r, light = false }: { r: Review; light?: boolean }) {
   return (
     <div className="flex items-center gap-[10px]">
       <Avatar src={asset('/figma/rev-avatar.png')} />
       <div className="leading-tight">
-        <div className="text-[16px] tracking-[0.03em] text-white">{r.author}</div>
-        <div className="text-[14px] text-white/50">{r.role}</div>
+        <div className={`text-[16px] tracking-[0.03em] ${light ? 'text-black' : 'text-white'}`}>{r.author}</div>
+        <div className={`text-[14px] ${light ? 'text-black/45' : 'text-white/50'}`}>{r.role}</div>
       </div>
     </div>
   );
@@ -212,7 +201,7 @@ function AudioCard({ r }: { r: Review }) {
     // top (author left / logo badge right), task title beneath, full-width
     // player pinned to the bottom.
     <div
-      className={`reveal-hidden relative w-full overflow-hidden rounded-card ${CARD_BORDER} ${GLASS} ${CARD_PAD}`}
+      className={`reveal-hidden relative w-full overflow-hidden rounded-card [clip-path:inset(0_round_40px)] ${CARD_BORDER} ${GLASS} ${CARD_PAD}`}
     >
       <Glow className="-left-[80px] bottom-[-40px] h-[280px] w-[280px]" />
       <div className="relative flex flex-col gap-[28px]">
@@ -235,7 +224,7 @@ function AudioCard({ r }: { r: Review }) {
             onClick={toggle}
             className="grid size-[60px] shrink-0 self-center place-items-center rounded-full bg-accent text-white transition hover:brightness-110"
           >
-            {playing ? <PauseIcon size={22} /> : <PlayIcon size={22} />}
+            {playing ? <PauseIcon size={22} /> : <span className="translate-x-[2px]"><PlayIcon size={22} /></span>}
           </button>
 
           {/* Waveform doubles as a seek bar (role=slider). flex-1 + justify-between
@@ -286,18 +275,22 @@ function TextCard({ r }: { r: Review }) {
   const light = r.tone === 'light';
   return (
     <div
-      className={`reveal-hidden relative flex h-full min-h-[300px] w-full flex-col justify-between overflow-hidden rounded-card ${CARD_PAD} backdrop-blur-md ${
+      className={`reveal-hidden relative flex h-full w-full flex-col justify-between overflow-hidden rounded-card [clip-path:inset(0_round_40px)] ${CARD_PAD} backdrop-blur-md ${
         light
-          ? `${CARD_BORDER} bg-gradient-to-br from-[#3a2018] via-[#241310] to-[#f05138]/35 text-white`
-          : `${CARD_BORDER} bg-black/15 text-white`
+          ? 'min-h-[290px] bg-gradient-to-b from-[#cdc8cd] via-[#e7dddc] to-[#f0a274] text-[#1a1414]'
+          : `min-h-[300px] ${CARD_BORDER} bg-black/15 text-white`
       }`}
     >
       {!light && <Glow className="-left-[40px] -top-[120px] h-[300px] w-[300px]" />}
-      {light && <Glow className="bottom-[10px] right-[10px] h-[240px] w-[240px] bg-accent/25" />}
+      {light && <Glow className="bottom-[-40px] right-[-20px] h-[260px] w-[260px] bg-accent/30" />}
       <p className="relative text-[22px] font-medium leading-[1.3]">{r.text}</p>
       <div className="relative mt-[40px]">
-        <Author r={r} />
+        <Author r={r} light={light} />
       </div>
+      {/* round badge in the corner, matching the Figma cards */}
+      {light && (
+        <span aria-hidden className="absolute bottom-[34px] right-[34px] size-[54px] rounded-full bg-black/[0.06]" />
+      )}
     </div>
   );
 }
@@ -307,7 +300,7 @@ function TextCard({ r }: { r: Review }) {
 function VideoCard({ r }: { r: Review }) {
   return (
     <div
-      className={`reveal-hidden group relative h-full min-h-[440px] w-full overflow-hidden rounded-card ${CARD_PAD} text-white`}
+      className={`reveal-hidden group relative h-full min-h-[510px] w-full overflow-hidden rounded-card ${CARD_PAD} text-white`}
     >
       <Image
         src={asset('/figma/founder-isaac.png')}
@@ -316,15 +309,27 @@ function VideoCard({ r }: { r: Review }) {
         sizes="400px"
         className="object-cover object-top transition duration-500 group-hover:scale-[1.03]"
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-accent/40 to-accent" />
-      <CenterPlay label={COPY.videoLabel} />
-      <div className="relative flex h-full flex-col justify-end">
+      {/* darker at the very top for the name, warm orange wash at the bottom */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-transparent to-accent/95" />
+      {/* name + caption at the TOP (Figma), role + mute pinned to the BOTTOM */}
+      <div className="relative flex h-full flex-col justify-between">
         <p className="text-[26px] font-medium leading-[1.15]">
           {r.author}
           <br />
-          <span className="text-white/60">{r.caption}</span>
+          <span className="text-white/70">{r.caption}</span>
         </p>
-        <div className="mt-[8px] text-[16px] leading-[1.3] text-white/85">{r.role}</div>
+        <div className="flex items-end justify-between gap-[12px]">
+          <div className="max-w-[72%] text-[15px] leading-[1.3] text-white/90">{r.role}</div>
+          <button
+            type="button"
+            aria-label="Смотреть видео-отзыв"
+            className="grid size-[48px] shrink-0 place-items-center rounded-full bg-white/15 text-white ring-1 ring-white/30 backdrop-blur-md transition hover:scale-105 hover:bg-white/25"
+          >
+            <span className="translate-x-[1px]">
+              <PlayIcon size={18} />
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -335,19 +340,41 @@ function VideoCard({ r }: { r: Review }) {
 function PortraitCard({ r }: { r: Review }) {
   return (
     <div
-      className={`reveal-hidden group relative flex h-full min-h-[440px] w-full flex-col items-center justify-center gap-[24px] overflow-hidden rounded-card ${CARD_BORDER} bg-white/[0.06] ${CARD_PAD} text-center backdrop-blur-md`}
+      className={`reveal-hidden group relative flex h-full min-h-[520px] w-full flex-col items-center justify-center gap-[24px] overflow-hidden rounded-card [clip-path:inset(0_round_40px)] ${CARD_BORDER} bg-white/[0.06] ${CARD_PAD} text-center backdrop-blur-md`}
     >
       <Glow className="left-1/2 top-[40px] h-[260px] w-[260px] -translate-x-1/2 bg-accent/20" />
-      <div className="relative size-[210px] overflow-hidden rounded-full ring-2 ring-accent/70">
+      {/* play in the top-left corner badge */}
+      <button
+        type="button"
+        aria-label="Смотреть видео-отзыв"
+        className="absolute left-[34px] top-[34px] z-10 grid size-[54px] place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/20 backdrop-blur-md transition hover:scale-105 hover:bg-white/20"
+      >
+        <span className="translate-x-[2px]">
+          <PlayIcon size={18} />
+        </span>
+      </button>
+      <div className="relative size-[260px] overflow-hidden rounded-full ring-2 ring-accent/70">
         <Image
           src={asset('/figma/founder-jennifer.png')}
           alt=""
           fill
-          sizes="210px"
-          className="object-cover transition duration-500 group-hover:scale-[1.03]"
+          sizes="260px"
+          className="object-cover grayscale transition duration-500 group-hover:scale-[1.03]"
         />
-        {/* play sits centred over the portrait — glassy + smaller than Глеба's (#6) */}
-        <CenterPlay label={COPY.videoLabel} size={64} />
+        {/* mute on the portrait, bottom-right (Figma) */}
+        <button
+          type="button"
+          aria-label="Включить звук"
+          className="absolute bottom-[12px] right-[12px] grid size-[36px] place-items-center rounded-full bg-black/40 text-white ring-1 ring-white/25 backdrop-blur-md transition hover:bg-black/55"
+        >
+          <MuteIcon size={16} />
+        </button>
+        {/* video duration, centred on the bottom edge of the portrait */}
+        {r.duration && (
+          <span className="absolute bottom-[12px] left-1/2 -translate-x-1/2 rounded-full bg-black/55 px-[11px] py-[3px] text-[12px] tabular-nums text-white backdrop-blur-md">
+            {r.duration}
+          </span>
+        )}
       </div>
       <div className="relative">
         <p className="text-[26px] font-medium leading-[1.2] text-[#f5f7f6]">
@@ -432,7 +459,7 @@ export function Reviews() {
   const [audio, t1, v1, t2, v2] = reviews.items;
 
   return (
-    <section id="reviews" className="relative overflow-hidden bg-[#05010d] pb-[160px] pt-[120px] text-white">
+    <section id="reviews" className="relative overflow-hidden bg-[#05010d] pb-[80px] pt-[120px] text-white">
       {/* #34 — soft twinkle for the starfield; static under reduced-motion */}
       <style>{`
         @keyframes rev-twinkle {
@@ -458,13 +485,22 @@ export function Reviews() {
       </div>
 
       <div ref={ref} className="relative mx-auto mt-[56px] flex max-w-[900px] flex-col gap-[28px] px-6">
-        <AudioCard r={audio} />
-        {/* balanced 2×2 mosaic: text + Глеб video on top, Дарья portrait + text below */}
+        {/* audio hero — centred, a touch narrower than the column (Figma) */}
+        <div className="mx-auto w-full max-w-[620px]">
+          <AudioCard r={audio} />
+        </div>
+        {/* row: dark text card (Полина) + Глеб video */}
         <div className="grid grid-cols-1 items-stretch gap-[28px] md:grid-cols-2">
           <TextCard r={t1} />
           <VideoCard r={v1} />
-          <PortraitCard r={v2} />
+        </div>
+        {/* light card — same width as the audio card above (centred) */}
+        <div className="mx-auto w-full max-w-[620px]">
           <TextCard r={t2} />
+        </div>
+        {/* Дарья portrait — narrow, centred */}
+        <div className="mx-auto w-full max-w-[430px]">
+          <PortraitCard r={v2} />
         </div>
       </div>
     </section>
