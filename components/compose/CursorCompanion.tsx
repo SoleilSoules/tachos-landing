@@ -3,14 +3,13 @@
 import { useEffect, useRef } from 'react';
 import { useCompose } from './ComposeProvider';
 
-// Tachos Nachos — the studio mascot. On load he simply pops into existence near the
-// cursor (scale-in, no logo origin, no falling). His home is not a corner: by
-// default he just chills next to the real cursor; if the visitor sits idle on the
-// first screen he flies to centre-stage to nudge them to scroll. He also announces
-// the CTA / more-cases, perches on the open letter, and carries the hero text down
-// into the footer brief. (Vadim's brief.)
+// Tachos Nachos — the studio mascot. Behaviour (rebuilt): he calmly follows the
+// cursor and SPEAKS ABOUT WHATEVER THE USER IS LOOKING AT — i.e. the element under
+// the cursor (card / input / button). Hint text comes from [data-hint] when set,
+// otherwise a generic line by element type. No auto fly-outs, no idle tricks, no
+// "scroll down" nags. In the footer he perches huge and watches with his eyes.
 export function CursorCompanion() {
-  const { isOpen, open } = useCompose();
+  const { isOpen } = useCompose();
   const openRef = useRef(isOpen);
   const root = useRef<HTMLDivElement>(null);
   const rot = useRef<SVGGElement>(null);
@@ -19,9 +18,6 @@ export function CursorCompanion() {
   const bubble = useRef<HTMLDivElement>(null);
   const bTitle = useRef<HTMLElement>(null);
   const bSub = useRef<HTMLElement>(null);
-  // Action fired when the (occasionally clickable) bubble is tapped — set while
-  // the mascot is mid-announce with a call-to-action (e.g. open the letter).
-  const actionRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     openRef.current = isOpen;
@@ -42,16 +38,15 @@ export function CursorCompanion() {
       const c3 = c1 + 1;
       return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
     };
-    const formPt = () => ({ x: innerWidth / 2, y: innerHeight * 0.13 });
+    // resting offset from the cursor — sits just to the lower-right, never on top
+    const OFF_X = 34;
+    const OFF_Y = 30;
 
     let mx = innerWidth / 2,
-      my = innerHeight * 0.42,
-      lastMove = performance.now();
+      my = innerHeight * 0.42;
     let pos = { x: mx, y: my - 40 };
-    let mode: 'appear' | 'companion' | 'flying' | 'form' | 'announce' | 'footer-perch' = 'appear';
+    let mode: 'appear' | 'companion' | 'flying' | 'footer-perch' = 'appear';
 
-    // simple appear: a short delay, then scale up in place near the cursor — no
-    // logo origin, no falling. Then behave normally.
     const appearStart = performance.now() + 160;
     let scaleCur = 0;
 
@@ -64,19 +59,10 @@ export function CursorCompanion() {
       then?: () => void;
     } | null = null;
     let flip = 1,
-      orbit = -0.6,
       faceAng = Math.PI / 2,
       prevOpen = false,
       bubbleTimer: ReturnType<typeof setTimeout>;
     let alive = true;
-    let scrolled = false;
-    let scrollHintShown = false;
-    // announce mode: hold at a point and speak for a while, then return to cursor.
-    let announcePt: { x: number; y: number } | null = null;
-    let announceUntil = 0;
-    let ctaShown = false;
-    let casesShown = false;
-    let lastTrick = performance.now();
 
     let typeTimer: ReturnType<typeof setTimeout>;
     const stopTyping = () => {
@@ -84,8 +70,7 @@ export function CursorCompanion() {
       bTitle.current?.classList.remove('talk-caret');
       bSub.current?.classList.remove('talk-caret');
     };
-    // Type a string into `el` one character at a time, then run `done`. A blinking
-    // caret rides the line being typed so the mascot reads as actually speaking.
+    // Type a string char by char, then run `done`; a blinking caret rides the line.
     const typeInto = (el: HTMLElement | null, text: string, speed: number, done?: () => void) => {
       if (!el) {
         done?.();
@@ -109,8 +94,7 @@ export function CursorCompanion() {
     const say = (title: string, sub: string, ms?: number) => {
       stopTyping();
       bubble.current?.classList.add('show');
-      // type the title, then the sub-line — the caret hands off between them.
-      // Calmer pace (was 26/16) so the mascot's speech is comfortable to read.
+      // calm, readable pace
       typeInto(bTitle.current, title, 42, () => typeInto(bSub.current, sub, 30));
       clearTimeout(bubbleTimer);
       if (ms) bubbleTimer = setTimeout(() => bubble.current?.classList.remove('show'), ms);
@@ -119,8 +103,6 @@ export function CursorCompanion() {
       clearTimeout(bubbleTimer);
       stopTyping();
       bubble.current?.classList.remove('show');
-      bubble.current?.classList.remove('actionable');
-      actionRef.current = null;
     };
 
     const flyTo = (x: number, y: number, dur: number, then?: () => void) => {
@@ -140,117 +122,54 @@ export function CursorCompanion() {
       };
       mode = 'flying';
     };
-    // Default "home" is wherever the cursor is — glide back to it, then chill.
     const backToCursor = () => {
       hush();
-      flyTo(mx + 60, my - 40, 600, () => {
+      flyTo(mx + OFF_X, my + OFF_Y, 600, () => {
         mode = 'companion';
       });
-    };
-    const toForm = () => {
-      const p = formPt();
-      flyTo(p.x, p.y, 700, () => {
-        mode = 'form';
-        say('Письмо пишется само', 'выберите пару пунктов — я рядом', 4200);
-      });
-    };
-
-    // Generic "fly out and announce": land at (x,y), speak, hold for `ms`, then
-    // return to the cursor. If `action` is given the bubble becomes clickable.
-    const announce = (
-      x: number,
-      y: number,
-      title: string,
-      sub: string,
-      ms: number,
-      action?: () => void,
-    ) => {
-      if (openRef.current) return;
-      actionRef.current = action ?? null;
-      bubble.current?.classList.toggle('actionable', !!action);
-      flyTo(x, y, 720, () => {
-        mode = 'announce';
-        announcePt = { x, y };
-        announceUntil = performance.now() + ms;
-        say(title, sub);
-      });
-    };
-
-    // Idle on the first screen → the mascot flies to screen *centre* and calls the
-    // visitor to scroll down. Fires once, only while still at the top of the page.
-    const scrollHint = () => {
-      if (scrollHintShown || scrolled || openRef.current || mode === 'form' || mode === 'appear')
-        return;
-      scrollHintShown = true;
-      announce(innerWidth / 2, innerHeight * 0.46, 'Листайте вниз 👇', 'там кейсы и живая форма', 4500);
     };
 
     const onMove = (e: MouseEvent) => {
       mx = e.clientX;
       my = e.clientY;
-      lastMove = performance.now();
     };
     addEventListener('mousemove', onMove, { passive: true });
 
+    // ─── HINT: speak about the element under the cursor ───
+    // Priority: explicit [data-hint]; else a generic line by element type. Returns
+    // null for elements not worth narrating (so the bubble just hushes).
+    const hintFor = (el: Element): { t: string; s: string } | null => {
+      const dh = el.getAttribute('data-hint');
+      if (dh) return { t: dh, s: el.getAttribute('data-hint-sub') || '' };
+      const tag = el.tagName.toLowerCase();
+      if (tag === 'textarea') return { t: 'Опишите задачу', s: 'своими словами — оформлю в письмо' };
+      if (tag === 'input') return { t: 'Сюда — ваш контакт', s: 'телефон, почта или @telegram' };
+      if (tag === 'button' || tag === 'a') {
+        const label = (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 30);
+        if (label) return { t: label, s: 'можно нажать' };
+      }
+      return null;
+    };
     let hintEl: Element | null = null;
     const onOver = (e: MouseEvent) => {
-      if (openRef.current || mode === 'announce' || mode === 'appear') return;
-      const el = (e.target as HTMLElement).closest?.('[data-hint]') ?? null;
+      if (openRef.current || mode === 'appear') return;
+      const el =
+        (e.target as HTMLElement).closest?.('[data-hint], textarea, input, button, a, article') ??
+        null;
       if (el === hintEl) return;
       hintEl = el;
-      if (el) say(el.getAttribute('data-hint') || '', el.getAttribute('data-hint-sub') || '', 4200);
+      const h = el ? hintFor(el) : null;
+      if (h) say(h.t, h.s, 4200);
+      else hush();
     };
     addEventListener('mouseover', onOver, { passive: true });
 
-    const onScroll = () => {
-      if (!scrolled) scrolled = true;
-      // At the CTA zone / end of cases the mascot flies to screen centre and speaks
-      // the message the floating plates used to show. Each fires once.
-      if (openRef.current || mode === 'flying' || mode === 'form' || mode === 'announce' || mode === 'appear')
-        return;
-      const focus = innerHeight * 0.6;
-      if (!ctaShown) {
-        const el = document.getElementById('cta-zone');
-        if (el) {
-          const r = el.getBoundingClientRect();
-          if (r.top <= focus && r.bottom >= focus) {
-            ctaShown = true;
-            announce(
-              innerWidth / 2,
-              innerHeight / 2,
-              'Обсудить проект?',
-              'посчитаем и предложим состав работ — нажмите',
-              6000,
-              () => open(),
-            );
-            return;
-          }
-        }
-      }
-      if (!casesShown) {
-        const el = document.getElementById('cases-end');
-        if (el) {
-          const r = el.getBoundingClientRect();
-          if (r.top > innerHeight * 0.2 && r.top < innerHeight * 0.9) {
-            casesShown = true;
-            announce(innerWidth / 2, innerHeight / 2, 'Ещё кейсы?', '40+ цифровых продуктов в портфолио', 5000);
-          }
-        }
-      }
-    };
-    addEventListener('scroll', onScroll, { passive: true });
-
-    // Footer perch: the footer reserves a slot [data-mascot-perch]. When it scrolls
-    // into view the mascot flies there, grows big and SITS — stops chasing the
-    // cursor (just watches with its eyes + speaks). Leaves when the footer scrolls
-    // away or the modal opens.
+    // ─── Footer perch: huge Nachos sits in the footer slot, eyes tracking ───
     let footerVisible = false;
     let perchedSaid = false;
     const perchEl = document.querySelector('[data-mascot-perch]');
     let perchObserver: IntersectionObserver | null = null;
     if (perchEl && 'IntersectionObserver' in window) {
-      // hysteresis: enter the perch at ≥45% visible, leave only below 10% — stops
-      // the perch/companion flip-flopping when the cursor hovers the threshold.
       perchObserver = new IntersectionObserver(
         ([e]) => {
           if (e.intersectionRatio >= 0.45) footerVisible = true;
@@ -280,6 +199,7 @@ export function CursorCompanion() {
       if (!root.current) return;
       root.current.style.transform = `translate3d(${pos.x - 16.5}px,${pos.y - 16.5}px,0) scale(${scale})`;
       rot.current?.setAttribute('transform', `rotate(${(faceAng * 180) / Math.PI} 13 13)`);
+      // eyes glance toward the cursor
       const k = Math.atan2(my - pos.y, mx - pos.x) - faceAng;
       const ex = Math.cos(k) * 1.3,
         ey = Math.sin(k) * 1.3;
@@ -287,33 +207,19 @@ export function CursorCompanion() {
       if (eyeR.current) eyeR.current.style.transform = `translate(${ex}px,${ey}px)`;
     };
 
-    // Idle "tricks": when chilling by the cursor and untouched for a while, the
-    // mascot does a playful flip / squish / scatter-regroup so it reads as alive.
-    const TRICKS = ['spin', 'squish', 'shatter'];
-    const maybeTrick = (now: number) => {
-      if (mode !== 'companion' || openRef.current) return;
-      if (now - lastMove < 4000 || now - lastTrick < 10000) return;
-      lastTrick = now;
-      const t = TRICKS[Math.floor(Math.random() * TRICKS.length)];
-      root.current?.classList.add(t);
-      setTimeout(() => root.current?.classList.remove(t), 950);
-    };
-
     let raf = 0;
     const loop = () => {
+      // modal open → don't interfere (no speaking), just keep following
       if (openRef.current && !prevOpen) {
         prevOpen = true;
         hush();
-        toForm();
       } else if (!openRef.current && prevOpen) {
         prevOpen = false;
-        backToCursor();
       }
 
-      // footer perch: fly in when the footer slot is visible, leave when it's gone.
-      // Skip while an announce (cta/cases) is mid-flight so we don't cut it off.
+      // footer perch enter/leave
       if (perchEl && !openRef.current) {
-        if (footerVisible && mode !== 'footer-perch' && mode !== 'flying' && mode !== 'announce') {
+        if (footerVisible && mode !== 'footer-perch' && mode !== 'flying') {
           const p = perchPt();
           flyTo(p.x, p.y, 700, () => {
             mode = 'footer-perch';
@@ -327,17 +233,13 @@ export function CursorCompanion() {
       const now = performance.now();
 
       if (mode === 'appear') {
-        // just pop into existence near the cursor — no logo, no falling
         const k = Math.min(Math.max((now - appearStart) / 340, 0), 1);
         scaleCur = Math.max(0, easeOutBack(k));
-        pos.x = lerp(pos.x, mx, 0.05);
-        pos.y = lerp(pos.y, my - 40, 0.05);
+        pos.x = lerp(pos.x, mx + OFF_X, 0.06);
+        pos.y = lerp(pos.y, my + OFF_Y, 0.06);
         faceAng = lerp(faceAng, Math.atan2(my - pos.y, mx - pos.x), 0.1);
         render(scaleCur);
-        if (k >= 1) {
-          mode = 'companion';
-          say('Это Начос 🔥', 'я рядом — помогу с письмом', 4800);
-        }
+        if (k >= 1) mode = 'companion';
       } else if (mode === 'flying' && fly) {
         const k = Math.min((now - fly.t0) / fly.dur, 1),
           e = easeIO(k);
@@ -356,26 +258,7 @@ export function CursorCompanion() {
           fly = null;
           cb?.();
         }
-      } else if (mode === 'announce') {
-        if (announcePt) {
-          pos.x = lerp(pos.x, announcePt.x, 0.16);
-          pos.y = lerp(pos.y, announcePt.y, 0.16);
-        }
-        faceAng = lerp(faceAng, Math.atan2(my - pos.y, mx - pos.x), 0.1);
-        render(1 + Math.sin(now * 0.004) * 0.04);
-        if (now > announceUntil) {
-          announcePt = null;
-          backToCursor();
-        }
-      } else if (mode === 'form') {
-        const p = formPt();
-        pos.x = lerp(pos.x, p.x, 0.18);
-        pos.y = lerp(pos.y, p.y, 0.18);
-        faceAng = lerp(faceAng, Math.PI / 2, 0.12);
-        render(1);
       } else if (mode === 'footer-perch') {
-        // sit on the footer slot (recompute each frame — scroll moves it), grow
-        // big and watch the cursor with the eyes; no chasing.
         const p = perchPt();
         pos.x = lerp(pos.x, p.x, 0.16);
         pos.y = lerp(pos.y, p.y, 0.16);
@@ -386,37 +269,12 @@ export function CursorCompanion() {
           say('Заполните письмо', 'и нажмите «Отправить» — я рядом');
         }
       } else {
-        // companion — lazy orbit around the cursor, with a springy "you can't catch
-        // me" repulsion: as the cursor closes in, the *target* slides away (fading
-        // smoothly with distance, safe at d→0) and a single lerp eases him there.
-        // Folding repulsion into the target — instead of a second position
-        // correction fighting the orbit — kills the old jitter/stick.
-        // original feel (pre-fixes): lazy orbit + a push-away when the cursor gets
-        // within 64px, eased at 0.045. Restored verbatim per Gosha.
-        orbit += 0.004 + Math.sin(now * 0.0004) * 0.002;
-        let tx = mx + Math.cos(orbit) * 120,
-          ty = my + Math.sin(orbit) * 84;
-        tx = Math.max(32, Math.min(innerWidth - 44, tx));
-        ty = Math.max(72, Math.min(innerHeight - 50, ty));
-        pos.x = lerp(pos.x, tx, 0.045);
-        pos.y = lerp(pos.y, ty, 0.045);
-        // push-away with two anti-"stuck" guards that keep the original feel:
-        //  • floor the divisor so the direction can't flip wildly when the cursor
-        //    sits right on him (the d→0 jitter that made him vibrate in place);
-        //  • fade the strength to 0 at the 64px edge instead of a hard on/off, so
-        //    he doesn't buzz across that boundary and stick in the repel state.
-        const dd = Math.hypot(pos.x - mx, pos.y - my);
-        if (dd < 64) {
-          const safe = Math.max(dd, 16);
-          const k = 0.3 * ((64 - dd) / 64);
-          pos.x = lerp(pos.x, mx + ((pos.x - mx) / safe) * 120, k);
-          pos.y = lerp(pos.y, my + ((pos.y - my) / safe) * 120, k);
-        }
-        faceAng = lerp(faceAng, Math.atan2(my - pos.y, mx - pos.x), 0.12);
+        // companion — calm follow just off the cursor, eyes tracking it. No orbit,
+        // no repulsion, no tricks: smooth and predictable.
+        pos.x = lerp(pos.x, mx + OFF_X, 0.14);
+        pos.y = lerp(pos.y, my + OFF_Y, 0.14);
+        faceAng = lerp(faceAng, Math.atan2(my - pos.y, mx - pos.x), 0.15);
         render(1);
-        maybeTrick(now);
-        // idle at the top of the page → nudge them to scroll
-        if (!scrolled && !scrollHintShown && now - lastMove > 5200) scrollHint();
       }
 
       if (bubble.current?.classList.contains('show')) {
@@ -435,10 +293,9 @@ export function CursorCompanion() {
       clearTimeout(typeTimer);
       removeEventListener('mousemove', onMove);
       removeEventListener('mouseover', onOver);
-      removeEventListener('scroll', onScroll);
       perchObserver?.disconnect();
     };
-  }, [open]);
+  }, []);
 
   return (
     <>
@@ -470,15 +327,10 @@ export function CursorCompanion() {
       <div
         ref={bubble}
         aria-hidden
-        onClick={() => actionRef.current?.()}
         className="bubble pointer-events-none fixed left-0 top-0 z-[121] w-[246px] rounded-[16px] bg-ink px-[16px] py-[12px] text-inverted shadow-[0_14px_40px_rgba(0,0,0,0.4)]"
       >
-        <b ref={bTitle} className="block text-[14px] font-semibold">
-          Заполнить письмо за вас?
-        </b>
-        <span ref={bSub} className="block text-[12px] text-inverted/55">
-          выберите пару пунктов — 20 секунд
-        </span>
+        <b ref={bTitle} className="block text-[14px] font-semibold" />
+        <span ref={bSub} className="block text-[12px] text-inverted/55" />
       </div>
     </>
   );

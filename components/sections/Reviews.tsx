@@ -201,6 +201,8 @@ function AudioCard({ r }: { r: Review }) {
     // top (author left / logo badge right), task title beneath, full-width
     // player pinned to the bottom.
     <div
+      data-hint="Отзыв клиента"
+      data-hint-sub={r.author}
       className={`reveal-hidden relative w-full overflow-hidden rounded-card [clip-path:inset(0_round_40px)] ${CARD_BORDER} ${GLASS} ${CARD_PAD}`}
     >
       <Glow className="-left-[80px] bottom-[-40px] h-[280px] w-[280px]" />
@@ -275,6 +277,8 @@ function TextCard({ r }: { r: Review }) {
   const light = r.tone === 'light';
   return (
     <div
+      data-hint="Отзыв клиента"
+      data-hint-sub={r.author}
       className={`reveal-hidden relative flex h-full w-full flex-col justify-between overflow-hidden rounded-card [clip-path:inset(0_round_40px)] ${CARD_PAD} backdrop-blur-md ${
         light
           ? 'min-h-[290px] bg-gradient-to-b from-[#cdc8cd] via-[#e7dddc] to-[#f0a274] text-[#1a1414]'
@@ -300,6 +304,8 @@ function TextCard({ r }: { r: Review }) {
 function VideoCard({ r }: { r: Review }) {
   return (
     <div
+      data-hint="Видео-отзыв"
+      data-hint-sub={r.author}
       className={`reveal-hidden group relative h-full min-h-[510px] w-full overflow-hidden rounded-card ${CARD_PAD} text-white`}
     >
       <Image
@@ -340,6 +346,8 @@ function VideoCard({ r }: { r: Review }) {
 function PortraitCard({ r }: { r: Review }) {
   return (
     <div
+      data-hint="Видео-отзыв"
+      data-hint-sub={r.author}
       className={`reveal-hidden group relative flex h-full min-h-[520px] w-full flex-col items-center justify-center gap-[24px] overflow-hidden rounded-card [clip-path:inset(0_round_40px)] ${CARD_BORDER} bg-white/[0.06] ${CARD_PAD} text-center backdrop-blur-md`}
     >
       <Glow className="left-1/2 top-[40px] h-[260px] w-[260px] -translate-x-1/2 bg-accent/20" />

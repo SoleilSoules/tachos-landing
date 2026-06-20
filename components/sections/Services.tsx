@@ -40,6 +40,8 @@ export function Services() {
           {tmRoles.map((role) => (
             <div
               key={role}
+              data-hint="Роль в команде"
+              data-hint-sub={role}
               className="reveal-hidden flex min-h-[92px] items-center rounded-[20px] bg-surface px-[22px] py-[20px] transition hover:bg-surface2"
             >
               <span className="text-[18px] font-medium leading-[1.2] tracking-[-0.01em] text-fg">

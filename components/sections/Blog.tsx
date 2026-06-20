@@ -88,6 +88,8 @@ function Card({
   return (
     <article
       tabIndex={0}
+      data-hint="Статья студии"
+      data-hint-sub={post.tag}
       className={`reveal-hidden group flex h-full cursor-pointer flex-col rounded-card transition duration-300 hover:-translate-y-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 ${
         peach ? 'bg-gradient-to-br from-[#f7d8c5] via-[#f6cdba] to-[#f1bda3]' : 'bg-surface hover:bg-surface2'
       } ${big ? 'min-h-[440px] p-[28px] sm:p-[40px] md:p-[44px]' : 'min-h-[360px] p-[24px] sm:p-[34px]'}`}

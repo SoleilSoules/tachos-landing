@@ -184,7 +184,7 @@ export function Products() {
                 {/* Clipped panel: rounded body with text/CTA. overflow-hidden keeps
                     the glow + rounding tidy; the tablet lives OUTSIDE it (sibling)
                     so it can bleed past the top edge like Figma. */}
-                <div className="relative h-full overflow-hidden rounded-[40px] border border-[#8d8d8d]/35 bg-white/[0.06] backdrop-blur-md shadow-[0_30px_80px_rgba(0,0,0,0.45)] [clip-path:inset(0_round_40px)]">
+                <div data-hint="Наш продукт" data-hint-sub={p.name} className="relative h-full overflow-hidden rounded-[40px] border border-[#8d8d8d]/35 bg-white/[0.06] backdrop-blur-md shadow-[0_30px_80px_rgba(0,0,0,0.45)] [clip-path:inset(0_round_40px)]">
                   {/* warm glow behind the device */}
                   <div className="pointer-events-none absolute -right-[40px] top-1/2 h-[560px] w-[600px] -translate-y-1/2 rounded-full bg-accent/25 blur-[150px]" />
 

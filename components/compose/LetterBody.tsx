@@ -372,6 +372,8 @@ export function LetterBody({ active, autofocus = true }: { active: boolean; auto
             <input
               ref={contactRef}
               data-autofocus={autofocus || undefined}
+              data-hint="Сюда придёт ответ"
+              data-hint-sub="телефон, почта или @telegram"
               type="text"
               value={contact}
               onChange={(e) => {
