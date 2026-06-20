@@ -64,6 +64,12 @@ export function Founder() {
   // rAF spring loop never triggers React re-renders — we write transform to DOM).
   const stRef = useRef({ x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0, grabx: 0, graby: 0, dragging: false, moved: 0, raf: 0, suppressClick: false });
   const [mounted, setMounted] = useState(false);
+  // Hide the draggable widget on touch devices — drag fights page scroll and the
+  // dot has nowhere good to sit on a phone (mirrors the mascot's touch guard).
+  const [touchDevice, setTouchDevice] = useState(false);
+  useEffect(() => {
+    setTouchDevice(window.matchMedia('(hover: none), (pointer: coarse)').matches);
+  }, []);
 
   useEffect(() => {
     if (!expanded) return;
@@ -226,6 +232,9 @@ export function Founder() {
       stopLoop();
     };
   }, []);
+
+  // No draggable founder widget on touch — keep the phone clean.
+  if (touchDevice) return null;
 
   return (
     <>
