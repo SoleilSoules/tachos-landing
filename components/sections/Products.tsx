@@ -26,14 +26,11 @@ const MOCKUPS: Record<string, { src: string; alt: string } | undefined> = {
 // behind the top sits a little lower, smaller, rotated and dimmed — a fanned
 // stack you can "deal" from. WHY a lookup not a formula: only ~3 products, so
 // hand-tuned offsets read better than linear math at this scale.
-const REST: { y: number; scale: number; opacity: number }[] = [
-  { y: 0, scale: 1, opacity: 1 }, // top, flat — the active product
-  { y: -34, scale: 0.95, opacity: 0.55 }, // peeks ABOVE the top card
-  { y: -62, scale: 0.9, opacity: 0.4 }, // deepest, furthest up
+const REST: { y: number; scale: number; opacity: number; rot: number }[] = [
+  { y: 0, scale: 1, opacity: 1, rot: 0 }, // top, flat — the active product
+  { y: -34, scale: 0.95, opacity: 0.55, rot: 1.6 }, // peeks above, tilted right
+  { y: -62, scale: 0.9, opacity: 0.4, rot: -1.6 }, // deepest, tilted left
 ];
-
-// CTA anchor copy lives next to the deck so the section stays content-driven.
-const SWITCHER_HINT = 'Листайте — это наши продукты';
 
 // Switcher card (Figma style): icon + name + tagline, with the active card
 // filling left-to-right in accent as a progress timer that auto-advances.
@@ -47,10 +44,10 @@ function ProductSwitcher({
   onPick: (i: number) => void;
 }) {
   return (
-    <div className="mt-[28px] flex items-end justify-center">
+    <div className="mt-[20px] flex items-center justify-center gap-[14px]">
       {products.map((p, i) => {
-        // deck-of-cards: cards overlap; the active one lifts and pops forward, so
-        // auto-advance reads as pulling a card out of the stack and tucking it back (Vadim)
+        // separate pills (no overlap, Figma): the active one goes accent and fills
+        // left-to-right as the auto-advance timer runs.
         const isActive = i === index;
         return (
           <button
@@ -58,32 +55,29 @@ function ProductSwitcher({
             type="button"
             onClick={() => onPick(i)}
             aria-current={isActive}
-            style={{ marginLeft: i === 0 ? 0 : -14, zIndex: isActive ? 20 : 9 - i }}
-            className={`relative flex h-[64px] w-[282px] items-center gap-[12px] overflow-hidden rounded-[16px] border px-[8px] text-left transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-              isActive
-                ? '-translate-y-[10px] scale-[1.03] border-accent/40 bg-[#3d3d3d] shadow-[0_20px_44px_rgba(0,0,0,0.5)]'
-                : 'scale-[0.96] border-white/8 bg-[#2e2e2e] opacity-70'
+            className={`relative flex h-[64px] w-[300px] items-center gap-[12px] overflow-hidden rounded-[16px] border px-[10px] text-left transition-colors duration-500 ${
+              isActive ? 'border-accent/40 bg-accent text-white' : 'border-white/10 bg-white/[0.06] text-white'
             }`}
           >
             {isActive && (
               <span
                 aria-hidden
-                className="absolute inset-y-0 left-0 rounded-[12px] bg-accent/80"
+                className="absolute inset-y-0 left-0 bg-white/15"
                 style={{ width: `${progress}%` }}
               />
             )}
             <span
-              className={`relative grid size-[48px] shrink-0 place-items-center rounded-[12px] ${
-                isActive ? 'bg-bg' : 'bg-white/30'
+              className={`relative grid size-[44px] shrink-0 place-items-center rounded-[12px] ${
+                isActive ? 'bg-black/25' : 'bg-white/10'
               }`}
             >
-              <Image src={asset(ICONS[p.id])} alt="" width={26} height={26} />
+              <Image src={asset(ICONS[p.id])} alt="" width={24} height={24} />
             </span>
             <span className="relative min-w-0">
               <span className="block text-[16px] font-medium leading-[1.15] text-white">
                 {p.name}
               </span>
-              <span className="block truncate text-[14px] leading-[1.2] text-white/60">
+              <span className="block truncate text-[14px] leading-[1.2] text-white/65">
                 {p.tagline}
               </span>
             </span>
@@ -157,11 +151,11 @@ export function Products() {
         <span className="text-white/30">{productsIntro.titleMuted}</span>
       </h2>
 
-      <div ref={ref} className="mx-auto mt-[56px] max-w-page px-[80px]">
+      <div ref={ref} className="mx-auto mt-[120px] max-w-[1080px] px-6">
         {/* Deck stage: every product is a full panel stacked here; the active one
             sits flat on top, the rest fan out behind it. Height is fixed so the
             absolutely-positioned cards reserve layout. */}
-        <div className="reveal-hidden relative h-[494px]">
+        <div className="reveal-hidden relative h-[540px]">
           {products.map((p, i) => {
             // Cyclic depth: 0 = active/top, then the upcoming products peek behind.
             // As `index` advances the whole deck rotates, so a switch reads as
@@ -175,7 +169,7 @@ export function Products() {
             // rotates — a clean "deal to the back of the stack" without a fragile
             // keyframe flight. Stable key so the card animates rather than remounts.
             const restStyle = {
-              transform: `translate3d(0, ${rest.y}px, 0) scale(${rest.scale})`,
+              transform: `translate3d(0, ${rest.y}px, 0) scale(${rest.scale}) rotate(${rest.rot}deg)`,
               opacity: rest.opacity,
               zIndex: count - depth,
             } as const;
@@ -190,7 +184,7 @@ export function Products() {
                 {/* Clipped panel: rounded body with text/CTA. overflow-hidden keeps
                     the glow + rounding tidy; the tablet lives OUTSIDE it (sibling)
                     so it can bleed past the top edge like Figma. */}
-                <div className="relative h-full overflow-hidden rounded-[48px] border border-white/8 bg-gradient-to-br from-[#1b1613] via-[#100c0b] to-black shadow-[0_30px_80px_rgba(0,0,0,0.5),inset_0_2px_120px_rgba(170,170,170,0.12)]">
+                <div className="relative h-full overflow-hidden rounded-[40px] border border-[#8d8d8d]/35 bg-white/[0.06] backdrop-blur-md shadow-[0_30px_80px_rgba(0,0,0,0.45)] [clip-path:inset(0_round_40px)]">
                   {/* warm glow behind the device */}
                   <div className="pointer-events-none absolute -right-[40px] top-1/2 h-[560px] w-[600px] -translate-y-1/2 rounded-full bg-accent/25 blur-[150px]" />
 
@@ -238,10 +232,6 @@ export function Products() {
             );
           })}
         </div>
-
-        <p className="mt-[24px] text-center text-[13px] tracking-[0.04em] text-white/35">
-          {SWITCHER_HINT}
-        </p>
 
         <ProductSwitcher index={index} progress={progress} onPick={pick} />
       </div>
