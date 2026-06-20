@@ -56,8 +56,8 @@ export default function Home() {
           scroll zone where it expands into the "Обсудить проект" state. */}
       <div id="cta-zone" aria-hidden className="h-[220px] bg-bg" />
       <Services />
-      <Products />
       <VideoBlock />
+      <Products />
       <Blog />
       <Footer />
     </main>

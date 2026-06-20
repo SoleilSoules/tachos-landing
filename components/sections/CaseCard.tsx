@@ -90,7 +90,7 @@ export function CaseCard({ item }: { item: CaseItem }) {
               frosted light fill. Pinned right; nudges up-right on hover.
               motion-safe gates the translate so reduced-motion users see no shift. */}
           <div className="flex justify-end">
-            <span className="grid size-[56px] place-items-center rounded-[18px] bg-white/20 text-white ring-1 ring-inset ring-white/15 backdrop-blur-md transition-[transform,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:bg-white/30 motion-safe:group-hover:translate-x-[3px] motion-safe:group-hover:-translate-y-[3px]">
+            <span className="grid size-[56px] place-items-center rounded-[18px] bg-white/55 text-white ring-1 ring-inset ring-white/40 backdrop-blur-md transition-[transform,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:bg-white/70 motion-safe:group-hover:translate-x-[3px] motion-safe:group-hover:-translate-y-[3px]">
               <ArrowIcon />
             </span>
           </div>

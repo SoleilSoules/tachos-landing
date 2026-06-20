@@ -11,7 +11,7 @@ export function LogoWall() {
   const row = Array.from({ length: 8 }, () => clients).flat();
 
   return (
-    <div className="relative z-10 mt-[124px] pb-[24px]">
+    <div className="relative z-10 mt-[100px] pb-[24px]">
       {/* gentle dark wash, feathered top & bottom — just enough contrast for the
           white logos, not a hard black band */}
       <div

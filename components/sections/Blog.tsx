@@ -8,7 +8,7 @@ import { posts, blogIntro, type Post } from '@/lib/content';
 function ArrowSquare({ onPeach }: { onPeach?: boolean }) {
   return (
     <span
-      className={`blog-arrow grid size-[46px] shrink-0 place-items-center rounded-[14px] transition ${
+      className={`blog-arrow grid size-[56px] shrink-0 place-items-center rounded-[18px] transition ${
         onPeach ? 'bg-black/[0.06] text-black/60' : 'bg-black/[0.05] text-black/55'
       }`}
       aria-hidden

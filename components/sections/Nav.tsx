@@ -31,17 +31,18 @@ export function Nav() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
-        stuck ? 'px-[14px] pt-[10px]' : 'px-0 pt-0'
+      className={`fixed inset-x-0 top-0 z-50 px-3 transition-all duration-300 lg:px-[14px] ${
+        stuck ? 'pt-[10px]' : 'pt-0'
       }`}
     >
-      {/* once stuck, the bar detaches from the edges into a floating pill
-          (rounded, translucent, blurred) — monte-tuning style. */}
+      {/* The bar keeps a CONSTANT horizontal padding in both states so the logo
+          and CTA never shift sideways when you scroll — only the plate (bg /
+          border / shadow / blur) and the height appear/change on `stuck`. */}
       <div
-        className={`mx-auto flex w-full max-w-page items-center justify-between transition-all duration-300 ${
+        className={`mx-auto flex w-full max-w-page items-center justify-between rounded-[22px] px-[14px] transition-all duration-300 lg:px-[34px] ${
           stuck
-            ? 'h-[60px] rounded-[22px] border border-white/10 bg-ink/75 px-[20px] shadow-[0_10px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl lg:px-[24px]'
-            : 'h-[64px] px-4 lg:h-[84px] lg:px-[48px]'
+            ? 'h-[60px] border border-white/10 bg-ink/75 shadow-[0_10px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl'
+            : 'h-[64px] border border-transparent lg:h-[84px]'
         }`}
       >
         {/* logo alone on the left; nav + CTA grouped to the right edge */}

@@ -61,6 +61,16 @@ export function Footer() {
             <div className="mt-[36px] max-w-[660px]">
               {isSuccess ? <ComposeSent /> : <LetterBody active={inView} autofocus={false} />}
             </div>
+            {/* manager sits right under the letter — Anna is who replies to it */}
+            <div className="mt-[28px] flex items-center gap-[10px]">
+              <span className="size-[54px] shrink-0 overflow-hidden rounded-full">
+                <Image src={asset('/figma/mgr-anna.png')} alt={footer.manager.name} width={54} height={54} className="size-full object-cover" />
+              </span>
+              <span className="leading-tight">
+                <span className="block text-[16px] tracking-[0.03em] text-[#f5f7f6]">{footer.manager.name}</span>
+                <span className="block text-[14px] text-[#b9b9b9]">{footer.manager.role}</span>
+              </span>
+            </div>
           </div>
 
           {/* right — the perch where the big Начос sits (over the flame glow) */}
@@ -75,8 +85,8 @@ export function Footer() {
           </div>
         </div>
 
-        {/* requisites — city, tap-to-copy email, phone + manager card */}
-        <div className="relative mt-[64px] flex flex-wrap items-end justify-between gap-[36px] border-t border-white/10 pt-[40px]">
+        {/* requisites — city, tap-to-copy email, phone */}
+        <div className="relative mt-[64px] border-t border-white/10 pt-[40px]">
           <div className="flex flex-col gap-[16px] text-[16px] font-medium tracking-[0.04em]">
             <span className="uppercase text-white/80">{footer.contacts.city}</span>
             <button
@@ -96,20 +106,6 @@ export function Footer() {
             >
               {footer.contacts.phone.value}
             </a>
-          </div>
-
-          {/* manager moved here */}
-          <div className="flex items-center gap-[10px]">
-            <span className="size-[54px] shrink-0 overflow-hidden rounded-full">
-              <Image src={asset('/figma/mgr-anna.png')} alt={footer.manager.name} width={54} height={54} className="size-full object-cover" />
-            </span>
-            <span className="leading-tight">
-              <span className="block text-[16px] tracking-[0.03em] text-[#f5f7f6]">{footer.manager.name}</span>
-              <span className="block text-[14px] text-[#b9b9b9]">{footer.manager.role}</span>
-            </span>
-            <span className="ml-[6px] grid size-[58px] place-items-center rounded-full bg-accent">
-              <Image src={asset('/figma/mgr-tg.svg')} alt="" width={26} height={26} />
-            </span>
           </div>
         </div>
 

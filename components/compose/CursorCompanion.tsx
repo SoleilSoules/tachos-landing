@@ -109,8 +109,9 @@ export function CursorCompanion() {
     const say = (title: string, sub: string, ms?: number) => {
       stopTyping();
       bubble.current?.classList.add('show');
-      // type the title, then the sub-line — the caret hands off between them
-      typeInto(bTitle.current, title, 26, () => typeInto(bSub.current, sub, 16));
+      // type the title, then the sub-line — the caret hands off between them.
+      // Calmer pace (was 26/16) so the mascot's speech is comfortable to read.
+      typeInto(bTitle.current, title, 42, () => typeInto(bSub.current, sub, 30));
       clearTimeout(bubbleTimer);
       if (ms) bubbleTimer = setTimeout(() => bubble.current?.classList.remove('show'), ms);
     };
@@ -197,7 +198,7 @@ export function CursorCompanion() {
       const el = (e.target as HTMLElement).closest?.('[data-hint]') ?? null;
       if (el === hintEl) return;
       hintEl = el;
-      if (el) say(el.getAttribute('data-hint') || '', el.getAttribute('data-hint-sub') || '', 2800);
+      if (el) say(el.getAttribute('data-hint') || '', el.getAttribute('data-hint-sub') || '', 4200);
     };
     addEventListener('mouseover', onOver, { passive: true });
 
@@ -335,7 +336,7 @@ export function CursorCompanion() {
         render(scaleCur);
         if (k >= 1) {
           mode = 'companion';
-          say('Это Начос 🔥', 'я рядом — помогу с письмом', 3000);
+          say('Это Начос 🔥', 'я рядом — помогу с письмом', 4800);
         }
       } else if (mode === 'flying' && fly) {
         const k = Math.min((now - fly.t0) / fly.dur, 1),
@@ -379,7 +380,7 @@ export function CursorCompanion() {
         pos.x = lerp(pos.x, p.x, 0.16);
         pos.y = lerp(pos.y, p.y, 0.16);
         faceAng = lerp(faceAng, Math.atan2(my - pos.y, mx - pos.x), 0.12);
-        render(2.8);
+        render(8);
         if (!perchedSaid) {
           perchedSaid = true;
           say('Заполните письмо', 'и нажмите «Отправить» — я рядом');

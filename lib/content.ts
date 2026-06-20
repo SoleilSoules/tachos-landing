@@ -214,6 +214,34 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     cover,
     avatar,
   },
+  // ⚠️ placeholder cases (NOT real Tachos work) — заполняют второй ряд под кнопкой
+  // «Показать ещё». Vadim: заменить на реальные кейсы или удалить (и вернуть грид к 4).
+  {
+    id: 'potok',
+    client: 'Поток',
+    category: 'логистика',
+    desc: {
+      lead: 'Платформа курьерской доставки: маршруты, трекинг и расчёты для операторов.',
+      highlight: '12 городов, 400 курьеров',
+      tail: '',
+    },
+    tags: ['Логистика', 'Web + mobile'],
+    cover,
+    avatar,
+  },
+  {
+    id: 'grace',
+    client: 'Грейс',
+    category: 'здоровье',
+    desc: {
+      lead: 'Запись к врачу и телемедицина в одном приложении —',
+      highlight: '60 000 приёмов',
+      tail: 'в месяц',
+    },
+    tags: ['Здоровье', 'iOS + Android'],
+    cover,
+    avatar,
+  },
 ]);
 
 // ─── Own IT products ───────────────────────────────────────────────
@@ -317,7 +345,7 @@ export const footer = deepNbsp({
   contacts: {
     email: { label: 'E-mail', value: 'hello@tachos.ru' },
     phone: { label: 'Позвонить', value: '+7 930 688-38-38' },
-    city: 'Волгоград ГОРОД ГЕРОЙ',
+    city: 'город-герой Волгоград',
   },
 } as const);
 

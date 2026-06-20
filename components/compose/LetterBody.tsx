@@ -66,9 +66,10 @@ function Slot({
         {value || ph}
       </span>
       {showPopup && (
-        // Starts at the slot and grows to the RIGHT; wraps instead of running off
-        // the edge — w-max keeps the pills on one line.
-        <span className="absolute left-0 top-[calc(100%+10px)] z-30 flex w-max gap-[8px] leading-none motion-safe:[animation:compose-pop-in_.22s_ease-out]">
+        // Opaque floating plate (its own bg + shadow) so the option pills read
+        // as a deliberate popover ON TOP of the letter — never a see-through mush
+        // overlapping the divider/text below.
+        <span className="absolute left-0 top-[calc(100%+8px)] z-40 flex w-max gap-[8px] rounded-[14px] bg-ink p-[8px] leading-none shadow-[0_18px_44px_rgba(0,0,0,0.55)] ring-1 ring-white/10 motion-safe:[animation:compose-pop-in_.22s_ease-out]">
           {options.map((o) => (
             <button
               key={o.label}
@@ -194,14 +195,15 @@ export function LetterBody({ active, autofocus = true }: { active: boolean; auto
       }
       if ('text' in cur) {
         if (charRef.current < cur.text.length) {
-          charRef.current = Math.min(cur.text.length, charRef.current + 2);
+          // one char at a time, a touch slower — calmer, more readable typing
+          charRef.current = Math.min(cur.text.length, charRef.current + 1);
           rerender();
-          id = setTimeout(step, 22);
+          id = setTimeout(step, 34);
         } else {
           segRef.current += 1;
           charRef.current = 0;
           rerender();
-          id = setTimeout(step, 45);
+          id = setTimeout(step, 60);
         }
       } else if (doneRef.current.includes(cur.slot)) {
         segRef.current += 1; // slot chosen — type past it to the next prose
