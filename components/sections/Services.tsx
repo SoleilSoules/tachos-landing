@@ -22,10 +22,10 @@ export function Services() {
   const ref = useReveal<HTMLDivElement>({ threshold: 0.08 });
 
   return (
-    <section id="services" className="bg-white pt-[96px] pb-[104px]">
-      <div ref={ref} className="mx-auto max-w-page px-[80px]">
+    <section id="services" className="bg-white pt-[64px] pb-[72px] lg:pt-[96px] lg:pb-[104px]">
+      <div ref={ref} className="mx-auto max-w-page px-5 sm:px-8 lg:px-[80px]">
         {/* Keep: "под ключ" framing, but WITHOUT concrete prices (issue #41) */}
-        <h2 className="reveal-hidden max-w-[680px] text-[44px] font-semibold leading-[1.08] tracking-[-0.02em] text-fg">
+        <h2 className="reveal-hidden max-w-[680px] text-[clamp(28px,7.5vw,44px)] font-semibold leading-[1.1] tracking-[-0.02em] text-fg lg:leading-[1.08]">
           {servicesIntro.titleLead}{' '}
           <span className="text-black/35">{servicesIntro.titleAccent}</span>
         </h2>

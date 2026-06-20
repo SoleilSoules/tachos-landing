@@ -10,7 +10,7 @@ export function CaseGridClient({ cases }: { cases: CaseItem[] }) {
   return (
     <div
       ref={ref}
-      className="mt-[40px] grid grid-cols-2 gap-x-[24px] gap-y-[64px]"
+      className="mt-[40px] grid grid-cols-1 gap-x-[24px] gap-y-[40px] sm:grid-cols-2 sm:gap-y-[64px]"
     >
       {cases.map((item) => (
         <div key={item.id} className="reveal-hidden">

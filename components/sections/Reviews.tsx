@@ -459,7 +459,7 @@ export function Reviews() {
   const [audio, t1, v1, t2, v2] = reviews.items;
 
   return (
-    <section id="reviews" className="relative overflow-hidden bg-[#05010d] pb-[80px] pt-[120px] text-white">
+    <section id="reviews" className="relative overflow-hidden bg-[#05010d] pb-[56px] pt-[64px] text-white lg:pb-[80px] lg:pt-[120px]">
       {/* #34 — soft twinkle for the starfield; static under reduced-motion */}
       <style>{`
         @keyframes rev-twinkle {
@@ -478,7 +478,7 @@ export function Reviews() {
       <div className="pointer-events-none absolute -right-[140px] bottom-[14%] h-[420px] w-[420px] rounded-full bg-accent/[0.10] blur-[150px]" aria-hidden />
 
       <div className="relative mx-auto max-w-[861px] px-6 text-center">
-        <h2 className="text-[52px] font-semibold leading-[0.9] tracking-[-0.02em]">{reviews.title}</h2>
+        <h2 className="text-[clamp(32px,9vw,52px)] font-semibold leading-[0.95] tracking-[-0.02em] lg:leading-[0.9]">{reviews.title}</h2>
         <p className="mx-auto mt-[28px] max-w-[320px] text-[19px] leading-[1.4] text-white/75">
           {reviews.subtitle}
         </p>

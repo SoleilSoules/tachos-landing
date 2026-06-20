@@ -45,7 +45,7 @@ export function CaseCard({ item }: { item: CaseItem }) {
       <a
         href="#cases"
         aria-label={`Кейс: ${item.client}`}
-        className="relative block h-[420px] overflow-hidden rounded-[44px] transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:-translate-y-[6px] motion-safe:group-hover:scale-[1.012] motion-safe:group-hover:shadow-[0_28px_64px_-16px_rgba(0,0,0,0.45)]"
+        className="relative block h-[360px] overflow-hidden rounded-[32px] transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:-translate-y-[6px] motion-safe:group-hover:scale-[1.012] motion-safe:group-hover:shadow-[0_28px_64px_-16px_rgba(0,0,0,0.45)] sm:h-[420px] sm:rounded-[44px]"
       >
         {/* brand tint fallback layer — sits under the photo */}
         <div className={`absolute inset-0 bg-gradient-to-br ${tint}`} aria-hidden />
@@ -100,7 +100,7 @@ export function CaseCard({ item }: { item: CaseItem }) {
       {/* caption/meta — pinned to its own card with a small left inset (#33) */}
       <div className="pl-[6px] pr-[10px]">
         <p className="text-[18px] font-medium tracking-[0.02em] text-black/50">{item.client}</p>
-        <p className="mt-[6px] text-[26px] font-medium leading-[1.22] text-black">
+        <p className="mt-[6px] text-[22px] font-medium leading-[1.22] text-black sm:text-[26px]">
           {item.desc.lead && <>{item.desc.lead} </>}
           {/* #31: accent underlay gets real padding + tag radius, cloned across
               line wraps so each line keeps rounded corners. .nums for figures. */}

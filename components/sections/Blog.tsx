@@ -90,11 +90,11 @@ function Card({
       tabIndex={0}
       className={`reveal-hidden group flex h-full cursor-pointer flex-col rounded-card transition duration-300 hover:-translate-y-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 ${
         peach ? 'bg-gradient-to-br from-[#f7d8c5] via-[#f6cdba] to-[#f1bda3]' : 'bg-surface hover:bg-surface2'
-      } ${big ? 'min-h-[440px] p-[40px] md:p-[44px]' : 'min-h-[360px] p-[34px]'}`}
+      } ${big ? 'min-h-[440px] p-[28px] sm:p-[40px] md:p-[44px]' : 'min-h-[360px] p-[24px] sm:p-[34px]'}`}
     >
       <h3
         className={`font-semibold leading-[1.1] tracking-[-0.01em] text-black ${
-          big ? 'max-w-[560px] text-[34px]' : 'max-w-[300px] text-[26px]'
+          big ? 'max-w-[560px] text-[26px] sm:text-[34px]' : 'max-w-[300px] text-[22px] sm:text-[26px]'
         }`}
       >
         {post.title}
@@ -114,7 +114,7 @@ export function Blog() {
   const ref = useReveal<HTMLDivElement>({ stagger: 90, threshold: 0.1 });
 
   return (
-    <section id="blog" className="bg-white pb-[140px] pt-[120px]">
+    <section id="blog" className="bg-white pb-[72px] pt-[64px] lg:pb-[140px] lg:pt-[120px]">
       <style>{`
         .blog-arrow svg { transition: transform .3s cubic-bezier(.16,1,.3,1); }
         .group:hover .blog-arrow svg, .group:focus-visible .blog-arrow svg { transform: translate(2px,-2px); }
@@ -122,7 +122,7 @@ export function Blog() {
       `}</style>
 
       <div className="mx-auto max-w-[680px] px-6 text-center">
-        <h2 className="text-[52px] font-semibold leading-[1.0] tracking-[-0.02em] text-fg">{blogIntro.title}</h2>
+        <h2 className="text-[clamp(32px,9vw,52px)] font-semibold leading-[1.05] tracking-[-0.02em] text-fg lg:leading-[1.0]">{blogIntro.title}</h2>
         <p className="mx-auto mt-[20px] max-w-[640px] text-[19px] leading-[1.4] text-black/45">{blogIntro.body}</p>
       </div>
 

@@ -324,7 +324,7 @@ export function LetterBody({ active, autofocus = true }: { active: boolean; auto
       </div>
 
       {/* THE LETTER — types step by step, stopping at each empty slot */}
-      <div className="whitespace-pre-line text-[20px] leading-[2.2] text-inverted/90">
+      <div className="whitespace-pre-line text-[17px] leading-[1.85] text-inverted/90 lg:text-[20px] lg:leading-[2.2]">
         {segments.map((s, i) => {
           if (i > segRef.current) return null;
           if ('text' in s) {

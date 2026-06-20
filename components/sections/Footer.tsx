@@ -49,11 +49,11 @@ export function Footer() {
 
   return (
     <footer id="contacts" ref={ref} className="relative overflow-hidden rounded-t-[40px] bg-bg text-inverted">
-      <div className="relative mx-auto max-w-page px-[96px] pb-[54px] pt-[100px]">
+      <div className="relative mx-auto max-w-page px-5 pb-[40px] pt-[64px] sm:px-10 lg:px-[96px] lg:pb-[54px] lg:pt-[100px]">
         <div className="relative grid grid-cols-1 gap-[40px] lg:grid-cols-[minmax(0,1fr)_460px]">
           {/* left — the smart letter, the very same composer as the modal (synced) */}
           <div>
-            <h2 className="max-w-[611px] text-[52px] font-semibold leading-[0.9] tracking-[-0.01em]">
+            <h2 className="max-w-[611px] text-[clamp(30px,8vw,52px)] font-semibold leading-[0.95] tracking-[-0.01em] lg:leading-[0.9]">
               {footer.formTitle[0]} {footer.formTitle[1]}
               <br />
               {footer.formTitle[2]}

@@ -8,7 +8,7 @@ export function Cases() {
     <section id="cases" className="bg-white pb-[160px] pt-[72px]">
       <CasesHeadingClient />
 
-      <div className="mx-auto mt-[44px] max-w-page px-[80px]">
+      <div className="mx-auto mt-[44px] max-w-page px-5 sm:px-8 lg:px-[80px]">
         <CaseTabs />
         <CaseGridClient cases={cases} />
         {/* anchor: the floating panel expands to "Все кейсы" only past this point */}

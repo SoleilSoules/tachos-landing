@@ -10,6 +10,8 @@ export function Nav() {
   // dark hero, then a dark blurred plate so the white nav text stays readable
   // over the light sections below.
   const [stuck, setStuck] = useState(false);
+  // On <lg the links don't fit — collapse them into a burger menu.
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setStuck(window.scrollY > 80);
@@ -17,6 +19,15 @@ export function Nav() {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [menuOpen]);
 
   return (
     <header
@@ -29,8 +40,8 @@ export function Nav() {
       <div
         className={`mx-auto flex w-full max-w-page items-center justify-between transition-all duration-300 ${
           stuck
-            ? 'h-[60px] rounded-[22px] border border-white/10 bg-ink/75 px-[24px] shadow-[0_10px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl'
-            : 'h-[84px] px-[48px]'
+            ? 'h-[60px] rounded-[22px] border border-white/10 bg-ink/75 px-[20px] shadow-[0_10px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl lg:px-[24px]'
+            : 'h-[64px] px-4 lg:h-[84px] lg:px-[48px]'
         }`}
       >
         {/* logo alone on the left; nav + CTA grouped to the right edge */}
@@ -51,7 +62,8 @@ export function Nav() {
           />
         </a>
 
-        <div className="flex items-center gap-[40px]">
+        {/* desktop: links + CTA inline */}
+        <div className="hidden items-center gap-[40px] lg:flex">
           <nav className="nums flex items-center gap-[34px]">
             {nav.links.map((link) => (
               <a
@@ -72,7 +84,60 @@ export function Nav() {
             {nav.cta}
           </a>
         </div>
+
+        {/* mobile: burger */}
+        <button
+          type="button"
+          onClick={() => setMenuOpen(true)}
+          aria-label="Открыть меню"
+          aria-expanded={menuOpen}
+          className="grid size-[40px] place-items-center text-inverted lg:hidden"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+            <path d="M3 6h18M3 12h18M3 18h18" />
+          </svg>
+        </button>
       </div>
+
+      {/* mobile menu overlay — slides down from the top */}
+      {menuOpen && (
+      <div className="fixed inset-0 z-[60] lg:hidden">
+        <div
+          onClick={() => setMenuOpen(false)}
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm [animation:fade-in_0.2s_ease-out]"
+        />
+        <nav className="absolute inset-x-0 top-0 flex flex-col gap-[2px] rounded-b-[28px] bg-ink px-6 pb-[28px] pt-[76px] shadow-[0_30px_80px_rgba(0,0,0,0.5)] [animation:fade-up_0.25s_ease-out]">
+          <button
+            type="button"
+            onClick={() => setMenuOpen(false)}
+            aria-label="Закрыть меню"
+            className="absolute right-[16px] top-[16px] grid size-[40px] place-items-center text-inverted"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+          {nav.links.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              onClick={() => setMenuOpen(false)}
+              className="py-[12px] text-[22px] font-medium text-inverted transition-colors hover:text-accent-bright"
+            >
+              {link.label}
+            </a>
+          ))}
+          <a
+            href="#contacts"
+            data-compose
+            onClick={() => setMenuOpen(false)}
+            className="mt-[14px] rounded-button bg-accent-bright px-[20px] py-[13px] text-center text-[17px] text-inverted"
+          >
+            {nav.cta}
+          </a>
+        </nav>
+      </div>
+      )}
     </header>
   );
 }

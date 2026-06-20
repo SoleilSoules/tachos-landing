@@ -24,6 +24,10 @@ body {
   padding: 0;
   margin: 0;
   overscroll-behavior: none;
+  /* hard guard against horizontal scroll on mobile — oversized decorative
+     backgrounds (hero device glow) bleed past the viewport by design */
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 body {

@@ -44,7 +44,7 @@ function ProductSwitcher({
   onPick: (i: number) => void;
 }) {
   return (
-    <div className="mt-[20px] flex items-center justify-center gap-[14px]">
+    <div className="mt-[24px] flex flex-col items-center justify-center gap-[10px] lg:mt-[20px] lg:flex-row lg:gap-[14px]">
       {products.map((p, i) => {
         // separate pills (no overlap, Figma): the active one goes accent and fills
         // left-to-right as the auto-advance timer runs.
@@ -55,7 +55,7 @@ function ProductSwitcher({
             type="button"
             onClick={() => onPick(i)}
             aria-current={isActive}
-            className={`relative flex h-[64px] w-[300px] items-center gap-[12px] overflow-hidden rounded-[16px] border px-[10px] text-left transition-colors duration-500 ${
+            className={`relative flex h-[64px] w-full max-w-[340px] items-center gap-[12px] overflow-hidden rounded-[16px] border px-[10px] text-left transition-colors duration-500 lg:w-[300px] ${
               isActive ? 'border-accent/40 bg-accent text-white' : 'border-white/10 bg-white/[0.06] text-white'
             }`}
           >
@@ -144,18 +144,18 @@ export function Products() {
   }, [index, count, inView]);
 
   return (
-    <section id="products" className="overflow-hidden bg-bg pt-[130px] pb-[150px] text-inverted">
-      <h2 className="mx-auto max-w-[1000px] px-6 text-center text-[52px] font-semibold leading-[1.0] tracking-[-0.01em]">
+    <section id="products" className="overflow-hidden bg-bg pt-[64px] pb-[80px] text-inverted lg:pt-[130px] lg:pb-[150px]">
+      <h2 className="mx-auto max-w-[1000px] px-6 text-center text-[clamp(30px,8vw,52px)] font-semibold leading-[1.05] tracking-[-0.01em] lg:leading-[1.0]">
         {productsIntro.titleLead}
         <br />
         <span className="text-white/30">{productsIntro.titleMuted}</span>
       </h2>
 
-      <div ref={ref} className="mx-auto mt-[120px] max-w-[1080px] px-6">
+      <div ref={ref} className="mx-auto mt-[56px] max-w-[1080px] px-5 sm:px-6 lg:mt-[120px]">
         {/* Deck stage: every product is a full panel stacked here; the active one
             sits flat on top, the rest fan out behind it. Height is fixed so the
             absolutely-positioned cards reserve layout. */}
-        <div className="reveal-hidden relative h-[540px]">
+        <div className="reveal-hidden relative h-[420px] lg:h-[540px]">
           {products.map((p, i) => {
             // Cyclic depth: 0 = active/top, then the upcoming products peek behind.
             // As `index` advances the whole deck rotates, so a switch reads as
@@ -193,9 +193,9 @@ export function Products() {
                       (the bug Vadim flagged: "balibali" bleeding through "doki").
                       Cards in the deck are just dark panels until they reach the top. */}
                   {isActive && (
-                    <div className="relative flex h-full max-w-[440px] flex-col justify-between p-[40px]">
+                    <div className="relative flex h-full max-w-full flex-col justify-between p-[28px] lg:max-w-[440px] lg:p-[40px]">
                       <div>
-                        <h3 className="text-[42px] font-medium leading-[1.0] tracking-[-0.01em]">
+                        <h3 className="text-[28px] font-medium leading-[1.05] tracking-[-0.01em] lg:text-[42px] lg:leading-[1.0]">
                           {p.heading}
                         </h3>
                         <p className="mt-[16px] max-w-[366px] text-[16px] leading-[1.3] text-white/70">
@@ -217,7 +217,7 @@ export function Products() {
                     the top-right edge like Figma. Only on the active card so the
                     deck behind stays clean (no doki tablet showing on every layer). */}
                 {isActive && mockup && (
-                  <div className="pointer-events-none absolute -top-[58px] right-[-10px] h-[562px] w-[803px] rotate-[-7deg]">
+                  <div className="pointer-events-none absolute -top-[58px] right-[-10px] hidden h-[562px] w-[803px] rotate-[-7deg] lg:block">
                     <Image
                       src={asset(mockup.src)}
                       alt={mockup.alt}
