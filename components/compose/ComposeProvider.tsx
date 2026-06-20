@@ -44,11 +44,15 @@ export function useCompose(): ComposeCtx {
   return ctx;
 }
 
-// Placeholder transport — swap for a real POST to /api/contact (or Formspree).
-// Rejects ~5% of the time so the error path is reachable in the demo.
+// ⚠️ TODO (Vadim) — DEMO STUB, NOT A REAL TRANSPORT. This sends NOTHING: it waits
+// 1.1s and resolves (rejecting ~5% only so the error UI is reachable in the demo).
+// The static GitHub Pages build has no backend. BEFORE PROD: replace with a real
+// POST (a Next route handler /api/contact, or Formspree / an email service), check
+// `res.ok` and throw on non-2xx, and DELETE the Math.random() reject. Until then
+// the form only *simulates* sending — submitted leads are NOT delivered anywhere.
 async function sendMail(_contact: string, _subject: string, _body: string) {
   await new Promise<void>((resolve, reject) =>
-    setTimeout(() => (Math.random() > 0.05 ? resolve() : reject(new Error('network'))), 1100),
+    setTimeout(() => (Math.random() > 0.05 ? resolve() : reject(new Error('demo-stub'))), 1100),
   );
 }
 
@@ -107,13 +111,18 @@ export function ComposeProvider({ children }: { children: React.ReactNode }) {
   const submitLetter = useCallback(
     async (contact: string) => {
       setSendStatus('sending');
-      const { subject, body } = buildLetter(state);
       try {
+        // inside try so a bad draft/state can't throw past the catch and leave
+        // the button stuck on "Отправляем…"
+        const { subject, body } = buildLetter(state);
         await sendMail(contact, subject, body);
         setSendStatus('success');
         setSent(true);
         clearDraft();
-      } catch {
+      } catch (err) {
+        // Surface the cause — the user sees a generic retry, but the engineer
+        // needs the reason (network, non-2xx, serialisation) to debug prod.
+        console.error('[compose] submit failed', err);
         setSendStatus('error');
       }
     },

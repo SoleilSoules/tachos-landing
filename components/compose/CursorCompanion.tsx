@@ -48,7 +48,7 @@ export function CursorCompanion() {
       my = innerHeight * 0.42,
       lastMove = performance.now();
     let pos = { x: mx, y: my - 40 };
-    let mode: 'appear' | 'companion' | 'flying' | 'form' | 'announce' = 'appear';
+    let mode: 'appear' | 'companion' | 'flying' | 'form' | 'announce' | 'footer-perch' = 'appear';
 
     // simple appear: a short delay, then scale up in place near the cursor — no
     // logo origin, no falling. Then behave normally.
@@ -71,7 +71,6 @@ export function CursorCompanion() {
     let alive = true;
     let scrolled = false;
     let scrollHintShown = false;
-    let carried = false;
     // announce mode: hold at a point and speak for a while, then return to cursor.
     let announcePt: { x: number; y: number } | null = null;
     let announceUntil = 0;
@@ -185,24 +184,6 @@ export function CursorCompanion() {
       announce(innerWidth / 2, innerHeight * 0.46, 'Листайте вниз 👇', 'там кейсы и живая форма', 4500);
     };
 
-    // Footer brief field scrolls into view pre-filled → fly down onto it "carrying"
-    // the hero text, then back to the cursor. Once.
-    const carryToBrief = (el: Element) => {
-      if (carried || openRef.current) return;
-      const v = (el as HTMLTextAreaElement).value;
-      if (!v || !v.trim()) return;
-      carried = true;
-      const r = el.getBoundingClientRect();
-      const target = { x: r.left + Math.min(64, r.width / 2), y: r.top + 26 };
-      pos = { x: target.x, y: Math.max(80, target.y - 240) };
-      say('Перенёс, что вы написали ✍️', 'допишите, если нужно', 3600);
-      flyTo(target.x, target.y, 760, () => {
-        setTimeout(() => {
-          if (!openRef.current) backToCursor();
-        }, 900);
-      });
-    };
-
     const onMove = (e: MouseEvent) => {
       mx = e.clientX;
       my = e.clientY;
@@ -258,17 +239,30 @@ export function CursorCompanion() {
     };
     addEventListener('scroll', onScroll, { passive: true });
 
-    let briefObserver: IntersectionObserver | null = null;
-    const briefTarget = document.querySelector('[data-brief-target]');
-    if (briefTarget && 'IntersectionObserver' in window) {
-      briefObserver = new IntersectionObserver(
-        (entries) => {
-          for (const entry of entries) if (entry.isIntersecting) carryToBrief(entry.target);
+    // Footer perch: the footer reserves a slot [data-mascot-perch]. When it scrolls
+    // into view the mascot flies there, grows big and SITS — stops chasing the
+    // cursor (just watches with its eyes + speaks). Leaves when the footer scrolls
+    // away or the modal opens.
+    let footerVisible = false;
+    let perchedSaid = false;
+    const perchEl = document.querySelector('[data-mascot-perch]');
+    let perchObserver: IntersectionObserver | null = null;
+    if (perchEl && 'IntersectionObserver' in window) {
+      // hysteresis: enter the perch at ≥45% visible, leave only below 10% — stops
+      // the perch/companion flip-flopping when the cursor hovers the threshold.
+      perchObserver = new IntersectionObserver(
+        ([e]) => {
+          if (e.intersectionRatio >= 0.45) footerVisible = true;
+          else if (e.intersectionRatio < 0.1) footerVisible = false;
         },
-        { threshold: 0.6 },
+        { threshold: [0.1, 0.45] },
       );
-      briefObserver.observe(briefTarget);
+      perchObserver.observe(perchEl);
     }
+    const perchPt = () => {
+      const r = (perchEl as HTMLElement).getBoundingClientRect();
+      return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    };
 
     const blink = () => {
       root.current?.classList.add('blink');
@@ -282,7 +276,8 @@ export function CursorCompanion() {
     blinkLoop();
 
     const render = (scale: number) => {
-      root.current!.style.transform = `translate3d(${pos.x - 16.5}px,${pos.y - 16.5}px,0) scale(${scale})`;
+      if (!root.current) return;
+      root.current.style.transform = `translate3d(${pos.x - 16.5}px,${pos.y - 16.5}px,0) scale(${scale})`;
       rot.current?.setAttribute('transform', `rotate(${(faceAng * 180) / Math.PI} 13 13)`);
       const k = Math.atan2(my - pos.y, mx - pos.x) - faceAng;
       const ex = Math.cos(k) * 1.3,
@@ -312,6 +307,20 @@ export function CursorCompanion() {
       } else if (!openRef.current && prevOpen) {
         prevOpen = false;
         backToCursor();
+      }
+
+      // footer perch: fly in when the footer slot is visible, leave when it's gone.
+      // Skip while an announce (cta/cases) is mid-flight so we don't cut it off.
+      if (perchEl && !openRef.current) {
+        if (footerVisible && mode !== 'footer-perch' && mode !== 'flying' && mode !== 'announce') {
+          const p = perchPt();
+          flyTo(p.x, p.y, 700, () => {
+            mode = 'footer-perch';
+            perchedSaid = false;
+          });
+        } else if (!footerVisible && mode === 'footer-perch') {
+          backToCursor();
+        }
       }
 
       const now = performance.now();
@@ -363,6 +372,18 @@ export function CursorCompanion() {
         pos.y = lerp(pos.y, p.y, 0.18);
         faceAng = lerp(faceAng, Math.PI / 2, 0.12);
         render(1);
+      } else if (mode === 'footer-perch') {
+        // sit on the footer slot (recompute each frame — scroll moves it), grow
+        // big and watch the cursor with the eyes; no chasing.
+        const p = perchPt();
+        pos.x = lerp(pos.x, p.x, 0.16);
+        pos.y = lerp(pos.y, p.y, 0.16);
+        faceAng = lerp(faceAng, Math.atan2(my - pos.y, mx - pos.x), 0.12);
+        render(2.8);
+        if (!perchedSaid) {
+          perchedSaid = true;
+          say('Заполните письмо', 'и нажмите «Отправить» — я рядом');
+        }
       } else {
         // companion — lazy orbit around the cursor, with a springy "you can't catch
         // me" repulsion: as the cursor closes in, the *target* slides away (fading
@@ -414,7 +435,7 @@ export function CursorCompanion() {
       removeEventListener('mousemove', onMove);
       removeEventListener('mouseover', onOver);
       removeEventListener('scroll', onScroll);
-      briefObserver?.disconnect();
+      perchObserver?.disconnect();
     };
   }, [open]);
 

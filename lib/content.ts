@@ -308,41 +308,17 @@ export const posts: Post[] = deepNbsp<Post[]>([
   },
 ]);
 
-// ─── Footer (request form + contacts + socials) ────────────────────
-export type Social = {
-  id: string;
-  brand: string;
-  label: string;
-  kind: 'tg' | 'vk' | 'yt' | 'link';
-};
-
+// ─── Footer (contacts) ─────────────────────────────────────────────
+// The request form is now the inline letter composer (<LetterBody>), so the old
+// form/socials copy was removed — only the heading, manager and contacts remain.
 export const footer = deepNbsp({
   formTitle: ['Сделаем вашу задачу', 'со стратегическим', 'обоснованием'],
-  fields: {
-    name: 'Имя',
-    company: 'Компания',
-    contact: 'Контакт для связи',
-    brief: 'Кратко о задаче',
-  },
-  attach: 'Прикрепить файл',
-  budgets: ['1–2 млн', '3–4 млн', '5–10 млн', '10+ млн'],
-  submit: 'Оставить заявку',
-  consent:
-    'Отправляя сообщение, вы соглашаетесь с политикой обработки персональных данных',
   manager: { name: 'Анна Кузнецова', role: 'Ваш менеджер проекта' },
   contacts: {
     email: { label: 'E-mail', value: 'hello@tachos.ru' },
     phone: { label: 'Позвонить', value: '+7 930 688-38-38' },
     city: 'Волгоград ГОРОД ГЕРОЙ',
   },
-  socialsTitle: 'Следите за нами в соц. сетях',
-  socials: [
-    { id: 'tg-studio', brand: 'TACHOS', label: 'Канал студии', kind: 'tg' },
-    { id: 'tg-vadim', brand: 'ВАДИМ', label: 'Личный канал CEO', kind: 'tg' },
-    { id: 'vk', brand: 'TACHOS', label: 'Сообщество в VK', kind: 'vk' },
-    { id: 'yt', brand: 'TACHOS', label: 'Мы в Ютубе', kind: 'yt' },
-    { id: 'portfolio', brand: 'TACHOS', label: 'Портфолио', kind: 'link' },
-  ] as Social[],
 } as const);
 
 // ─── CTA banner (between Reviews and Services) ─────────────────────

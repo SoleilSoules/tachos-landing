@@ -7,24 +7,21 @@ import { HeroPrompt } from './HeroPrompt';
 // image. Instead the entry uses a pure CSS fade-up (staggered via animation-delay)
 // that runs on the very first paint, independent of JS. reduced-motion → instant.
 export function Hero() {
-  // last word of line 2 ("брендами") gets a handwritten accent
-  const words = hero.title[1].split(' ');
-  const accent = words.pop();
-  const head = words.join(' ');
-
   return (
     <div className="relative z-10 flex flex-col items-center px-6 pt-[210px] text-center">
       <h1 className="max-w-[966px] select-none text-[82px] font-medium leading-[0.9] tracking-[-0.02em] text-inverted [animation:fade-up_0.55s_ease-out_both] motion-reduce:[animation:none]">
         {hero.title[0]}
         <br />
-        {head}{' '}
-        <span className="font-script text-[92px] font-medium leading-none">{accent}</span>
+        {hero.title[1]}
       </h1>
 
-      <p className="mt-[28px] max-w-[760px] select-none text-[19px] leading-[1.4] text-inverted [text-shadow:0_1px_16px_rgba(0,0,0,0.55)] [animation:fade-up_0.55s_ease-out_0.08s_both] motion-reduce:[animation:none]">
-        <span className="font-script text-[26px] font-medium leading-none text-accent-warm">{hero.subhead.lead}</span>{' '}
-        {hero.subhead.rest}
-      </p>
+      <div className="mt-[24px] [animation:fade-up_0.55s_ease-out_0.08s_both] motion-reduce:[animation:none]">
+        {/* accent line on top, plain copy on the second line — both centred */}
+        <p className="font-script text-[28px] font-medium leading-none text-accent-warm">{hero.subhead.lead}</p>
+        <p className="mx-auto mt-[14px] max-w-[760px] select-none text-[19px] leading-[1.4] text-inverted [text-shadow:0_1px_16px_rgba(0,0,0,0.55)]">
+          {hero.subhead.rest}
+        </p>
+      </div>
 
       <div className="[animation:fade-up_0.55s_ease-out_0.16s_both] motion-reduce:[animation:none]">
         <HeroPrompt />

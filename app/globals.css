@@ -116,6 +116,12 @@ a {
   opacity: 1;
   transform: translateY(0);
 }
+/* the announce bubble can be a CTA (opens the letter) — override the base
+   pointer-events:none so the "нажмите" copy is actually clickable */
+.bubble.actionable {
+  pointer-events: auto;
+  cursor: pointer;
+}
 /* the mascot "talking": a blinking caret rides the line currently being typed */
 .bubble .talk-caret::after {
   content: '';
@@ -156,6 +162,20 @@ a {
   50% {
     opacity: 0;
   }
+}
+
+/* letter composer (modal + inline footer): slot popup, typing caret, mail hint */
+@keyframes compose-hint-in {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes compose-pop-in {
+  from { opacity: 0; transform: translateY(-6px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes compose-caret {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 /* hero device — slow vertical float (keeps the horizontal centring) */

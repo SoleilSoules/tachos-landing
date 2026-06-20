@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import { Onest, Marck_Script } from 'next/font/google';
+import { Onest } from 'next/font/google';
+import localFont from 'next/font/local';
 import './globals.css';
 
 // Onest is a variable font — covers the full weight range we use (400–700)
@@ -10,11 +11,10 @@ const onest = Onest({
   display: 'swap',
 });
 
-// Marck Script — a more characterful pen-script for the hero accents (heading word
-// + subhead lead). Single weight 400; cyrillic subset required (accents are Russian).
-const script = Marck_Script({
-  weight: '400',
-  subsets: ['latin', 'cyrillic'],
+// Handwritten accent for the hero — a local, non-Google face (installed by Gosha,
+// cyrillic included). Swap `src` to try a different one.
+const script = localFont({
+  src: './fonts/Kurochkalapkoi.ttf',
   variable: '--font-script',
   display: 'swap',
 });
