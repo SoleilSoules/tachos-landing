@@ -49,6 +49,9 @@ export function CursorCompanion() {
 
     const appearStart = performance.now() + 160;
     let scaleCur = 0;
+    let orbit = -0.6;
+    let lastMove = performance.now();
+    let lastTrick = performance.now();
 
     let fly: {
       p0: { x: number; y: number };
@@ -132,6 +135,7 @@ export function CursorCompanion() {
     const onMove = (e: MouseEvent) => {
       mx = e.clientX;
       my = e.clientY;
+      lastMove = performance.now();
     };
     addEventListener('mousemove', onMove, { passive: true });
 
@@ -207,6 +211,23 @@ export function CursorCompanion() {
       if (eyeR.current) eyeR.current.style.transform = `translate(${ex}px,${ey}px)`;
     };
 
+    // Idle tricks: when idle near the cursor, the mascot plays — a flip, a squish,
+    // a wobble, and (rarely) shatters into 6 shards and regroups.
+    const TRICKS = ['spin', 'squish', 'wobble'];
+    const maybeTrick = (now: number) => {
+      if (mode !== 'companion' || openRef.current) return;
+      if (now - lastMove < 3500 || now - lastTrick < 8000) return;
+      lastTrick = now;
+      if (Math.random() < 0.18) {
+        root.current?.classList.add('shatter');
+        setTimeout(() => root.current?.classList.remove('shatter'), 1100);
+      } else {
+        const t = TRICKS[Math.floor(Math.random() * TRICKS.length)];
+        root.current?.classList.add(t);
+        setTimeout(() => root.current?.classList.remove(t), 950);
+      }
+    };
+
     let raf = 0;
     const loop = () => {
       // modal open → don't interfere (no speaking), just keep following
@@ -269,12 +290,27 @@ export function CursorCompanion() {
           say('Заполните письмо', 'и нажмите «Отправить» — я рядом');
         }
       } else {
-        // companion — calm follow just off the cursor, eyes tracking it. No orbit,
-        // no repulsion, no tricks: smooth and predictable.
-        pos.x = lerp(pos.x, mx + OFF_X, 0.14);
-        pos.y = lerp(pos.y, my + OFF_Y, 0.14);
-        faceAng = lerp(faceAng, Math.atan2(my - pos.y, mx - pos.x), 0.15);
+        // companion — lazy orbit around the cursor + a springy "you can't catch me"
+        // push-away when the cursor closes in, plus the occasional idle trick.
+        orbit += 0.004 + Math.sin(now * 0.0004) * 0.002;
+        let tx = mx + Math.cos(orbit) * 112,
+          ty = my + Math.sin(orbit) * 80;
+        tx = Math.max(32, Math.min(innerWidth - 44, tx));
+        ty = Math.max(72, Math.min(innerHeight - 50, ty));
+        pos.x = lerp(pos.x, tx, 0.05);
+        pos.y = lerp(pos.y, ty, 0.05);
+        // repel: as the cursor nears, slide the target away (floored divisor + a
+        // distance-faded strength so he doesn't jitter or stick on the boundary)
+        const dd = Math.hypot(pos.x - mx, pos.y - my);
+        if (dd < 72) {
+          const safe = Math.max(dd, 16);
+          const k = 0.32 * ((72 - dd) / 72);
+          pos.x = lerp(pos.x, mx + ((pos.x - mx) / safe) * 130, k);
+          pos.y = lerp(pos.y, my + ((pos.y - my) / safe) * 130, k);
+        }
+        faceAng = lerp(faceAng, Math.atan2(my - pos.y, mx - pos.x), 0.12);
         render(1);
+        maybeTrick(now);
       }
 
       if (bubble.current?.classList.contains('show')) {
@@ -323,6 +359,12 @@ export function CursorCompanion() {
             </g>
           </g>
         </svg>
+        {/* 6 shards for the rare "shatter & regroup" trick (hidden until .shatter) */}
+        <span className="shards" aria-hidden>
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <i key={i} style={{ '--a': `${i * 60}deg` } as React.CSSProperties} />
+          ))}
+        </span>
       </div>
       <div
         ref={bubble}

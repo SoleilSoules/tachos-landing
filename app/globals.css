@@ -65,8 +65,34 @@ a {
 .companion.squish svg {
   animation: companion-squish 0.6s ease-in-out;
 }
-.companion.shatter svg {
-  animation: companion-shatter 0.9s ease-in-out;
+.companion.wobble svg {
+  animation: companion-wobble 0.8s ease-in-out;
+}
+/* "shatter": hide the whole mascot and burst 6 shards out, then regroup. */
+.companion.shatter > svg {
+  opacity: 0;
+}
+.shards {
+  position: absolute;
+  inset: 0;
+  display: none;
+}
+.companion.shatter .shards {
+  display: block;
+}
+.shards i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 11px;
+  height: 11px;
+  margin: -5.5px 0 0 -5.5px;
+  background: #f84800;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  opacity: 0;
+}
+.companion.shatter .shards i {
+  animation: shard-burst 1.05s cubic-bezier(0.4, 0, 0.2, 1);
 }
 @keyframes companion-spin {
   to {
@@ -82,21 +108,19 @@ a {
     transform: scale(0.78, 1.28) rotate(-6deg);
   }
 }
-/* "shatter": a quick scatter-and-regroup pulse standing in for splitting into
-   pieces and coming back together (full 9-shard morph is a later pass). */
-@keyframes companion-shatter {
-  20% {
-    transform: scale(1.4) rotate(-18deg);
-    opacity: 0.7;
-  }
-  45% {
-    transform: scale(0.5) rotate(24deg);
-    opacity: 0.85;
-  }
-  100% {
-    transform: scale(1) rotate(0);
-    opacity: 1;
-  }
+/* 6 shards fly out along their own angle (--a), tumble, then regroup to centre. */
+@keyframes shard-burst {
+  0% { opacity: 0; transform: rotate(var(--a)) translateY(0) rotate(0) scale(0.5); }
+  18% { opacity: 1; }
+  45% { opacity: 1; transform: rotate(var(--a)) translateY(-26px) rotate(140deg) scale(1); }
+  80% { opacity: 1; transform: rotate(var(--a)) translateY(-26px) rotate(230deg) scale(0.9); }
+  100% { opacity: 0; transform: rotate(var(--a)) translateY(0) rotate(360deg) scale(0.4); }
+}
+@keyframes companion-wobble {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-16deg); }
+  60% { transform: rotate(12deg); }
+  85% { transform: rotate(-5deg); }
 }
 .companion.blink .lid {
   animation: blink-once 0.2s ease;
