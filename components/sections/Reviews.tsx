@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties }
 import Image from 'next/image';
 import { asset } from '@/lib/asset';
 import { useReveal } from '@/hooks/useReveal';
+import { WordsReveal } from '@/components/WordsReveal';
 import { reviews, type Review } from '@/lib/content';
 
 // ─── Shared design tokens for the section ──────────────────────────────
@@ -437,7 +438,7 @@ function Starfield() {
   // column stays clean; ~70 keeps the "космос" feel without lonely dots (#7).
   const stars = useMemo(() => makeStars(70), []);
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-0">
+    <div aria-hidden className="rev-field pointer-events-none absolute inset-0">
       {stars.map((s, i) => (
         <span
           key={i}
@@ -474,9 +475,16 @@ export function Reviews() {
           0%, 100% { opacity: calc(var(--rev-o) * 0.5); }
           50%      { opacity: var(--rev-o); }
         }
-        .rev-star { animation: rev-twinkle linear infinite; will-change: opacity; }
+        .rev-star { animation: rev-twinkle linear infinite; }
+        /* slow parallax drift of the whole field so the "космос" feels alive */
+        @keyframes rev-drift {
+          0%, 100% { transform: translate3d(0, 0, 0); }
+          50%      { transform: translate3d(-2.4%, -2.8%, 0); }
+        }
+        .rev-field { animation: rev-drift 56s ease-in-out infinite; }
         @media (prefers-reduced-motion: reduce) {
           .rev-star { animation: none !important; opacity: var(--rev-o); }
+          .rev-field { animation: none !important; }
         }
       `}</style>
 
@@ -486,10 +494,12 @@ export function Reviews() {
       <div className="pointer-events-none absolute -right-[140px] bottom-[14%] h-[420px] w-[420px] rounded-full bg-accent/[0.10] blur-[150px]" aria-hidden />
 
       <div className="relative mx-auto max-w-[861px] px-6 text-center">
-        <h2 className="text-[clamp(32px,9vw,52px)] font-semibold leading-[0.95] tracking-[-0.02em] lg:leading-[0.9]">{reviews.title}</h2>
-        <p className="mx-auto mt-[28px] max-w-[320px] text-[19px] leading-[1.4] text-white/75">
+        <WordsReveal as="h2" stagger={48} className="text-[clamp(32px,9vw,52px)] font-semibold leading-[0.95] tracking-[-0.02em] lg:leading-[0.9]">
+          {reviews.title}
+        </WordsReveal>
+        <WordsReveal as="p" stagger={20} start={240} className="mx-auto mt-[28px] block max-w-[320px] text-[19px] leading-[1.4] text-white/75">
           {reviews.subtitle}
-        </p>
+        </WordsReveal>
       </div>
 
       <div ref={ref} className="relative mx-auto mt-[56px] flex max-w-[900px] flex-col gap-[28px] px-6">

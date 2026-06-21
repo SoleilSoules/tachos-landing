@@ -192,11 +192,24 @@ a {
 @keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(30px) scale(0.97);
+    transform: translateY(34px) scale(0.99);
   }
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+/* heading line-rise: text slides up out of an overflow-hidden mask (premium,
+   filter.im-style). Put .reveal-rise-mask on the wrapper, .reveal-hidden +
+   .reveal-rise on the inner element. */
+@keyframes rise-up {
+  from {
+    opacity: 0;
+    transform: translateY(105%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 @keyframes fade-in {
@@ -243,6 +256,19 @@ a {
   }
 }
 
+/* case covers — gentle ambient drift of the device mockup so the cards feel
+   alive. Each card gets a negative animation-delay (by id) so they don't bob in
+   sync. Applied via motion-safe → reduced-motion keeps them perfectly still. */
+@keyframes cover-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-0.5deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(0.5deg);
+  }
+}
+
 /* logo wall — seamless leftward marquee (row is duplicated, so -50% loops) */
 @keyframes logo-marquee {
   from {
@@ -255,15 +281,49 @@ a {
 
 .reveal-hidden {
   opacity: 0;
-  transform: translateY(30px) scale(0.97);
+  transform: translateY(34px) scale(0.99);
 }
 .reveal-visible {
-  animation: fade-up var(--reveal-dur, 0.55s)
+  animation: fade-up var(--reveal-dur, 0.7s)
     var(--reveal-ease, cubic-bezier(0.16, 1, 0.3, 1)) both;
   animation-delay: var(--reveal-delay, 0ms);
 }
 .reveal-visible.reveal-fade {
   animation-name: fade-in;
+}
+/* line-rise variant — for headings wrapped in .reveal-rise-mask (overflow clip) */
+.reveal-rise-mask {
+  overflow: hidden;
+  padding-bottom: 0.08em; /* room for descenders so they aren't clipped */
+}
+.reveal-rise {
+  transform: translateY(105%);
+  filter: none;
+}
+.reveal-visible.reveal-rise {
+  animation-name: rise-up;
+}
+
+/* word-by-word text reveal (filter.im signature) — each word rises + fades in
+   with a small per-word stagger via --wd. Driven by the WordsReveal component. */
+.word-rise {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.5em);
+}
+.word-rise.is-in {
+  animation: word-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--wd, 0ms);
+}
+@keyframes word-up {
+  from {
+    opacity: 0;
+    transform: translateY(0.5em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -272,6 +332,16 @@ a {
     transform: none;
   }
   .reveal-visible {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+  }
+  /* word-by-word reveal must also be neutralised: show words, no motion, and
+     never leave them at opacity:0 if JS hasn't toggled .is-in yet */
+  .word-rise {
+    opacity: 1;
+    transform: none;
+  }
+  .word-rise.is-in {
     animation-duration: 0.01ms !important;
     animation-delay: 0ms !important;
   }

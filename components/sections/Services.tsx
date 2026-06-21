@@ -1,6 +1,7 @@
 'use client';
 
 import { useReveal } from '@/hooks/useReveal';
+import { WordsReveal } from '@/components/WordsReveal';
 import { servicesIntro } from '@/lib/content';
 
 // ─── Time & material roles (issue #41) ──────────────────────────────
@@ -25,14 +26,23 @@ export function Services() {
     <section id="services" className="bg-white pt-[64px] pb-[72px] lg:pt-[96px] lg:pb-[104px]">
       <div ref={ref} className="mx-auto max-w-page px-5 sm:px-8 lg:px-[80px]">
         {/* Keep: "под ключ" framing, but WITHOUT concrete prices (issue #41) */}
-        <h2 className="reveal-hidden max-w-[680px] text-[clamp(28px,7.5vw,44px)] font-semibold leading-[1.1] tracking-[-0.02em] text-fg lg:leading-[1.08]">
+        <WordsReveal
+          as="h2"
+          stagger={48}
+          className="max-w-[680px] text-[clamp(28px,7.5vw,44px)] font-semibold leading-[1.1] tracking-[-0.02em] text-fg lg:leading-[1.08]"
+        >
           {servicesIntro.titleLead}{' '}
           <span className="text-black/35">{servicesIntro.titleAccent}</span>
-        </h2>
-        <p className="reveal-hidden mt-[20px] max-w-[520px] text-[19px] leading-[1.4] text-black/50">
+        </WordsReveal>
+        <WordsReveal
+          as="p"
+          stagger={20}
+          start={260}
+          className="mt-[20px] block max-w-[520px] text-[19px] leading-[1.4] text-black/50"
+        >
           Не знаете, как назвать задачу, — поможем сформулировать и подберём
           состав работ. Ниже — направления, в которых мы сильны.
-        </p>
+        </WordsReveal>
 
         {/* Role cards (issue #41): one section heading only (the "под ключ" offer);
             no T&M label. Compact, less-rounded cards, no grades. */}

@@ -14,9 +14,9 @@ type UseRevealOptions = {
 // animates in (staggered) when the container first enters the viewport. Respects
 // prefers-reduced-motion (no delay; CSS shortens the animation).
 export function useReveal<T extends HTMLElement = HTMLElement>({
-  stagger = 80,
+  stagger = 95,
   threshold = 0.12,
-  duration = 550,
+  duration = 700,
   variant,
   rootMargin = '-80px 0px',
 }: UseRevealOptions = {}) {
@@ -53,8 +53,15 @@ export function useReveal<T extends HTMLElement = HTMLElement>({
     );
     observer.observe(container);
 
-    // Failsafe: never leave content hidden if the observer doesn't fire.
-    const fallback = setTimeout(reveal, 1200);
+    // Failsafe: only reveal-by-timer if the container is ACTUALLY in view. A blind
+    // timer used to fire for every section ~1.2s after mount — so below-the-fold
+    // sections played their reveal before you ever scrolled there, and by the time
+    // you arrived they were already shown ("no animations"). Now the timer only
+    // rescues sections already on screen; the rest wait for the observer on scroll.
+    const fallback = setTimeout(() => {
+      const r = container.getBoundingClientRect();
+      if (r.top < window.innerHeight * 0.9 && r.bottom > 0) reveal();
+    }, 1400);
 
     return () => {
       clearTimeout(fallback);

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { asset } from '@/lib/asset';
 import { useReveal } from '@/hooks/useReveal';
+import { WordsReveal } from '@/components/WordsReveal';
 import { products, productsIntro } from '@/lib/content';
 
 // How long each product stays active before the carousel advances.
@@ -141,9 +142,12 @@ export function Products() {
   return (
     <section id="products" className="overflow-hidden bg-bg pt-[64px] pb-[80px] text-inverted lg:pt-[130px] lg:pb-[150px]">
       <h2 className="mx-auto max-w-[1000px] px-6 text-center text-[clamp(30px,8vw,52px)] font-semibold leading-[1.05] tracking-[-0.01em] lg:leading-[1.0]">
-        {productsIntro.titleLead}
-        <br />
-        <span className="text-white/30">{productsIntro.titleMuted}</span>
+        <WordsReveal as="span" stagger={48} className="block">
+          {productsIntro.titleLead}
+        </WordsReveal>
+        <WordsReveal as="span" stagger={48} start={260} className="block text-white/30">
+          {productsIntro.titleMuted}
+        </WordsReveal>
       </h2>
 
       <div ref={ref} className="mx-auto mt-[56px] max-w-[1080px] px-5 sm:px-6 lg:mt-[120px]">
@@ -174,7 +178,7 @@ export function Products() {
                 key={p.id}
                 aria-hidden={!isActive}
                 style={restStyle}
-                className="absolute inset-0 origin-top transform-gpu transition-[transform,opacity] duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform motion-reduce:!transition-none"
+                className="absolute inset-0 origin-top transform-gpu transition-[transform,opacity] duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:!transition-none"
               >
                 {/* Clipped panel: rounded body with text/CTA. overflow-hidden keeps
                     the glow + rounding tidy; the tablet lives OUTSIDE it (sibling)

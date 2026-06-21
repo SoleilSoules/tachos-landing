@@ -1,6 +1,18 @@
 # Tachos — HANDOFF (для нового чата)
 
-Боевая вёрстка лендинга **tachos.ru**. Обновлено: **2026-06-21** (длинная сессия полировки, Гоша смотрит localhost вживую). Прод: https://soleilsoules.github.io/tachos-landing/ — **всё задеплоено, последний деплой `b278a68`** (3 деплоя за день).
+Боевая вёрстка лендинга **tachos.ru**. Обновлено: **2026-06-21** (длинная сессия полировки, Гоша смотрит localhost вживую). Прод: https://soleilsoules.github.io/tachos-landing/.
+
+## HERO-ВИДЕО через Remotion + Three.js (активная работа 21.06, НЕ задеплоено)
+Гоша захотел hero-видео в стиле **filter.im** (студия-аналог; их hero — лента устройств с реальными проектами за статичным текстом). Делаем СВОЁ видео кодом.
+- **Проект:** `~/tachos-hero-remotion` (ОТДЕЛЬНЫЙ от Next-репо, не трогает его). Стек: **Remotion 4.0.481 + @remotion/three + three 0.184 + R3F v9 + drei v10**. `src/HeroScene3D.tsx` (параметризованная сцена), `src/HeroBelt.tsx` (TransitionSeries из 3 сцен), `src/Root.tsx` (композиции `HeroBelt` + `Hero3D` дебаг).
+- **Лента:** 3 проекта на тёмных платформах, реальные скрины: **Складно (iPhone, ракурс a), Хайс (browser-desktop, b), Maginary (iPhone-AppStore, c)**, кросс-фейды. Стиль filter.im: тёмный контраст, устройство на геом-платформах, экран = яркий акцент, медленный дрейф камеры, разные ракурсы.
+- **Рендер:** `npx remotion render src/index.ts HeroBelt out/herobelt.mp4 --codec=h264 --crf=18 --gl=angle`. **`--gl=angle` ОБЯЗАТЕЛЬНО** (Three на macOS, иначе софт-рендер/тормоза). Three-рендер медленный (~5-7 мин на 398 кадров, 16GB). **Метод: проверять `npx remotion still ... --frame=N --gl=angle` ПЕРЕД видео-рендером** (Three дорогой).
+- **ГРАБЛИ (решены):** (1) texture грузить через **module-cache `Map` + `new Image()` на DOM-уровне HeroScene3D + delayRender** — НЕ drei `useTexture`/per-frame (мерцает, устройство пропадает на кадрах). (2) скрин-плоскость = **rounded ShapeGeometry с UV-remap** + `polygonOffset` (иначе углы торчат + z-fighting «лопается» при повороте). (3) **НЕ MeshReflectorMaterial floor** — даёт линию горизонта, Гоша забраковал → однотонный фон #050506 + CSS оранж-glow + vignette. (4) тонкий bezel (экран почти во всю грань) + тонкий корпус (depth) — иначе «экран далеко». (5) камера фронтальнее → ровные уголки.
+- **Вставка в сайт:** mp4 → `tachos-ru/public/figma/hero-belt-vN.mp4`, в `page.tsx` `<video autoPlay muted loop playsInline poster=hero-bg.png>` фон (object-cover, object-[center_42%], wash-градиент). **Версионное имя (vN) от кэша Safari.** Скрины проектов: `~/Desktop/tachos-hero-shots/{desktop,mobile}/` (mobile 780×1688). ⚠️ Видео filter.im (`/tmp/filter-vids/`) — чужое, НЕ коммитить (было для примерки).
+- **Записи filter.im от Гоши** (анализ стиля): `/tmp/tachos-ref/their2.mov` (90с). Их движения: ОЧЕНЬ медленный дрейф, тёмные платформы, контраст, fade-переходы.
+- **Открыто:** Maginary-скрин тёмный (App Store) — норм в тёмной сцене, но можно заменить на чистый экран приложения. Композиция в hero: устройство по центру за текстом (центр-лейаут держим). **Следом по плану — анимации текста/карточек как у filter.im (#6).**
+
+## Сессия 21.06 (ч.3) — визуальные правки #2, premium-обложки, hero-iPhone (ЗАДЕПЛОЕНО `b278a68`)
 
 ## Сессия 21.06 (ч.3) — визуальные правки #2, premium-обложки, hero-iPhone (ВСЁ ЗАДЕПЛОЕНО)
 3 деплоя за день: base round (`2a0d07f`), visual polish (`d152bc3`), premium covers + iPhone hero (`b278a68`). Режим: Гоша шлёт скрин-правки, правлю по одной/группами, сам проверяю build+скрин, деплой по «деплой».

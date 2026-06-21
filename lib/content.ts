@@ -91,6 +91,7 @@ export type CaseItem = {
   avatar: string;
   shot?: string; // real product screenshot, shown in a device mockup on the cover
   shotKind?: 'phone' | 'desktop'; // which premium mockup frame to use for `shot`
+  coverVideo?: string; // Remotion-rendered animated cover (overrides the static mockup)
   story: CaseStory; // case-page content (placeholder prose until Vadim confirms)
   verified?: boolean; // confirmed Tachos work (Складно / Хайс / Maginary)
 };
@@ -181,6 +182,7 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     avatar,
     shot: '/figma/shots/skladno.png',
     shotKind: 'phone',
+    coverVideo: '/figma/covers/skladno-v2.mp4',
     story: {
       summary: 'Сеть хранения без персонала: бронь, оплата и доступ к ячейке по Bluetooth — всё в приложении.',
       metrics: [

@@ -47,12 +47,13 @@ function PhoneMock({ shot, client, big }: { shot: string; client: string; big: b
 }
 
 export function CaseCover({
-  id: _id,
+  id,
   client,
   shot,
   shotKind = 'desktop',
   variant = 'card',
   className = '',
+  coverVideo,
 }: {
   id: string;
   client: string;
@@ -60,21 +61,55 @@ export function CaseCover({
   shotKind?: 'phone' | 'desktop';
   variant?: 'card' | 'hero';
   className?: string;
+  coverVideo?: string;
 }) {
   const initial = client.trim().charAt(0).toUpperCase();
   const initialSize = variant === 'hero' ? 'clamp(180px,34vw,360px)' : '230px';
   const big = variant === 'hero';
+
+  // Per-card phase so covers don't bob in sync — deterministic from id (SSR-safe).
+  const phase = id.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % 70;
+  const coverDelay = `-${(phase / 10).toFixed(1)}s`;
+
+  // Remotion-rendered animated cover (3D device + gentle float) — overrides the
+  // static CSS mockup when present. poster = the still shot for instant paint.
+  if (coverVideo) {
+    return (
+      // keep the brand field behind the video so a failed/slow load degrades to
+      // the grey gradient instead of a black box; video is decorative → aria-hidden
+      <div className={`relative h-full w-full overflow-hidden bg-gradient-to-br ${FIELD} ${className}`}>
+        <video
+          aria-hidden
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster={shot ? asset(shot) : undefined}
+          className="absolute inset-0 h-full w-full object-cover"
+        >
+          <source src={asset(coverVideo)} type="video/mp4" />
+        </video>
+      </div>
+    );
+  }
 
   return (
     <div className={`relative flex h-full w-full items-end justify-center overflow-hidden bg-gradient-to-br ${FIELD} ${className}`}>
       {shot ? (
         // mockup pushed slightly below the bottom edge (clipped) for depth
         <div className="flex w-full translate-y-[12%] justify-center">
-          {shotKind === 'phone' ? (
-            <PhoneMock shot={shot} client={client} big={big} />
-          ) : (
-            <BrowserMock shot={shot} client={client} big={big} />
-          )}
+          {/* gentle ambient drift — kept on an inner wrapper so it doesn't fight
+              the 12% offset above or the hover-scale on the outer cover */}
+          <div
+            className="flex w-full justify-center [transform-origin:50%_40%] motion-safe:[animation:cover-float_7s_ease-in-out_infinite]"
+            style={{ animationDelay: coverDelay }}
+          >
+            {shotKind === 'phone' ? (
+              <PhoneMock shot={shot} client={client} big={big} />
+            ) : (
+              <BrowserMock shot={shot} client={client} big={big} />
+            )}
+          </div>
         </div>
       ) : (
         <span

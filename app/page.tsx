@@ -24,10 +24,12 @@ export default function Home() {
           <div className="absolute inset-0 bg-ink" />
           {/* warm brand glow behind the device, as in the concept */}
           <div className="absolute left-1/2 top-[110px] h-[760px] w-[1040px] -translate-x-1/2 rounded-full bg-accent/30 blur-[150px]" />
-          {/* Our own hero render (Remotion CSS-3D): a device showing a real studio
-              project, slow cinematic camera flythrough on a dark studio backdrop.
-              poster falls back to the previous warm mockup for reduced-motion. */}
+          {/* Our own hero render (Remotion + Three.js): a belt of real 3D devices,
+              each showing a real studio project (Складно iPhone → Хайс browser →
+              Maginary iPhone), cross-fading on a dark studio floor. poster falls
+              back to the previous warm mockup for reduced-motion. */}
           <video
+            aria-hidden
             autoPlay
             muted
             loop
@@ -35,7 +37,7 @@ export default function Home() {
             poster={asset('/figma/hero-bg.png')}
             className="absolute left-1/2 top-0 h-[1340px] w-full max-w-[1600px] -translate-x-1/2 object-cover object-[center_42%] opacity-95 motion-reduce:hidden"
           >
-            <source src={asset('/figma/hero-remotion.mp4')} type="video/mp4" />
+            <source src={asset('/figma/hero-belt-v4.mp4')} type="video/mp4" />
           </video>
           {/* vertical wash: keeps the device muted so the H1 and orange
               sub-head stay readable over its centre */}

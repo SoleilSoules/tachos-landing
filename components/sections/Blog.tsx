@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useReveal } from '@/hooks/useReveal';
+import { WordsReveal } from '@/components/WordsReveal';
 import { asset } from '@/lib/asset';
 import { posts, blogIntro, type Post } from '@/lib/content';
 
@@ -116,8 +117,12 @@ export function Blog() {
       `}</style>
 
       <div className="mx-auto max-w-[680px] px-6 text-center">
-        <h2 className="text-[clamp(32px,9vw,52px)] font-semibold leading-[1.05] tracking-[-0.02em] text-fg lg:leading-[1.0]">{blogIntro.title}</h2>
-        <p className="mx-auto mt-[20px] max-w-[640px] text-[19px] leading-[1.4] text-black/45">{blogIntro.body}</p>
+        <WordsReveal as="h2" stagger={48} className="text-[clamp(32px,9vw,52px)] font-semibold leading-[1.05] tracking-[-0.02em] text-fg lg:leading-[1.0]">
+          {blogIntro.title}
+        </WordsReveal>
+        <WordsReveal as="p" stagger={20} start={240} className="mx-auto mt-[20px] block max-w-[640px] text-[19px] leading-[1.4] text-black/45">
+          {blogIntro.body}
+        </WordsReveal>
       </div>
 
       <div ref={ref} className="mx-auto mt-[56px] flex max-w-[900px] flex-col gap-[40px] px-6">
