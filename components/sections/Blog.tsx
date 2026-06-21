@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useReveal } from '@/hooks/useReveal';
 import { asset } from '@/lib/asset';
 import { posts, blogIntro, type Post } from '@/lib/content';
@@ -86,8 +87,8 @@ function Card({
   children?: React.ReactNode;
 }) {
   return (
-    <article
-      tabIndex={0}
+    <Link
+      href={`/blog/${post.slug}`}
       data-hint="Статья студии"
       data-hint-sub={post.tag}
       className={`reveal-hidden group flex h-full cursor-pointer flex-col rounded-card transition duration-300 hover:-translate-y-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 ${
@@ -107,7 +108,7 @@ function Card({
         <Author post={post} />
         <ArrowSquare onPeach={peach} />
       </div>
-    </article>
+    </Link>
   );
 }
 

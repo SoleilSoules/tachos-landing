@@ -23,11 +23,37 @@ html,
 body {
   padding: 0;
   margin: 0;
-  overscroll-behavior: none;
-  /* hard guard against horizontal scroll on mobile — oversized decorative
-     backgrounds (hero device glow) bleed past the viewport by design */
-  overflow-x: hidden;
   max-width: 100%;
+}
+
+/* Hide the decorative horizontal bleed (oversized hero glow / device) WITHOUT
+   creating a scroll container — `clip` (unlike `hidden`) doesn't establish a
+   scroll context, so it can't compete with `body` for the page's vertical
+   scroll. Previously overflow-x:hidden sat on BOTH html and body, spawning two
+   rival scroll containers → the "broken scroll on the whole site" Vadim hit. */
+html {
+  overflow-x: clip;
+  /* native anchor-jump fallback (touch / reduced-motion, where Lenis is off and
+     its `anchors` offset doesn't apply) — keep section titles clear of fixed nav */
+  scroll-padding-top: 100px;
+}
+
+/* Lenis smooth scroll (desktop pointer only; touch/reduced-motion keep native
+   scroll — see components/SmoothScroll.tsx). The instance is exposed on
+   window.__lenis so the letter modal can stop()/start() the page scroll
+   natively (the .lenis-stopped class below is what actually locks it). */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
 }
 
 body {

@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
-import { Onest } from 'next/font/google';
-import localFont from 'next/font/local';
+import { Onest, PT_Mono } from 'next/font/google';
 import './globals.css';
+import { SmoothScroll } from '@/components/SmoothScroll';
+import { ComposeProvider } from '@/components/compose/ComposeProvider';
 
 // Onest is a variable font — covers the full weight range we use (400–700)
 // without separate weight files. Cyrillic subset is required (UI is Russian).
@@ -11,11 +12,12 @@ const onest = Onest({
   display: 'swap',
 });
 
-// Handwritten accent for the hero — a local, non-Google face (installed by Gosha,
-// cyrillic included). Swap `src` to try a different one.
-const script = localFont({
-  src: './fonts/Kurochkalapkoi.ttf',
-  variable: '--font-script',
+// PT Mono — technical monospace for case-page labels, captions and meta (mirrors
+// the portfolio case look). Cyrillic subset, single weight.
+const ptMono = PT_Mono({
+  subsets: ['latin', 'cyrillic'],
+  weight: '400',
+  variable: '--font-mono',
   display: 'swap',
 });
 
@@ -30,9 +32,16 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // ComposeProvider lives here (not in a page) so the letter modal, mascot and
+  // floating CTA work on every route (home, case, blog), and the draft survives
+  // client-side navigation between them.
   return (
-    <html lang="ru" className={`${onest.variable} ${script.variable}`}>
-      <body>{children}</body>
+    <html lang="ru" className={`${onest.variable} ${ptMono.variable}`}>
+      <body>
+        <SmoothScroll>
+          <ComposeProvider>{children}</ComposeProvider>
+        </SmoothScroll>
+      </body>
     </html>
   );
 }

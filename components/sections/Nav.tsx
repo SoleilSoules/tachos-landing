@@ -2,10 +2,56 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { asset } from '@/lib/asset';
 import { nav } from '@/lib/content';
 
+function LogoImg() {
+  return (
+    <Image
+      src={asset('/logos/tachos.svg')}
+      alt="tachos"
+      width={90}
+      height={22}
+      priority
+      className="block"
+      style={{ height: 22, width: 'auto' }}
+    />
+  );
+}
+
+// On the home page nav items are in-page hash anchors (Lenis smooth-scrolls them).
+// On sub-pages (case / blog) they must route back to the home section, so prefix
+// with "/" and use next/link (which also applies the prod basePath automatically).
+function NavLink({
+  href,
+  onHome,
+  className,
+  onClick,
+  children,
+}: {
+  href: string;
+  onHome: boolean;
+  className?: string;
+  onClick?: () => void;
+  children: React.ReactNode;
+}) {
+  return onHome ? (
+    <a href={href} className={className} onClick={onClick}>
+      {children}
+    </a>
+  ) : (
+    <Link href={`/${href}`} className={className} onClick={onClick}>
+      {children}
+    </Link>
+  );
+}
+
 export function Nav() {
+  const pathname = usePathname();
+  const onHome = pathname === '/';
+
   // Vadim: once you scroll, the bar should pin with a plate. Transparent over the
   // dark hero, then a dark blurred plate so the white nav text stays readable
   // over the light sections below.
@@ -20,13 +66,21 @@ export function Nav() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // While the burger menu is open, lock page scroll (stop Lenis if present, else
+  // body.overflow on touch) so the page behind the overlay doesn't scroll.
   useEffect(() => {
     if (!menuOpen) return;
+    window.__lenis?.stop();
+    document.body.style.overflow = 'hidden';
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setMenuOpen(false);
     };
     document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
+    return () => {
+      window.__lenis?.start();
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', onKey);
+    };
   }, [menuOpen]);
 
   return (
@@ -45,35 +99,29 @@ export function Nav() {
             : 'h-[64px] border border-transparent lg:h-[84px]'
         }`}
       >
-        {/* logo alone on the left; nav + CTA grouped to the right edge */}
-        <a
-          href="#"
-          data-logo-mark
-          className="flex items-center"
-          aria-label="tachos — на главную"
-        >
-          <Image
-            src={asset('/logos/tachos.svg')}
-            alt="tachos"
-            width={90}
-            height={22}
-            priority
-            className="block"
-            style={{ height: 22, width: 'auto' }}
-          />
-        </a>
+        {/* logo alone on the left; home scrolls to top, sub-pages route home */}
+        {onHome ? (
+          <a href="#" data-logo-mark className="flex items-center" aria-label="tachos — на главную">
+            <LogoImg />
+          </a>
+        ) : (
+          <Link href="/" data-logo-mark className="flex items-center" aria-label="tachos — на главную">
+            <LogoImg />
+          </Link>
+        )}
 
         {/* desktop: links + CTA inline */}
         <div className="hidden items-center gap-[40px] lg:flex">
           <nav className="nums flex items-center gap-[34px]">
             {nav.links.map((link) => (
-              <a
+              <NavLink
                 key={link.label}
                 href={link.href}
+                onHome={onHome}
                 className="text-[16px] font-medium tracking-[0.04em] text-inverted transition-colors hover:text-accent-bright"
               >
                 {link.label}
-              </a>
+              </NavLink>
             ))}
           </nav>
 
@@ -119,14 +167,15 @@ export function Nav() {
             </svg>
           </button>
           {nav.links.map((link) => (
-            <a
+            <NavLink
               key={link.label}
               href={link.href}
+              onHome={onHome}
               onClick={() => setMenuOpen(false)}
               className="py-[12px] text-[22px] font-medium text-inverted transition-colors hover:text-accent-bright"
             >
               {link.label}
-            </a>
+            </NavLink>
           ))}
           <a
             href="#contacts"

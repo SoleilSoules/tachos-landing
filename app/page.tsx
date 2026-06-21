@@ -1,7 +1,5 @@
-import Image from 'next/image';
-import { asset } from '@/lib/asset';
-import { ComposeProvider } from '@/components/compose/ComposeProvider';
 import { Nav } from '@/components/sections/Nav';
+import { HeroDeviceCycle } from '@/components/sections/HeroDeviceCycle';
 import { Hero } from '@/components/sections/Hero';
 import { LogoWall } from '@/components/sections/LogoWall';
 import { Founder } from '@/components/sections/Founder';
@@ -15,10 +13,9 @@ import { VideoBlock } from '@/components/sections/VideoBlock';
 
 export default function Home() {
   return (
-    <ComposeProvider>
-    {/* Full-bleed dark canvas; nav + logo wall stretch to the screen edges,
-        while text/founder blocks keep their fixed widths and self-centre. */}
-    <main className="w-full overflow-x-hidden bg-bg">
+    /* Full-bleed dark canvas; nav + logo wall stretch to the screen edges,
+       while text/founder blocks keep their fixed widths and self-centre. */
+    <main className="w-full bg-bg">
       <section className="relative min-h-[88vh] overflow-hidden bg-bg text-inverted">
         <div
           aria-hidden
@@ -27,21 +24,12 @@ export default function Home() {
           <div className="absolute inset-0 bg-ink" />
           {/* warm glow behind the device, as in the concept */}
           <div className="absolute left-1/2 top-[110px] h-[760px] w-[1040px] -translate-x-1/2 rounded-full bg-accent/40 blur-[150px]" />
-          {/* iPhone mockup — large close-up like the concept; cropped to its
-              centre so the stock white backdrop falls outside the frame */}
-          <div className="absolute left-1/2 top-0 h-[1340px] w-[1120px] -translate-x-1/2 overflow-hidden [animation:float-y_7s_ease-in-out_infinite] motion-reduce:[animation:none]">
-            <Image
-              src={asset('/figma/hero-bg.png')}
-              alt=""
-              fill
-              priority
-              sizes="1120px"
-              className="scale-[1.1] object-cover object-[center_16%] brightness-[0.6] saturate-[0.82] sepia-[0.22]"
-            />
-          </div>
-          {/* vertical wash: the concept keeps the device warm + muted (not a bright
-              stock screen) so the H1 and orange sub-head stay readable over its centre */}
-          <div className="absolute inset-0 bg-gradient-to-b from-bg/55 via-bg/38 to-bg" />
+          {/* generated device carousel — one device on screen at a time, each
+              showing a Tachos project; flies in from below, out the top */}
+          <HeroDeviceCycle />
+          {/* vertical wash: keeps the bright device screens muted so the H1 and
+              orange sub-head stay readable over the centre */}
+          <div className="absolute inset-0 bg-gradient-to-b from-bg/40 via-bg/15 to-bg" />
         </div>
 
         <Nav />
@@ -61,6 +49,5 @@ export default function Home() {
       <Blog />
       <Footer />
     </main>
-    </ComposeProvider>
   );
 }

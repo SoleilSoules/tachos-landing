@@ -27,6 +27,7 @@ export function ComposeOverlay() {
         aria-label="Письмо в студию"
         aria-hidden={!isOpen}
         inert={!isOpen ? true : undefined}
+        data-lenis-prevent
         style={{
           transformOrigin: 'center',
           transform: isOpen

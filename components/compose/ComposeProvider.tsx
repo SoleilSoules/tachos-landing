@@ -131,9 +131,21 @@ export function ComposeProvider({ children }: { children: React.ReactNode }) {
 
   const resetSend = useCallback(() => setSendStatus('idle'), []);
 
+  // Lock page scroll while the letter modal is open. With Lenis (desktop) we
+  // stop()/start() it — the `.lenis-stopped` class locks scroll natively, no
+  // body hack. Touch / reduced-motion has no Lenis instance → fall back to
+  // body.overflow.
   useEffect(() => {
-    document.body.style.overflow = isOpen ? 'hidden' : '';
+    const lenis = window.__lenis;
+    if (isOpen) {
+      if (lenis) lenis.stop();
+      else document.body.style.overflow = 'hidden';
+    } else {
+      if (lenis) lenis.start();
+      else document.body.style.overflow = '';
+    }
     return () => {
+      window.__lenis?.start();
       document.body.style.overflow = '';
     };
   }, [isOpen]);

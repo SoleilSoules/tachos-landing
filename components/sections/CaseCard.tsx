@@ -1,21 +1,10 @@
-import Image from 'next/image';
-import { asset } from '@/lib/asset';
+import Link from 'next/link';
+import { CaseCover } from '@/components/CaseCover';
 import type { CaseItem } from '@/lib/content';
 
 // Local UI copy (kept out of content.ts per task scope). The sparkle marks the
 // "method" tag (e.g. ML) the way the reference shows "✦ ML".
 const SPARKLE = '✦';
-
-// Per-project cover theming. Real case stills come from Vadim later; until then
-// each card keeps its own brand-tinted gradient that sits UNDER the cover photo
-// — so even if a still is missing the card reads as a distinct project rather
-// than an empty box. The photo (item.cover) is layered on top with object-cover.
-const TINT: Record<string, string> = {
-  skladno: 'from-[#27405a] via-[#16273a] to-[#0b1620]',
-  hais: 'from-[#0e5240] via-[#073227] to-[#031a14]',
-  maginary: 'from-[#3d2060] via-[#241241] to-[#130a26]',
-  dobry: 'from-[#7c3314] via-[#4a1d0b] to-[#250e05]',
-};
 
 function ArrowIcon() {
   return (
@@ -32,7 +21,6 @@ function ArrowIcon() {
 }
 
 export function CaseCard({ item }: { item: CaseItem }) {
-  const tint = TINT[item.id] ?? TINT.skladno;
   // Tags arrive as [domain, method]; the method pill gets the sparkle prefix.
   const [domainTag, methodTag] = item.tags;
 
@@ -42,21 +30,17 @@ export function CaseCard({ item }: { item: CaseItem }) {
       data-hint={`Кейс: ${item.client}`}
       data-hint-sub={item.tags.join(' · ')}
     >
-      <a
-        href="#cases"
+      <Link
+        href={`/cases/${item.id}`}
         aria-label={`Кейс: ${item.client}`}
         className="relative block h-[360px] overflow-hidden rounded-[32px] transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:-translate-y-[6px] motion-safe:group-hover:scale-[1.012] motion-safe:group-hover:shadow-[0_28px_64px_-16px_rgba(0,0,0,0.45)] sm:h-[420px] sm:rounded-[44px]"
       >
-        {/* brand tint fallback layer — sits under the photo */}
-        <div className={`absolute inset-0 bg-gradient-to-br ${tint}`} aria-hidden />
-
-        {/* full-bleed cover photo (real still from Vadim; placeholder for now) */}
-        <Image
-          src={asset(item.cover)}
-          alt=""
-          fill
-          sizes="(max-width: 1024px) 100vw, 668px"
-          className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:scale-[1.04]"
+        {/* generated brand cover (real stills come from Vadim later) */}
+        <CaseCover
+          id={item.id}
+          client={item.client}
+          variant="card"
+          className="transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:scale-[1.04]"
         />
 
         {/* top + bottom scrims so the glass chips and arrow stay legible on any photo */}
@@ -95,7 +79,7 @@ export function CaseCard({ item }: { item: CaseItem }) {
             </span>
           </div>
         </div>
-      </a>
+      </Link>
 
       {/* caption/meta — pinned to its own card with a small left inset (#33) */}
       <div className="pl-[6px] pr-[10px]">
