@@ -35,40 +35,31 @@ function Meta({ post, peach }: { post: Post; peach?: boolean }) {
   );
 }
 
+// Author — same size as the review cards' author (54px avatar, 16/14 text). (#3)
 function Author({ post }: { post: Post }) {
   return (
     <div className="flex items-center gap-[10px]">
-      <span className="relative size-[40px] shrink-0 overflow-hidden rounded-full bg-black/10">
-        <Image src={asset('/figma/founder-container.jpg')} alt={post.author} fill sizes="40px" className="object-cover" />
+      <span className="relative size-[54px] shrink-0 overflow-hidden rounded-full bg-black/10">
+        <Image src={asset('/figma/founder-container.jpg')} alt={post.author} fill sizes="54px" className="object-cover" />
       </span>
       <span className="leading-tight">
-        <span className="block text-[14px] font-medium text-black">{post.author}</span>
-        <span className="block text-[12px] text-black/45">{post.authorRole}</span>
+        <span className="block text-[16px] tracking-[0.03em] text-black">{post.author}</span>
+        <span className="block text-[14px] text-black/45">{post.authorRole}</span>
       </span>
     </div>
   );
 }
 
-// Clean monte GTR device placeholder (no real product photo yet) for the peach card.
-function DeviceMock() {
+// Photo block (real device photo). `bleed` pushes it off the right card edge by
+// ~half (#2) — used on the peach card.
+function PhotoBlock({ src, bleed }: { src: string; bleed?: boolean }) {
   return (
-    <div className="relative mt-[20px] overflow-hidden rounded-[22px] bg-gradient-to-br from-[#2c2c31] to-[#141417] p-[20px] shadow-[0_22px_50px_-18px_rgba(0,0,0,0.55)]">
-      <div className="mb-[16px] flex items-center justify-between">
-        <span className="text-[12px] font-semibold tracking-[0.08em] text-white/85">monte GTR</span>
-        <span className="size-[8px] rounded-full bg-accent-bright shadow-[0_0_10px_rgba(255,82,44,0.8)]" />
-      </div>
-      <div className="flex gap-[14px]">
-        {[
-          { v: '0.8', l: 'BOOST' },
-          { v: '94°', l: 'OIL' },
-          { v: '6200', l: 'RPM' },
-        ].map((g) => (
-          <div key={g.l} className="flex-1 rounded-[14px] bg-white/[0.05] px-[12px] py-[14px]">
-            <div className="nums text-[20px] font-semibold text-white">{g.v}</div>
-            <div className="mt-[2px] text-[10px] tracking-[0.12em] text-accent-bright">{g.l}</div>
-          </div>
-        ))}
-      </div>
+    <div
+      className={`relative mt-[20px] aspect-[16/10] overflow-hidden rounded-[22px] ${
+        bleed ? 'w-[142%] translate-x-[24%]' : 'w-full'
+      }`}
+    >
+      <Image src={asset(src)} alt="" fill sizes="(max-width: 768px) 100vw, 560px" className="object-cover" />
     </div>
   );
 }
@@ -93,7 +84,7 @@ function Card({
       data-hint-sub={post.tag}
       className={`reveal-hidden group flex h-full cursor-pointer flex-col rounded-card transition duration-300 hover:-translate-y-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 ${
         peach ? 'bg-gradient-to-br from-[#f7d8c5] via-[#f6cdba] to-[#f1bda3]' : 'bg-surface hover:bg-surface2'
-      } ${big ? 'min-h-[440px] p-[28px] sm:p-[40px] md:p-[44px]' : 'min-h-[360px] p-[24px] sm:p-[34px]'}`}
+      } ${big ? 'min-h-[500px] p-[28px] sm:p-[40px] md:p-[44px]' : 'min-h-[380px] p-[24px] sm:p-[34px]'}`}
     >
       <h3
         className={`font-semibold leading-[1.1] tracking-[-0.01em] text-black ${
@@ -129,14 +120,14 @@ export function Blog() {
         <p className="mx-auto mt-[20px] max-w-[640px] text-[19px] leading-[1.4] text-black/45">{blogIntro.body}</p>
       </div>
 
-      <div ref={ref} className="mx-auto mt-[56px] flex max-w-[900px] flex-col gap-[24px] px-6">
-        {/* hero card — full width, plain light surface (no split visual) */}
+      <div ref={ref} className="mx-auto mt-[56px] flex max-w-[900px] flex-col gap-[40px] px-6">
+        {/* hero card — full width, no photo (as before, #2) */}
         <Card post={hero} big />
 
-        <div className="grid grid-cols-1 gap-[24px] md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-[40px] md:grid-cols-2">
           <Card post={left} />
           <Card post={right} peach>
-            <DeviceMock />
+            <PhotoBlock src="/figma/monte-gtr.png" bleed />
           </Card>
         </div>
       </div>

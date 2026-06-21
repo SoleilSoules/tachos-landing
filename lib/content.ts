@@ -14,7 +14,6 @@ export const nav: { links: NavLink[]; cta: string } = {
     { label: 'Кейсы', href: '#cases' },
     { label: 'Отзывы', href: '#reviews' },
     { label: 'Контакты', href: '#contacts' },
-    { label: 'О нас', href: '#about' },
     { label: 'Медиа', href: '#media' },
   ],
   cta: 'Связаться',
@@ -24,7 +23,7 @@ export const hero = deepNbsp({
   title: ['Стоим за сильными', 'продуктами и брендами'],
   subhead: {
     lead: 'Студия инжиниринга и дизайна.',
-    rest: 'Проектируем и собираем веб- и мобильные продукты для фаундеров и компаний — от идеи до релиза в проде',
+    rest: 'Проектируем и собираем веб и мобильные продукты для фаундеров и компаний — от идеи до релиза в проде',
   },
   inputPlaceholder: 'Начните описывать задачу, мы поможем',
   needLabel: 'Мне нужен:',
@@ -327,6 +326,60 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
       ],
     },
   },
+  // ⚠️ placeholder-кейсы (NOT real Tachos work) — нужны, чтобы «Показать ещё»
+  // работал по 2 несколько раз. Vadim: заменить на реальные или удалить.
+  {
+    id: 'vektor',
+    client: 'Вектор',
+    category: 'аналитика',
+    desc: {
+      lead: 'BI-панель для отдела продаж: дашборды, отчёты и прогнозы в реальном времени.',
+      highlight: '40+ дашбордов',
+      tail: '',
+    },
+    tags: ['Аналитика', 'Web'],
+    cover,
+    avatar,
+    story: {
+      summary: 'BI-панель для отдела продаж: дашборды, отчёты и прогнозы в реальном времени.',
+      metrics: [
+        { value: '40+', label: 'дашбордов' },
+        { value: 'real-time', label: 'обновление' },
+        { value: 'Web', label: 'платформа' },
+      ],
+      sections: [
+        { title: 'Контекст', body: 'Отделу продаж не хватало единой картины: данные жили в разных таблицах и выгрузках.' },
+        { title: 'Что сделали', body: 'Собрали BI-панель с дашбордами, автоматическими отчётами и прогнозами на основе исторических данных.' },
+        { title: 'Результат', body: '40+ дашбордов закрыли потребности команды — решения принимаются по цифрам.' },
+      ],
+    },
+  },
+  {
+    id: 'orbita',
+    client: 'Орбита',
+    category: 'образование',
+    desc: {
+      lead: 'Платформа онлайн-курсов: уроки, тесты и прогресс ученика в одном кабинете.',
+      highlight: '20 000 учеников',
+      tail: '',
+    },
+    tags: ['EdTech', 'Web + mobile'],
+    cover,
+    avatar,
+    story: {
+      summary: 'Платформа онлайн-курсов: уроки, тесты и прогресс ученика в одном кабинете.',
+      metrics: [
+        { value: '20 000', label: 'учеников' },
+        { value: 'Web + mobile', label: 'связка' },
+        { value: 'EdTech', label: 'направление' },
+      ],
+      sections: [
+        { title: 'Контекст', body: 'Образовательному проекту нужна была платформа с уроками, тестами и трекингом прогресса.' },
+        { title: 'Что сделали', body: 'Собрали веб-кабинет и мобильное приложение: видеоуроки, тесты, прогресс и сертификаты.' },
+        { title: 'Результат', body: 'На платформе учатся 20 000 человек.' },
+      ],
+    },
+  },
 ]);
 
 // ─── Own IT products ───────────────────────────────────────────────
@@ -357,19 +410,19 @@ export const products: Product[] = deepNbsp<Product[]>([
   },
   {
     id: 'hub',
-    name: 'hub',
+    name: 'MonteHub',
     tagline: 'Самописный склад',
-    heading: '«hub» — система складского учёта',
+    heading: '«MonteHub» — система складского учёта',
     body: 'Закрывает приёмку, остатки и логистику в одном окне — без таблиц',
-    cta: 'Узнать про hub',
+    cta: 'Узнать про MonteHub',
   },
   {
     id: 'balibali',
-    name: 'balibali',
+    name: 'BaliBetula',
     tagline: 'Конструктор ресторанов',
-    heading: '«balibali» — конструктор ресторанов',
+    heading: '«BaliBetula» — конструктор ресторанов',
     body: 'Меню, заказы и QR-обслуживание — всё для заведения из коробки',
-    cta: 'Узнать про balibali',
+    cta: 'Узнать про BaliBetula',
   },
 ]);
 
@@ -458,7 +511,7 @@ export const posts: Post[] = deepNbsp<Post[]>([
 // The request form is now the inline letter composer (<LetterBody>), so the old
 // form/socials copy was removed — only the heading, manager and contacts remain.
 export const footer = deepNbsp({
-  formTitle: ['Сделаем вашу задачу', 'со стратегическим', 'обоснованием'],
+  formTitle: ['Отправьте', 'нам', 'письмо'],
   manager: { name: 'Анна Кузнецова', role: 'Ваш менеджер проекта' },
   contacts: {
     email: { label: 'E-mail', value: 'hello@tachos.ru' },

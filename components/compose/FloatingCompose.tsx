@@ -21,13 +21,29 @@ export function FloatingCompose() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const compute = () => setVisible(!isOpen && window.scrollY >= 620);
+    // Hide the floating pill once the footer (which carries the inline letter
+    // form) is in view — no point duplicating the compose CTA over the real form.
+    let footerVisible = false;
+    const compute = () => setVisible(!isOpen && window.scrollY >= 620 && !footerVisible);
+    const footer = document.getElementById('contacts');
+    const io =
+      footer && 'IntersectionObserver' in window
+        ? new IntersectionObserver(
+            ([e]) => {
+              footerVisible = e.isIntersecting;
+              compute();
+            },
+            { threshold: 0.01 },
+          )
+        : null;
+    if (footer) io?.observe(footer);
     compute();
     window.addEventListener('scroll', compute, { passive: true });
     window.addEventListener('resize', compute);
     return () => {
       window.removeEventListener('scroll', compute);
       window.removeEventListener('resize', compute);
+      io?.disconnect();
     };
   }, [isOpen]);
 

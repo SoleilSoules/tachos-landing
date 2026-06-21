@@ -69,7 +69,7 @@ function Slot({
         // Opaque floating plate (its own bg + shadow) so the option pills read
         // as a deliberate popover ON TOP of the letter — never a see-through mush
         // overlapping the divider/text below.
-        <span className="absolute left-0 top-[calc(100%+8px)] z-40 flex w-max gap-[8px] rounded-[14px] bg-ink p-[8px] leading-none shadow-[0_18px_44px_rgba(0,0,0,0.55)] ring-1 ring-white/10 motion-safe:[animation:compose-pop-in_.22s_ease-out]">
+        <span className="absolute left-0 top-[calc(100%+8px)] z-40 flex max-w-[min(440px,78vw)] flex-wrap gap-[8px] rounded-[14px] bg-ink p-[8px] leading-none shadow-[0_18px_44px_rgba(0,0,0,0.55)] ring-1 ring-white/10 motion-safe:[animation:compose-pop-in_.22s_ease-out]">
           {options.map((o) => (
             <button
               key={o.label}
@@ -304,7 +304,7 @@ export function LetterBody({ active, autofocus = true }: { active: boolean; auto
           type="button"
           onClick={copyMail}
           aria-label="Скопировать почту hello@tachos.ru"
-          className="group/mail relative inline-flex items-center gap-[6px] rounded-[6px] px-[2px] py-[1px] outline-none transition hover:text-inverted/70 focus-visible:ring-1 focus-visible:ring-white/40"
+          className="group/mail inline-flex items-center gap-[6px] rounded-[6px] px-[2px] py-[1px] outline-none transition hover:text-inverted/70 focus-visible:ring-1 focus-visible:ring-white/40"
         >
           <span>
             Кому:{' '}
@@ -312,13 +312,11 @@ export function LetterBody({ active, autofocus = true }: { active: boolean; auto
               hello@tachos.ru
             </b>
           </span>
-          <CopyGlyph className="text-inverted/40 opacity-0 transition group-hover/mail:opacity-100 group-focus-visible/mail:opacity-100" />
-          <span
-            aria-hidden
-            className="pointer-events-none absolute -top-[28px] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-[8px] bg-black/85 px-[8px] py-[4px] text-[11px] text-inverted opacity-0 transition group-hover/mail:opacity-100 group-focus-visible/mail:opacity-100 motion-safe:[animation:compose-hint-in_.18s_ease-out]"
-          >
-            {mailCopied ? 'Скопировано ✓' : 'Нажмите, чтобы скопировать'}
-          </span>
+          {mailCopied ? (
+            <span className="text-[12px] text-accent">✓</span>
+          ) : (
+            <CopyGlyph className="text-inverted/40 transition group-hover/mail:text-inverted/70" />
+          )}
         </button>
         <span>
           Тема: <b className="font-medium text-inverted/80">{subject}</b>
@@ -413,24 +411,7 @@ export function LetterBody({ active, autofocus = true }: { active: boolean; auto
           </button>
         </div>
 
-        <div className="mt-[12px] flex flex-wrap items-center gap-[18px]">
-          <button
-            type="button"
-            onClick={() => copy(body, 'Письмо в буфере — вставьте в чат')}
-            className="text-[13.5px] text-inverted/65 underline-offset-2 transition hover:text-inverted hover:underline"
-          >
-            Скопировать в Telegram
-          </button>
-          <button
-            type="button"
-            onClick={() => copy(body, 'Письмо скопировано')}
-            className="text-[13.5px] text-inverted/65 underline-offset-2 transition hover:text-inverted hover:underline"
-          >
-            Скопировать письмо
-          </button>
-        </div>
-
-        <label className="mt-[14px] flex cursor-pointer items-start gap-[8px] text-[12px] leading-[1.4] text-inverted/55">
+        <label className="mt-[16px] flex cursor-pointer items-start gap-[8px] text-[12px] leading-[1.4] text-inverted/55">
           <input
             type="checkbox"
             checked={agreed}

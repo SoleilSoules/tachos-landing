@@ -9,13 +9,6 @@ import { products, productsIntro } from '@/lib/content';
 // How long each product stays active before the carousel advances.
 const SLIDE_MS = 5000;
 
-// Per-product switcher icon (doki has its own glyph; hub/bali share one).
-const ICONS: Record<string, string> = {
-  doki: '/figma/prod-icon-doki.svg',
-  hub: '/figma/prod-icon-hub.svg',
-  balibali: '/figma/prod-icon-hub.svg',
-};
-
 // Per-product device mockup. Only doki has a real screen so far; hub/bali show
 // the glassy panel + glow without a tablet until Vadim provides their shots.
 const MOCKUPS: Record<string, { src: string; alt: string } | undefined> = {
@@ -44,7 +37,7 @@ function ProductSwitcher({
   onPick: (i: number) => void;
 }) {
   return (
-    <div className="mt-[24px] flex flex-col items-center justify-center gap-[10px] lg:mt-[20px] lg:flex-row lg:gap-[14px]">
+    <div className="mt-[24px] flex flex-row items-stretch justify-center gap-[8px] lg:mt-[20px] lg:gap-[14px]">
       {products.map((p, i) => {
         // separate pills (no overlap, Figma): the active one goes accent and fills
         // left-to-right as the auto-advance timer runs.
@@ -55,7 +48,7 @@ function ProductSwitcher({
             type="button"
             onClick={() => onPick(i)}
             aria-current={isActive}
-            className={`relative flex h-[64px] w-full max-w-[340px] items-center gap-[12px] overflow-hidden rounded-[16px] border px-[10px] text-left transition-colors duration-500 lg:w-[300px] ${
+            className={`relative flex h-[64px] min-w-0 flex-1 items-center gap-[10px] overflow-hidden rounded-[16px] border px-[10px] text-left transition-colors duration-500 lg:max-w-[300px] lg:gap-[12px] ${
               isActive ? 'border-accent/40 bg-accent text-white' : 'border-white/10 bg-white/[0.06] text-white'
             }`}
           >
@@ -66,12 +59,14 @@ function ProductSwitcher({
                 style={{ width: `${progress}%` }}
               />
             )}
+            {/* lettermark placeholder (no blue 3rd-party glyph) — real product
+                logos from Vadim later (#23). */}
             <span
-              className={`relative grid size-[44px] shrink-0 place-items-center rounded-[12px] ${
+              className={`relative grid size-[44px] shrink-0 place-items-center rounded-[12px] text-[18px] font-semibold text-white ${
                 isActive ? 'bg-black/25' : 'bg-white/10'
               }`}
             >
-              <Image src={asset(ICONS[p.id])} alt="" width={24} height={24} />
+              {p.name.charAt(0)}
             </span>
             <span className="relative min-w-0">
               <span className="block text-[16px] font-medium leading-[1.15] text-white">
@@ -217,7 +212,7 @@ export function Products() {
                     the top-right edge like Figma. Only on the active card so the
                     deck behind stays clean (no doki tablet showing on every layer). */}
                 {isActive && mockup && (
-                  <div className="pointer-events-none absolute -top-[58px] right-[-10px] hidden h-[562px] w-[803px] rotate-[-7deg] lg:block">
+                  <div className="pointer-events-none absolute -top-[40px] right-[-20px] hidden h-[640px] w-[910px] rotate-[-7deg] lg:block">
                     <Image
                       src={asset(mockup.src)}
                       alt={mockup.alt}

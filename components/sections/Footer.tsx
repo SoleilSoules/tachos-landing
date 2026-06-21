@@ -7,12 +7,22 @@ import { useCompose } from '@/components/compose/ComposeProvider';
 import { footer } from '@/lib/content';
 import { LetterBody, ComposeSent } from '@/components/compose/LetterBody';
 
+function CopyIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden className="text-white/40 transition group-hover/c:text-accent-bright">
+      <rect x="5.5" y="5.5" width="8" height="8" rx="1.6" stroke="currentColor" strokeWidth="1.3" />
+      <path d="M3.5 10.5h-.5A1.5 1.5 0 0 1 1.5 9V3A1.5 1.5 0 0 1 3 1.5h6A1.5 1.5 0 0 1 10.5 3v.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function Footer() {
   const { sendStatus } = useCompose();
   const isSuccess = sendStatus === 'success';
   const ref = useRef<HTMLElement>(null);
   const [inView, setInView] = useState(false);
   const [mailCopied, setMailCopied] = useState(false);
+  const [phoneCopied, setPhoneCopied] = useState(false);
 
   // Start the inline letter typing once the footer scrolls into view (not on load,
   // since it sits at the very bottom).
@@ -35,15 +45,15 @@ export function Footer() {
     return () => io.disconnect();
   }, []);
 
-  const copyEmail = async () => {
+  // Copy a contact value with a brief ✓; no fake success if clipboard is blocked.
+  const copyContact = async (text: string, setCopied: (v: boolean) => void) => {
     try {
       if (!navigator.clipboard?.writeText) throw new Error('no-clipboard');
-      await navigator.clipboard.writeText(footer.contacts.email.value);
-      setMailCopied(true);
-      setTimeout(() => setMailCopied(false), 1400);
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1400);
     } catch {
-      // no clipboard (insecure context / webview) — don't fake a "✓ скопировано";
-      // the address is shown on screen to copy by hand
+      // no clipboard (insecure context / webview) — value stays on screen to copy
     }
   };
 
@@ -87,25 +97,26 @@ export function Footer() {
 
         {/* requisites — city, tap-to-copy email, phone */}
         <div className="relative mt-[64px] border-t border-white/10 pt-[40px]">
-          <div className="flex flex-col gap-[16px] text-[16px] font-medium tracking-[0.04em]">
+          <div className="flex flex-wrap items-center gap-x-[28px] gap-y-[14px] text-[16px] font-medium tracking-[0.04em]">
             <span className="uppercase text-white/80">{footer.contacts.city}</span>
             <button
               type="button"
-              onClick={copyEmail}
+              onClick={() => copyContact(footer.contacts.email.value, setMailCopied)}
               aria-label="Скопировать почту"
-              className="group/mail flex w-fit items-center gap-[8px] text-white/70 transition hover:text-accent-bright"
+              className="group/c flex items-center gap-[8px] text-white/70 transition hover:text-accent-bright"
             >
               <span className="underline decoration-dotted underline-offset-[5px]">{footer.contacts.email.value}</span>
-              <span className="text-[13px] text-white/40 group-hover/mail:text-accent-bright">
-                {mailCopied ? '✓ скопировано' : 'нажмите, чтобы скопировать'}
-              </span>
+              {mailCopied ? <span className="text-[14px] text-accent-bright">✓</span> : <CopyIcon />}
             </button>
-            <a
-              href={`tel:${footer.contacts.phone.value.replace(/[^+\d]/g, '')}`}
-              className="w-fit text-white/70 transition hover:text-accent-bright"
+            <button
+              type="button"
+              onClick={() => copyContact(footer.contacts.phone.value, setPhoneCopied)}
+              aria-label="Скопировать телефон"
+              className="group/c flex items-center gap-[8px] text-white/70 transition hover:text-accent-bright"
             >
-              {footer.contacts.phone.value}
-            </a>
+              <span>{footer.contacts.phone.value}</span>
+              {phoneCopied ? <span className="text-[14px] text-accent-bright">✓</span> : <CopyIcon />}
+            </button>
           </div>
         </div>
 

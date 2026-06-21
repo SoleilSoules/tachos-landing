@@ -93,7 +93,7 @@ export function Nav() {
           and CTA never shift sideways when you scroll — only the plate (bg /
           border / shadow / blur) and the height appear/change on `stuck`. */}
       <div
-        className={`mx-auto flex w-full max-w-page items-center justify-between rounded-[22px] px-[14px] transition-all duration-300 lg:px-[34px] ${
+        className={`mx-auto flex w-full max-w-page items-center justify-between rounded-[22px] px-[12px] transition-all duration-300 lg:px-[22px] ${
           stuck
             ? 'h-[60px] border border-white/10 bg-ink/75 shadow-[0_10px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl'
             : 'h-[64px] border border-transparent lg:h-[84px]'

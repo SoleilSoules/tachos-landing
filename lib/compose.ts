@@ -26,7 +26,7 @@ export const typeChips: { type: LetterType; label: string }[] = [
   { type: 'app', label: 'Приложение' },
   { type: 'shop', label: 'Магазин' },
   { type: 'game', label: 'Игра' },
-  { type: 'idk', label: 'Не знаю — разберитесь' },
+  { type: 'idk', label: 'Не знаю' },
 ];
 
 // Three common first names offered as quick-pick in the letter's name slot.

@@ -279,4 +279,47 @@ a {
   [class*='caret-blink'] {
     animation: none !important;
   }
+  /* hero device rail — kill decorative float / sweep / needle under reduced-motion */
+  [class*='float-y-rail'],
+  .hero-sweep,
+  .hero-needle {
+    animation: none !important;
+  }
+}
+
+/* hero device rail — translateY-only idle float (composes with the 3D parent's
+   centring instead of fighting it; do NOT reuse float-y, which bakes translateX) */
+@keyframes float-y-rail {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* hero device rail — one-shot specular glint across the focused screen */
+@keyframes sweep-x {
+  from {
+    transform: translateX(-120%) rotate(-20deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  to {
+    transform: translateX(320%) rotate(-20deg);
+    opacity: 0;
+  }
+}
+
+/* hero device rail — tachometer needle ticking to redline (one-shot) */
+@keyframes needle-tick {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(126deg);
+  }
 }

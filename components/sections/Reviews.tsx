@@ -351,16 +351,6 @@ function PortraitCard({ r }: { r: Review }) {
       className={`reveal-hidden group relative flex h-full min-h-[520px] w-full flex-col items-center justify-center gap-[24px] overflow-hidden rounded-card [clip-path:inset(0_round_40px)] ${CARD_BORDER} bg-white/[0.06] ${CARD_PAD} text-center backdrop-blur-md`}
     >
       <Glow className="left-1/2 top-[40px] h-[260px] w-[260px] -translate-x-1/2 bg-accent/20" />
-      {/* play in the top-left corner badge */}
-      <button
-        type="button"
-        aria-label="Смотреть видео-отзыв"
-        className="absolute left-[34px] top-[34px] z-10 grid size-[54px] place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/20 backdrop-blur-md transition hover:scale-105 hover:bg-white/20"
-      >
-        <span className="translate-x-[2px]">
-          <PlayIcon size={18} />
-        </span>
-      </button>
       <div className="relative size-[260px] overflow-hidden rounded-full ring-2 ring-accent/70">
         <Image
           src={asset('/figma/founder-jennifer.png')}
@@ -369,6 +359,16 @@ function PortraitCard({ r }: { r: Review }) {
           sizes="260px"
           className="object-cover grayscale transition duration-500 group-hover:scale-[1.03]"
         />
+        {/* play centred over the portrait (#37) */}
+        <button
+          type="button"
+          aria-label="Смотреть видео-отзыв"
+          className="absolute inset-0 z-10 m-auto grid size-[64px] place-items-center rounded-full bg-black/45 text-white ring-1 ring-white/30 backdrop-blur-md transition hover:scale-105 hover:bg-black/60"
+        >
+          <span className="translate-x-[2px]">
+            <PlayIcon size={24} />
+          </span>
+        </button>
         {/* mute on the portrait, bottom-right (Figma) */}
         <button
           type="button"
@@ -467,7 +467,7 @@ export function Reviews() {
   const [audio, t1, v1, t2, v2] = reviews.items;
 
   return (
-    <section id="reviews" className="relative overflow-hidden bg-[#05010d] pb-[56px] pt-[64px] text-white lg:pb-[80px] lg:pt-[120px]">
+    <section id="reviews" className="relative overflow-hidden bg-[#05010d] pb-[56px] pt-[96px] text-white lg:pb-[80px] lg:pt-[168px]">
       {/* #34 — soft twinkle for the starfield; static under reduced-motion */}
       <style>{`
         @keyframes rev-twinkle {

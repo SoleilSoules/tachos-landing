@@ -22,10 +22,8 @@ export default function Home() {
           className="pointer-events-none absolute inset-x-0 top-0 h-[1340px] overflow-hidden"
         >
           <div className="absolute inset-0 bg-ink" />
-          {/* warm glow behind the device, as in the concept */}
-          <div className="absolute left-1/2 top-[110px] h-[760px] w-[1040px] -translate-x-1/2 rounded-full bg-accent/40 blur-[150px]" />
-          {/* generated device carousel — one device on screen at a time, each
-              showing a Tachos project; flies in from below, out the top */}
+          {/* device showreel (REDLINE DEPTH RAIL) — renders its own redline glow
+              bed + elliptical readability scrim inside, so no static orb here */}
           <HeroDeviceCycle />
           {/* vertical wash: keeps the bright device screens muted so the H1 and
               orange sub-head stay readable over the centre */}
