@@ -1,64 +1,90 @@
-// Generated brand cover for a case — no real stills yet, so each case gets its
-// own distinct, code-drawn artwork (brand gradient + glowing orbs + fine grid +
-// a huge translucent initial) instead of one shared placeholder photo. Replace
-// with real screenshots from Vadim later by swapping this for an <Image>.
+import Image from 'next/image';
+import { asset } from '@/lib/asset';
 
-type Cover = { grad: string; orb: string };
+// Brand cover for a case. One unified light-grey Apple-style field for ALL cases
+// (no per-brand colours). When the case has a real product screenshot (`shot`), it
+// sits in a premium straight device mockup (browser for `desktop`, iPhone for
+// `phone`) that drops slightly off the bottom edge. Otherwise a generated cover
+// with a huge translucent initial.
 
-const COVERS: Record<string, Cover> = {
-  skladno: { grad: 'from-[#27405a] via-[#16273a] to-[#0b1620]', orb: 'rgba(86,148,210,0.45)' },
-  hais: { grad: 'from-[#0e5240] via-[#073227] to-[#031a14]', orb: 'rgba(40,196,142,0.42)' },
-  maginary: { grad: 'from-[#3d2060] via-[#241241] to-[#130a26]', orb: 'rgba(154,96,232,0.44)' },
-  dobry: { grad: 'from-[#7c3314] via-[#4a1d0b] to-[#250e05]', orb: 'rgba(240,124,52,0.46)' },
-  potok: { grad: 'from-[#0d4b4f] via-[#072d30] to-[#03191b]', orb: 'rgba(42,204,204,0.4)' },
-  grace: { grad: 'from-[#5a2740] via-[#3a1628] to-[#1f0b16]', orb: 'rgba(232,96,150,0.42)' },
-};
+// Single shared light field (apple.com product-grey).
+const FIELD = 'from-[#f6f6f8] via-[#ededf0] to-[#e4e4e8]';
 
-const GRID =
-  'linear-gradient(rgba(255,255,255,.8) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.8) 1px,transparent 1px)';
+// Clean Apple-style browser window — light chrome, soft deep shadow, straight.
+function BrowserMock({ shot, client, big }: { shot: string; client: string; big: boolean }) {
+  return (
+    <div
+      className={`overflow-hidden rounded-[12px] bg-white ring-1 ring-black/10 shadow-[0_40px_80px_-28px_rgba(0,0,0,0.4)] ${
+        big ? 'w-[80%]' : 'w-[88%]'
+      }`}
+    >
+      <div className="flex h-[26px] items-center gap-[6px] bg-[#ececee] px-[12px]">
+        <span className="size-[8px] rounded-full bg-[#ff5f57]" />
+        <span className="size-[8px] rounded-full bg-[#febc2e]" />
+        <span className="size-[8px] rounded-full bg-[#28c840]" />
+      </div>
+      <div className="relative aspect-[16/10]">
+        <Image src={asset(shot)} alt={client} fill sizes="(max-width: 1024px) 100vw, 720px" className="object-cover object-top" />
+      </div>
+    </div>
+  );
+}
+
+// Clean iPhone — dark frame, Dynamic Island, soft deep shadow, straight.
+function PhoneMock({ shot, client, big }: { shot: string; client: string; big: boolean }) {
+  return (
+    <div
+      className={`relative aspect-[9/19.3] rounded-[15%] bg-[#0b0b0d] p-[2.2%] ring-1 ring-black/10 shadow-[0_40px_80px_-26px_rgba(0,0,0,0.45)] ${
+        big ? 'h-[112%]' : 'h-[104%]'
+      }`}
+    >
+      <div className="relative h-full w-full overflow-hidden rounded-[13%] bg-black">
+        <Image src={asset(shot)} alt={client} fill sizes="360px" className="object-cover object-top" />
+        <div className="absolute left-1/2 top-[1.8%] h-[2.4%] w-[26%] -translate-x-1/2 rounded-full bg-black" />
+      </div>
+    </div>
+  );
+}
 
 export function CaseCover({
-  id,
+  id: _id,
   client,
+  shot,
+  shotKind = 'desktop',
   variant = 'card',
   className = '',
 }: {
   id: string;
   client: string;
+  shot?: string;
+  shotKind?: 'phone' | 'desktop';
   variant?: 'card' | 'hero';
   className?: string;
 }) {
-  const c = COVERS[id] ?? COVERS.skladno;
   const initial = client.trim().charAt(0).toUpperCase();
   const initialSize = variant === 'hero' ? 'clamp(180px,34vw,360px)' : '230px';
+  const big = variant === 'hero';
 
   return (
-    <div className={`relative h-full w-full overflow-hidden bg-gradient-to-br ${c.grad} ${className}`}>
-      {/* glowing brand orbs */}
-      <div
-        aria-hidden
-        className="absolute -left-[12%] -top-[14%] h-[60%] w-[60%] rounded-full blur-[60px]"
-        style={{ background: c.orb }}
-      />
-      <div
-        aria-hidden
-        className="absolute -bottom-[18%] -right-[10%] h-[64%] w-[64%] rounded-full blur-[72px] opacity-70"
-        style={{ background: c.orb }}
-      />
-      {/* fine technical grid */}
-      <div
-        aria-hidden
-        className="absolute inset-0 opacity-[0.06]"
-        style={{ backgroundImage: GRID, backgroundSize: '34px 34px' }}
-      />
-      {/* huge translucent initial, bottom-right */}
-      <span
-        aria-hidden
-        className="absolute -bottom-[0.2em] right-[0.04em] select-none font-semibold leading-none text-white/[0.08]"
-        style={{ fontSize: initialSize }}
-      >
-        {initial}
-      </span>
+    <div className={`relative flex h-full w-full items-end justify-center overflow-hidden bg-gradient-to-br ${FIELD} ${className}`}>
+      {shot ? (
+        // mockup pushed slightly below the bottom edge (clipped) for depth
+        <div className="flex w-full translate-y-[12%] justify-center">
+          {shotKind === 'phone' ? (
+            <PhoneMock shot={shot} client={client} big={big} />
+          ) : (
+            <BrowserMock shot={shot} client={client} big={big} />
+          )}
+        </div>
+      ) : (
+        <span
+          aria-hidden
+          className="absolute -bottom-[0.2em] right-[0.04em] select-none font-semibold leading-none text-black/[0.06]"
+          style={{ fontSize: initialSize }}
+        >
+          {initial}
+        </span>
+      )}
     </div>
   );
 }

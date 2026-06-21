@@ -89,6 +89,8 @@ export type CaseItem = {
   tags: [string, string];
   cover: string;
   avatar: string;
+  shot?: string; // real product screenshot, shown in a device mockup on the cover
+  shotKind?: 'phone' | 'desktop'; // which premium mockup frame to use for `shot`
   story: CaseStory; // case-page content (placeholder prose until Vadim confirms)
   verified?: boolean; // confirmed Tachos work (Складно / Хайс / Maginary)
 };
@@ -177,6 +179,8 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     tags: ['Сервис хранения', 'Mobile + бэкенд'],
     cover,
     avatar,
+    shot: '/figma/shots/skladno.png',
+    shotKind: 'phone',
     story: {
       summary: 'Сеть хранения без персонала: бронь, оплата и доступ к ячейке по Bluetooth — всё в приложении.',
       metrics: [
@@ -204,6 +208,8 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     tags: ['Финтех', 'iOS + Android'],
     cover,
     avatar,
+    shot: '/figma/shots/hais.png',
+    shotKind: 'desktop',
     story: {
       summary: 'Мобильный банк для ИП с нуля — счёт, бухгалтерия и валюта в одном приложении.',
       metrics: [
@@ -231,6 +237,8 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     tags: ['Приложение-книга', 'iOS'],
     cover,
     avatar,
+    shot: '/figma/shots/maginary.png',
+    shotKind: 'phone',
     story: {
       summary: 'Анимированная книга-игра, где читатель становится героем истории.',
       metrics: [
@@ -258,6 +266,8 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     tags: ['Web-игра', '4 недели'],
     cover,
     avatar,
+    shot: '/figma/shots/dobry.png',
+    shotKind: 'desktop',
     story: {
       summary: 'Промо-игра для бренда №1 на рынке соков России — от идеи до прода за месяц.',
       metrics: [

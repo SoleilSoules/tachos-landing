@@ -114,7 +114,7 @@ export function CaseView({ item, others }: { item: CaseItem; others: CaseItem[] 
             </div>
 
             <div className="mt-10 aspect-[16/9] max-w-[820px] overflow-hidden rounded-[24px]">
-              <CaseCover id={item.id} client={item.client} variant="hero" />
+              <CaseCover id={item.id} client={item.client} shot={item.shot} shotKind={item.shotKind} variant="hero" />
             </div>
           </section>
 
@@ -156,7 +156,7 @@ export function CaseView({ item, others }: { item: CaseItem; others: CaseItem[] 
               {others.map((c) => (
                 <Link key={c.id} href={`/cases/${c.id}`} className="group block">
                   <div className="aspect-[4/3] overflow-hidden rounded-[20px]">
-                    <CaseCover id={c.id} client={c.client} variant="card" className="transition-transform duration-500 group-hover:scale-[1.05]" />
+                    <CaseCover id={c.id} client={c.client} shot={c.shot} shotKind={c.shotKind} variant="card" className="transition-transform duration-500 group-hover:scale-[1.05]" />
                   </div>
                   <p className="mt-3 text-[17px] font-medium text-inverted">{c.client}</p>
                   <p className="text-[14px] text-inverted/40">{c.category}</p>

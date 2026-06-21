@@ -8,7 +8,7 @@ import { HeroPrompt } from './HeroPrompt';
 // that runs on the very first paint, independent of JS. reduced-motion → instant.
 export function Hero() {
   return (
-    <div className="relative z-10 flex flex-col items-center px-5 pt-[136px] text-center sm:px-6 lg:pt-[210px]">
+    <div className="relative z-10 flex flex-col items-center px-5 pt-[120px] text-center sm:px-6 lg:pt-[176px]">
       <h1 className="w-full max-w-[966px] select-none text-[clamp(36px,11vw,82px)] font-medium leading-[0.95] tracking-[-0.02em] text-inverted [animation:fade-up_0.55s_ease-out_both] motion-reduce:[animation:none] lg:leading-[0.9]">
         {hero.title[0]}
         <br />

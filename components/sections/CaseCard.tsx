@@ -33,12 +33,14 @@ export function CaseCard({ item }: { item: CaseItem }) {
       <Link
         href={`/cases/${item.id}`}
         aria-label={`Кейс: ${item.client}`}
-        className="relative block h-[360px] overflow-hidden rounded-[32px] transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:-translate-y-[6px] motion-safe:group-hover:scale-[1.012] motion-safe:group-hover:shadow-[0_28px_64px_-16px_rgba(0,0,0,0.45)] sm:h-[420px] sm:rounded-[44px]"
+        className="relative block h-[360px] overflow-hidden rounded-[32px] shadow-[0_16px_44px_-24px_rgba(0,0,0,0.3)] ring-1 ring-black/[0.06] transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:-translate-y-[6px] motion-safe:group-hover:scale-[1.012] motion-safe:group-hover:shadow-[0_28px_64px_-16px_rgba(0,0,0,0.45)] sm:h-[420px] sm:rounded-[44px]"
       >
         {/* generated brand cover (real stills come from Vadim later) */}
         <CaseCover
           id={item.id}
           client={item.client}
+          shot={item.shot}
+          shotKind={item.shotKind}
           variant="card"
           className="transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:scale-[1.04]"
         />

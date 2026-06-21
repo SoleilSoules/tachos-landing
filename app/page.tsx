@@ -1,5 +1,6 @@
+import Image from 'next/image';
+import { asset } from '@/lib/asset';
 import { Nav } from '@/components/sections/Nav';
-import { HeroDeviceCycle } from '@/components/sections/HeroDeviceCycle';
 import { Hero } from '@/components/sections/Hero';
 import { LogoWall } from '@/components/sections/LogoWall';
 import { Founder } from '@/components/sections/Founder';
@@ -22,12 +23,22 @@ export default function Home() {
           className="pointer-events-none absolute inset-x-0 top-0 h-[1340px] overflow-hidden"
         >
           <div className="absolute inset-0 bg-ink" />
-          {/* device showreel (REDLINE DEPTH RAIL) — renders its own redline glow
-              bed + elliptical readability scrim inside, so no static orb here */}
-          <HeroDeviceCycle />
-          {/* vertical wash: keeps the bright device screens muted so the H1 and
-              orange sub-head stay readable over the centre */}
-          <div className="absolute inset-0 bg-gradient-to-b from-bg/40 via-bg/15 to-bg" />
+          {/* warm glow behind the device, as in the concept */}
+          <div className="absolute left-1/2 top-[110px] h-[760px] w-[1040px] -translate-x-1/2 rounded-full bg-accent/40 blur-[150px]" />
+          {/* iPhone mockup — large warm close-up like the concept */}
+          <div className="absolute left-1/2 top-0 h-[1340px] w-[1120px] -translate-x-1/2 overflow-hidden [animation:float-y_7s_ease-in-out_infinite] motion-reduce:[animation:none]">
+            <Image
+              src={asset('/figma/hero-bg.png')}
+              alt=""
+              fill
+              priority
+              sizes="1120px"
+              className="scale-[1.1] object-cover object-[center_16%] brightness-[0.6] saturate-[0.82] sepia-[0.22]"
+            />
+          </div>
+          {/* vertical wash: keeps the device warm + muted so the H1 and orange
+              sub-head stay readable over its centre */}
+          <div className="absolute inset-0 bg-gradient-to-b from-bg/55 via-bg/38 to-bg" />
         </div>
 
         <Nav />
