@@ -2,13 +2,18 @@
 // just the clip). TEMPORARY: embeds the crauch.ru Kinescope clip as a stand-in
 // until Vadim supplies the studio's own footage — swap the iframe src (or replace
 // with a self-hosted <video>) then.
+//
+// background=1 runs the player as a decorative backdrop: it forces autoplay +
+// muted + loop AND hides every control, so a click no longer surfaces the dark
+// pause/control overlay (what read as a "shadow"). no_poster=1 stops the poster
+// flashing on each loop restart.
 export function VideoBlock() {
   return (
     <section id="studio" className="bg-white py-[72px] lg:py-[120px]">
       <div className="mx-auto max-w-page px-5 sm:px-8 lg:px-[80px]">
         <div className="relative aspect-video w-full overflow-hidden rounded-card">
           <iframe
-            src="https://kinescope.io/embed/nGzuTWL7hcR9SSZHhk1e2i?autoplay=1&muted=1&loop=1"
+            src="https://kinescope.io/embed/nGzuTWL7hcR9SSZHhk1e2i?background=1&no_poster=1"
             title="Студия Tachos изнутри"
             allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
             allowFullScreen
