@@ -99,16 +99,35 @@ export function Nav() {
             : 'h-[64px] border border-transparent lg:h-[84px]'
         }`}
       >
-        {/* logo alone on the left; home scrolls to top, sub-pages route home */}
-        {onHome ? (
-          <a href="#" data-logo-mark className="flex items-center" aria-label="tachos — на главную">
-            <LogoImg />
-          </a>
-        ) : (
-          <Link href="/" data-logo-mark className="flex items-center" aria-label="tachos — на главную">
-            <LogoImg />
-          </Link>
-        )}
+        {/* logo on the left, with a quiet "report a bug" link beside it */}
+        <div className="flex items-center gap-[18px]">
+          {onHome ? (
+            <a
+              href="#"
+              data-logo-mark
+              className="flex items-center"
+              aria-label="tachos — на главную"
+            >
+              <LogoImg />
+            </a>
+          ) : (
+            <Link
+              href="/"
+              data-logo-mark
+              className="flex items-center"
+              aria-label="tachos — на главную"
+            >
+              <LogoImg />
+            </Link>
+          )}
+          <button
+            type="button"
+            data-feedback
+            className="hidden rounded-full border border-accent/40 bg-accent/10 px-[13px] py-[5px] text-[13px] font-medium text-accent-bright transition hover:bg-accent hover:text-inverted sm:block"
+          >
+            Нашли ошибку?
+          </button>
+        </div>
 
         {/* desktop: links + CTA inline */}
         <div className="hidden items-center gap-[40px] lg:flex">
@@ -142,7 +161,16 @@ export function Nav() {
           aria-expanded={menuOpen}
           className="grid size-[40px] place-items-center text-inverted lg:hidden"
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            aria-hidden
+          >
             <path d="M3 6h18M3 12h18M3 18h18" />
           </svg>
         </button>
@@ -150,43 +178,60 @@ export function Nav() {
 
       {/* mobile menu overlay — slides down from the top */}
       {menuOpen && (
-      <div className="fixed inset-0 z-[60] lg:hidden">
-        <div
-          onClick={() => setMenuOpen(false)}
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm [animation:fade-in_0.2s_ease-out]"
-        />
-        <nav className="absolute inset-x-0 top-0 flex flex-col gap-[2px] rounded-b-[28px] bg-ink px-6 pb-[28px] pt-[76px] shadow-[0_30px_80px_rgba(0,0,0,0.5)] [animation:fade-up_0.25s_ease-out]">
-          <button
-            type="button"
+        <div className="fixed inset-0 z-[60] lg:hidden">
+          <div
             onClick={() => setMenuOpen(false)}
-            aria-label="Закрыть меню"
-            className="absolute right-[16px] top-[16px] grid size-[40px] place-items-center text-inverted"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
-              <path d="M6 6l12 12M18 6L6 18" />
-            </svg>
-          </button>
-          {nav.links.map((link) => (
-            <NavLink
-              key={link.label}
-              href={link.href}
-              onHome={onHome}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm [animation:fade-in_0.2s_ease-out]"
+          />
+          <nav className="absolute inset-x-0 top-0 flex flex-col gap-[2px] rounded-b-[28px] bg-ink px-6 pb-[28px] pt-[76px] shadow-[0_30px_80px_rgba(0,0,0,0.5)] [animation:fade-up_0.25s_ease-out]">
+            <button
+              type="button"
               onClick={() => setMenuOpen(false)}
-              className="py-[12px] text-[22px] font-medium text-inverted transition-colors hover:text-accent-bright"
+              aria-label="Закрыть меню"
+              className="absolute right-[16px] top-[16px] grid size-[40px] place-items-center text-inverted"
             >
-              {link.label}
-            </NavLink>
-          ))}
-          <a
-            href="#contacts"
-            data-compose
-            onClick={() => setMenuOpen(false)}
-            className="mt-[14px] rounded-button bg-accent-bright px-[20px] py-[13px] text-center text-[17px] text-inverted"
-          >
-            {nav.cta}
-          </a>
-        </nav>
-      </div>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                aria-hidden
+              >
+                <path d="M6 6l12 12M18 6L6 18" />
+              </svg>
+            </button>
+            {nav.links.map((link) => (
+              <NavLink
+                key={link.label}
+                href={link.href}
+                onHome={onHome}
+                onClick={() => setMenuOpen(false)}
+                className="py-[12px] text-[22px] font-medium text-inverted transition-colors hover:text-accent-bright"
+              >
+                {link.label}
+              </NavLink>
+            ))}
+            <a
+              href="#contacts"
+              data-compose
+              onClick={() => setMenuOpen(false)}
+              className="mt-[14px] rounded-button bg-accent-bright px-[20px] py-[13px] text-center text-[17px] text-inverted"
+            >
+              {nav.cta}
+            </a>
+            <button
+              type="button"
+              data-feedback
+              onClick={() => setMenuOpen(false)}
+              className="mt-[10px] py-[10px] text-center text-[15px] text-inverted/65 transition-colors hover:text-accent-bright"
+            >
+              Нашли ошибку?
+            </button>
+          </nav>
+        </div>
       )}
     </header>
   );

@@ -3,6 +3,7 @@ import { Onest, PT_Mono } from 'next/font/google';
 import './globals.css';
 import { SmoothScroll } from '@/components/SmoothScroll';
 import { ComposeProvider } from '@/components/compose/ComposeProvider';
+import { FeedbackWidget } from '@/components/feedback/FeedbackWidget';
 
 // Onest is a variable font — covers the full weight range we use (400–700)
 // without separate weight files. Cyrillic subset is required (UI is Russian).
@@ -27,11 +28,7 @@ export const metadata: Metadata = {
     'Проектируем и собираем веб- и мобильные продукты для фаундеров и компаний — от идеи до релиза в проде.',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   // ComposeProvider lives here (not in a page) so the letter modal, mascot and
   // floating CTA work on every route (home, case, blog), and the draft survives
   // client-side navigation between them.
@@ -40,6 +37,7 @@ export default function RootLayout({
       <body>
         <SmoothScroll>
           <ComposeProvider>{children}</ComposeProvider>
+          <FeedbackWidget />
         </SmoothScroll>
       </body>
     </html>

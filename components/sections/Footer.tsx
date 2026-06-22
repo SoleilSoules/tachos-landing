@@ -9,9 +9,21 @@ import { LetterBody, ComposeSent } from '@/components/compose/LetterBody';
 
 function CopyIcon() {
   return (
-    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden className="text-white/40 transition group-hover/c:text-accent-bright">
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden
+      className="text-white/40 transition group-hover/c:text-accent-bright"
+    >
       <rect x="5.5" y="5.5" width="8" height="8" rx="1.6" stroke="currentColor" strokeWidth="1.3" />
-      <path d="M3.5 10.5h-.5A1.5 1.5 0 0 1 1.5 9V3A1.5 1.5 0 0 1 3 1.5h6A1.5 1.5 0 0 1 10.5 3v.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+      <path
+        d="M3.5 10.5h-.5A1.5 1.5 0 0 1 1.5 9V3A1.5 1.5 0 0 1 3 1.5h6A1.5 1.5 0 0 1 10.5 3v.5"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -34,7 +46,7 @@ export function Footer() {
     }
     const io = new IntersectionObserver(
       ([e]) => {
-        if (e.isIntersecting) {
+        if (e?.isIntersecting) {
           setInView(true);
           io.disconnect(); // one-shot: once typing starts it never needs to re-fire
         }
@@ -58,7 +70,11 @@ export function Footer() {
   };
 
   return (
-    <footer id="contacts" ref={ref} className="relative overflow-hidden rounded-t-[40px] bg-bg text-inverted">
+    <footer
+      id="contacts"
+      ref={ref}
+      className="relative overflow-hidden rounded-t-[40px] bg-bg text-inverted"
+    >
       <div className="relative mx-auto max-w-page px-5 pb-[40px] pt-[64px] sm:px-10 lg:px-[96px] lg:pb-[54px] lg:pt-[100px]">
         <div className="relative grid grid-cols-1 gap-[40px] lg:grid-cols-[minmax(0,1fr)_460px]">
           {/* left — the smart letter, the very same composer as the modal (synced) */}
@@ -74,10 +90,18 @@ export function Footer() {
             {/* manager sits right under the letter — Anna is who replies to it */}
             <div className="mt-[28px] flex items-center gap-[10px]">
               <span className="size-[54px] shrink-0 overflow-hidden rounded-full">
-                <Image src={asset('/figma/mgr-anna.png')} alt={footer.manager.name} width={54} height={54} className="size-full object-cover" />
+                <Image
+                  src={asset('/figma/mgr-anna.png')}
+                  alt={footer.manager.name}
+                  width={54}
+                  height={54}
+                  className="size-full object-cover"
+                />
               </span>
               <span className="leading-tight">
-                <span className="block text-[16px] tracking-[0.03em] text-[#f5f7f6]">{footer.manager.name}</span>
+                <span className="block text-[16px] tracking-[0.03em] text-[#f5f7f6]">
+                  {footer.manager.name}
+                </span>
                 <span className="block text-[14px] text-[#b9b9b9]">{footer.manager.role}</span>
               </span>
             </div>
@@ -90,7 +114,13 @@ export function Footer() {
             className="pointer-events-none relative hidden min-h-[460px] lg:block"
           >
             <div className="absolute right-[10px] top-1/2 h-[600px] w-[520px] -translate-y-1/2">
-              <Image src={asset('/figma/footer-fire.svg')} alt="" fill className="object-contain" priority={false} />
+              <Image
+                src={asset('/figma/footer-fire.svg')}
+                alt=""
+                fill
+                className="object-contain"
+                priority={false}
+              />
             </div>
           </div>
         </div>
@@ -105,8 +135,14 @@ export function Footer() {
               aria-label="Скопировать почту"
               className="group/c flex items-center gap-[8px] text-white/70 transition hover:text-accent-bright"
             >
-              <span className="underline decoration-dotted underline-offset-[5px]">{footer.contacts.email.value}</span>
-              {mailCopied ? <span className="text-[14px] text-accent-bright">✓</span> : <CopyIcon />}
+              <span className="underline decoration-dotted underline-offset-[5px]">
+                {footer.contacts.email.value}
+              </span>
+              {mailCopied ? (
+                <span className="text-[14px] text-accent-bright">✓</span>
+              ) : (
+                <CopyIcon />
+              )}
             </button>
             <button
               type="button"
@@ -115,7 +151,11 @@ export function Footer() {
               className="group/c flex items-center gap-[8px] text-white/70 transition hover:text-accent-bright"
             >
               <span>{footer.contacts.phone.value}</span>
-              {phoneCopied ? <span className="text-[14px] text-accent-bright">✓</span> : <CopyIcon />}
+              {phoneCopied ? (
+                <span className="text-[14px] text-accent-bright">✓</span>
+              ) : (
+                <CopyIcon />
+              )}
             </button>
           </div>
         </div>
