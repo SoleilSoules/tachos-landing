@@ -69,8 +69,7 @@ const bodies: Record<LetterType, (s: ComposeState) => string> = {
 };
 
 export function buildLetter(s: ComposeState): { subject: string; body: string } {
-  let body =
-    bodies[s.type](s) + (s.budget ? `\n\nОриентир по бюджету: ${s.budget}.` : '');
+  let body = bodies[s.type](s) + (s.budget ? `\n\nОриентир по бюджету: ${s.budget}.` : '');
   // Personalise the greeting with the name slot when the visitor filled it.
   if (s.name) body = body.replace('Здравствуйте!', `Здравствуйте! Меня зовут ${s.name}.`);
   return { subject: subjects[s.type], body };

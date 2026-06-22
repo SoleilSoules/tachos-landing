@@ -146,7 +146,8 @@ export function CursorCompanion() {
       const dh = el.getAttribute('data-hint');
       if (dh) return { t: dh, s: el.getAttribute('data-hint-sub') || '' };
       const tag = el.tagName.toLowerCase();
-      if (tag === 'textarea') return { t: 'Опишите задачу', s: 'своими словами — оформлю в письмо' };
+      if (tag === 'textarea')
+        return { t: 'Опишите задачу', s: 'своими словами — оформлю в письмо' };
       if (tag === 'input') return { t: 'Сюда — ваш контакт', s: 'телефон, почта или @telegram' };
       if (tag === 'button' || tag === 'a') {
         const label = (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 30);
@@ -176,6 +177,7 @@ export function CursorCompanion() {
     if (perchEl && 'IntersectionObserver' in window) {
       perchObserver = new IntersectionObserver(
         ([e]) => {
+          if (!e) return;
           if (e.intersectionRatio >= 0.45) footerVisible = true;
           else if (e.intersectionRatio < 0.1) footerVisible = false;
         },
@@ -222,7 +224,8 @@ export function CursorCompanion() {
         root.current?.classList.add('shatter');
         setTimeout(() => root.current?.classList.remove('shatter'), 1100);
       } else {
-        const t = TRICKS[Math.floor(Math.random() * TRICKS.length)];
+        // WHY: index is Math.floor(random * length), always within TRICKS bounds.
+        const t = TRICKS[Math.floor(Math.random() * TRICKS.length)]!;
         root.current?.classList.add(t);
         setTimeout(() => root.current?.classList.remove(t), 950);
       }
@@ -350,12 +353,28 @@ export function CursorCompanion() {
             <g ref={eyeL} className="eye">
               <circle cx="10.2" cy="10" r="2.1" fill="#fff" />
               <circle cx="10.9" cy="10" r="1" fill="#0E0E10" />
-              <rect className="lid" x="7.6" y="7.4" width="5.2" height="5.2" rx="2.6" fill="#F84800" />
+              <rect
+                className="lid"
+                x="7.6"
+                y="7.4"
+                width="5.2"
+                height="5.2"
+                rx="2.6"
+                fill="#F84800"
+              />
             </g>
             <g ref={eyeR} className="eye">
               <circle cx="10.8" cy="15.6" r="2.1" fill="#fff" />
               <circle cx="11.5" cy="15.6" r="1" fill="#0E0E10" />
-              <rect className="lid" x="8.2" y="13" width="5.2" height="5.2" rx="2.6" fill="#F84800" />
+              <rect
+                className="lid"
+                x="8.2"
+                y="13"
+                width="5.2"
+                height="5.2"
+                rx="2.6"
+                fill="#F84800"
+              />
             </g>
           </g>
         </svg>

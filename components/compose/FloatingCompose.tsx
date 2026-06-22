@@ -30,6 +30,7 @@ export function FloatingCompose() {
       footer && 'IntersectionObserver' in window
         ? new IntersectionObserver(
             ([e]) => {
+              if (!e) return;
               footerVisible = e.isIntersecting;
               compute();
             },

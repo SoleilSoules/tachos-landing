@@ -77,7 +77,7 @@ export function CaseCard({ item }: { item: CaseItem }) {
               frosted light fill. Pinned right; nudges up-right on hover.
               motion-safe gates the translate so reduced-motion users see no shift. */}
           <div className="flex justify-end">
-            <span className="grid size-[56px] place-items-center rounded-[18px] bg-white/55 text-white ring-1 ring-inset ring-white/40 backdrop-blur-md transition-[transform,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:bg-white/70 motion-safe:group-hover:translate-x-[3px] motion-safe:group-hover:-translate-y-[3px]">
+            <span className="grid size-[56px] place-items-center rounded-[18px] bg-white/55 text-white ring-1 ring-inset ring-white/40 backdrop-blur-md transition-[transform,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:bg-white/70 motion-safe:group-hover:-translate-y-[3px] motion-safe:group-hover:translate-x-[3px]">
               <ArrowIcon />
             </span>
           </div>
@@ -91,7 +91,7 @@ export function CaseCard({ item }: { item: CaseItem }) {
           {item.desc.lead && <>{item.desc.lead} </>}
           {/* #31: accent underlay gets real padding + tag radius, cloned across
               line wraps so each line keeps rounded corners. .nums for figures. */}
-          <span className="nums box-decoration-clone rounded-tag bg-accent px-[8px] py-[2px] text-white">
+          <span className="nums rounded-tag bg-accent box-decoration-clone px-[8px] py-[2px] text-white">
             {item.desc.highlight}
           </span>
           {item.desc.tail && <> {item.desc.tail}</>}

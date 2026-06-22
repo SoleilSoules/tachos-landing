@@ -78,7 +78,7 @@ const GRID =
 // Signed shortest wrapped delta in roughly [-2..2]. With N=5 every index maps to a
 // unique slot {-2,-1,0,+1,+2}; for larger N anything past ±2 is pushed out of view.
 function signedDelta(idx: number, active: number): number {
-  let d = ((idx - active + N) % N + N) % N; // 0..N-1
+  let d = (((idx - active + N) % N) + N) % N; // 0..N-1
   if (d > N / 2) d -= N; // wrap to nearest, signed
   return d;
 }
@@ -95,7 +95,8 @@ const POSES: Record<number, Pose> = {
     z: 40,
   },
   1: {
-    transform: 'translate3d(calc(-50% + 70px), calc(-50% + 34px), -150px) rotateY(-13deg) scale(0.8)',
+    transform:
+      'translate3d(calc(-50% + 70px), calc(-50% + 34px), -150px) rotateY(-13deg) scale(0.8)',
     opacity: 0.2,
     filter: 'blur(5px)',
     z: 30,
@@ -107,13 +108,15 @@ const POSES: Record<number, Pose> = {
     z: 25,
   },
   2: {
-    transform: 'translate3d(calc(-50% + 90px), calc(-50% + 14px), -320px) rotateY(-10deg) scale(0.66)',
+    transform:
+      'translate3d(calc(-50% + 90px), calc(-50% + 14px), -320px) rotateY(-10deg) scale(0.66)',
     opacity: 0.1,
     filter: 'blur(8px) grayscale(0.3)',
     z: 20,
   },
   '-2': {
-    transform: 'translate3d(calc(-50% - 84px), calc(-50% - 26px), -320px) rotateY(10deg) scale(0.66)',
+    transform:
+      'translate3d(calc(-50% - 84px), calc(-50% - 26px), -320px) rotateY(10deg) scale(0.66)',
     opacity: 0.1,
     filter: 'blur(8px) grayscale(0.3)',
     z: 20,
@@ -151,10 +154,20 @@ function Screen({ p, tablet }: { p: Proj; tablet: boolean }) {
     >
       {/* brand header — the brightest in-screen detail, biased to the TOP THIRD so
           it sits ABOVE the H1 / white-pill zone */}
-      <div className={`relative overflow-hidden bg-gradient-to-br ${p.grad} px-6 ${tablet ? 'pb-9 pt-7' : 'pb-8 pt-7'}`}>
-        <div aria-hidden className="absolute -right-6 -top-10 h-32 w-32 rounded-full blur-[40px]" style={{ background: p.orb }} />
+      <div
+        className={`relative overflow-hidden bg-gradient-to-br ${p.grad} px-6 ${tablet ? 'pb-9 pt-7' : 'pb-8 pt-7'}`}
+      >
+        <div
+          aria-hidden
+          className="absolute -right-6 -top-10 h-32 w-32 rounded-full blur-[40px]"
+          style={{ background: p.orb }}
+        />
         {/* faint technical grid, like CaseCover */}
-        <div aria-hidden className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: GRID, backgroundSize: '34px 34px' }} />
+        <div
+          aria-hidden
+          className="absolute inset-0 opacity-[0.06]"
+          style={{ backgroundImage: GRID, backgroundSize: '34px 34px' }}
+        />
         {/* huge translucent initial */}
         <span
           aria-hidden
@@ -167,7 +180,9 @@ function Screen({ p, tablet }: { p: Proj; tablet: boolean }) {
           <span>9:41</span>
           <span className="size-[8px] rounded-full bg-white/40" />
         </div>
-        <div className="relative mt-7 text-[30px] font-semibold leading-none text-white">{p.name}</div>
+        <div className="relative mt-7 text-[30px] font-semibold leading-none text-white">
+          {p.name}
+        </div>
         <div className="relative mt-2 font-mono text-[12px] text-white/65">{p.tagline}</div>
       </div>
       {/* neutral cards */}
@@ -193,7 +208,11 @@ function Screen({ p, tablet }: { p: Proj; tablet: boolean }) {
    exactly once, on the focused device, and can never fire on the wrong one. */
 function FocusOverlay({ tablet }: { tablet: boolean }) {
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-[9px] overflow-hidden" style={{ borderRadius: tablet ? 26 : 38 }}>
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-[9px] overflow-hidden"
+      style={{ borderRadius: tablet ? 26 : 38 }}
+    >
       {/* skewed specular glint sweeping across once on focus-in */}
       <div
         className="hero-sweep absolute -inset-y-8 left-0 w-[55%] -rotate-[20deg] bg-gradient-to-r from-transparent via-white/15 to-transparent"
@@ -201,10 +220,35 @@ function FocusOverlay({ tablet }: { tablet: boolean }) {
       />
       {/* tachometer arc + needle, top-right above the pill zone */}
       <svg className="absolute right-4 top-4 h-[58px] w-[58px]" viewBox="0 0 100 100" fill="none">
-        <path d="M18 78 A 42 42 0 1 1 82 78" stroke="rgba(255,255,255,0.22)" strokeWidth="6" strokeLinecap="round" />
-        <path d="M58 30 A 42 42 0 0 1 82 78" stroke="#f05138" strokeWidth="6" strokeLinecap="round" />
-        <g className="hero-needle" style={{ transformOrigin: '50px 60px', transform: 'rotate(0deg)', animation: 'needle-tick 900ms cubic-bezier(0.16,1,0.3,1) 120ms both' }}>
-          <line x1="50" y1="60" x2="50" y2="22" stroke="#fe4a00" strokeWidth="4" strokeLinecap="round" />
+        <path
+          d="M18 78 A 42 42 0 1 1 82 78"
+          stroke="rgba(255,255,255,0.22)"
+          strokeWidth="6"
+          strokeLinecap="round"
+        />
+        <path
+          d="M58 30 A 42 42 0 0 1 82 78"
+          stroke="#f05138"
+          strokeWidth="6"
+          strokeLinecap="round"
+        />
+        <g
+          className="hero-needle"
+          style={{
+            transformOrigin: '50px 60px',
+            transform: 'rotate(0deg)',
+            animation: 'needle-tick 900ms cubic-bezier(0.16,1,0.3,1) 120ms both',
+          }}
+        >
+          <line
+            x1="50"
+            y1="60"
+            x2="50"
+            y2="22"
+            stroke="#fe4a00"
+            strokeWidth="4"
+            strokeLinecap="round"
+          />
         </g>
         <circle cx="50" cy="60" r="6" fill="#fe4a00" />
       </svg>
@@ -268,7 +312,9 @@ function Device({
             parent, NOT globals float-y which bakes translateX(-50%)) */}
         <div
           className="absolute inset-0"
-          style={isFocus && animate ? { animation: 'float-y-rail 7s ease-in-out infinite' } : undefined}
+          style={
+            isFocus && animate ? { animation: 'float-y-rail 7s ease-in-out infinite' } : undefined
+          }
         >
           <Screen p={p} tablet={tablet} />
           {isFocus && animate && showOverlay && <FocusOverlay key={cycleKey} tablet={tablet} />}
@@ -343,7 +389,11 @@ export function HeroDeviceCycle() {
       <div
         aria-hidden
         className="absolute left-1/2 top-[185px] h-[680px] w-full -translate-x-1/2"
-        style={{ perspective: '1500px', perspectiveOrigin: '50% 40%', transformStyle: 'preserve-3d' }}
+        style={{
+          perspective: '1500px',
+          perspectiveOrigin: '50% 40%',
+          transformStyle: 'preserve-3d',
+        }}
       >
         {PROJECTS.map((p, idx) => {
           if (!animate) {

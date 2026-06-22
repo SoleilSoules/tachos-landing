@@ -1,19 +1,7 @@
 'use client';
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import {
-  type ComposeState,
-  type LetterType,
-  initialCompose,
-  buildLetter,
-} from '@/lib/compose';
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { type ComposeState, type LetterType, initialCompose, buildLetter } from '@/lib/compose';
 import { loadDraft, clearDraft, useAutoSaveDraft } from '@/lib/useComposeDraft';
 import { ComposeOverlay } from './ComposeOverlay';
 import { FloatingCompose } from './FloatingCompose';
@@ -100,13 +88,10 @@ export function ComposeProvider({ children }: { children: React.ReactNode }) {
 
   const close = useCallback(() => setIsOpen(false), []);
 
-  const setField = useCallback(
-    <K extends keyof ComposeState>(key: K, value: ComposeState[K]) => {
-      setState((s) => ({ ...s, [key]: value }));
-      setTouched(true);
-    },
-    [],
-  );
+  const setField = useCallback(<K extends keyof ComposeState>(key: K, value: ComposeState[K]) => {
+    setState((s) => ({ ...s, [key]: value }));
+    setTouched(true);
+  }, []);
 
   const submitLetter = useCallback(
     async (contact: string) => {

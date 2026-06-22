@@ -15,7 +15,15 @@ function ImgPlaceholder({ minH = 300 }: { minH?: number }) {
       className="flex items-center justify-center overflow-hidden rounded-[24px] bg-white/[0.04]"
       style={{ minHeight: minH }}
     >
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" aria-hidden>
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="rgba(255,255,255,0.12)"
+        strokeWidth="1.5"
+        aria-hidden
+      >
         <rect x="3" y="3" width="18" height="18" rx="2" />
         <circle cx="8.5" cy="8.5" r="1.5" />
         <path d="m21 15-5-5L5 21" />
@@ -39,7 +47,9 @@ function NotesPanel({ item, atCta }: { item: CaseItem; atCta: boolean }) {
       }`}
       style={{ right: 'max(48px, calc((100vw - 1440px) / 2 + 60px))' }}
     >
-      <p className="mb-5 text-[13px] font-semibold uppercase tracking-[0.06em] text-inverted/80">Заметки</p>
+      <p className="mb-5 text-[13px] font-semibold uppercase tracking-[0.06em] text-inverted/80">
+        Заметки
+      </p>
       <div className="space-y-4 border-l border-white/10 pl-4">
         {rows.map((r) => (
           <div key={r.k}>
@@ -47,7 +57,9 @@ function NotesPanel({ item, atCta }: { item: CaseItem; atCta: boolean }) {
             <p className="text-[15px] leading-[1.4] text-inverted/70">{r.v}</p>
           </div>
         ))}
-        {item.verified && <p className="text-[14px] font-medium text-accent">✦ Подтверждённый кейс</p>}
+        {item.verified && (
+          <p className="text-[14px] font-medium text-accent">✦ Подтверждённый кейс</p>
+        )}
       </div>
     </div>
   );
@@ -62,7 +74,7 @@ export function CaseView({ item, others }: { item: CaseItem; others: CaseItem[] 
   useEffect(() => {
     const el = ctaRef.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => setAtCta(e.isIntersecting), {
+    const io = new IntersectionObserver(([e]) => setAtCta(e?.isIntersecting ?? false), {
       rootMargin: '0px 0px -40% 0px',
     });
     io.observe(el);
@@ -83,7 +95,15 @@ export function CaseView({ item, others }: { item: CaseItem; others: CaseItem[] 
             href="/#cases"
             className="inline-flex items-center gap-2 text-[15px] text-inverted/45 transition-colors hover:text-inverted/80"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden
+            >
               <path d="M19 12H5M11 18l-6-6 6-6" />
             </svg>
             Назад
@@ -107,14 +127,22 @@ export function CaseView({ item, others }: { item: CaseItem; others: CaseItem[] 
             <div className="flex flex-wrap gap-x-12 gap-y-7">
               {item.story.metrics.map((m) => (
                 <div key={m.label}>
-                  <p className="nums text-[34px] font-semibold leading-none tracking-[-0.02em] text-inverted">{m.value}</p>
+                  <p className="nums text-[34px] font-semibold leading-none tracking-[-0.02em] text-inverted">
+                    {m.value}
+                  </p>
                   <p className="mt-2 text-[14px] text-inverted/45">{m.label}</p>
                 </div>
               ))}
             </div>
 
             <div className="mt-10 aspect-[16/9] max-w-[820px] overflow-hidden rounded-[24px]">
-              <CaseCover id={item.id} client={item.client} shot={item.shot} shotKind={item.shotKind} variant="hero" />
+              <CaseCover
+                id={item.id}
+                client={item.client}
+                shot={item.shot}
+                shotKind={item.shotKind}
+                variant="hero"
+              />
             </div>
           </section>
 
@@ -151,12 +179,21 @@ export function CaseView({ item, others }: { item: CaseItem; others: CaseItem[] 
 
           {/* OTHER CASES */}
           <section className="mt-20 pb-6">
-            <h2 className="mb-8 text-[clamp(24px,3vw,34px)] font-semibold tracking-[-0.02em]">Другие кейсы</h2>
+            <h2 className="mb-8 text-[clamp(24px,3vw,34px)] font-semibold tracking-[-0.02em]">
+              Другие кейсы
+            </h2>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
               {others.map((c) => (
                 <Link key={c.id} href={`/cases/${c.id}`} className="group block">
                   <div className="aspect-[4/3] overflow-hidden rounded-[20px]">
-                    <CaseCover id={c.id} client={c.client} shot={c.shot} shotKind={c.shotKind} variant="card" className="transition-transform duration-500 group-hover:scale-[1.05]" />
+                    <CaseCover
+                      id={c.id}
+                      client={c.client}
+                      shot={c.shot}
+                      shotKind={c.shotKind}
+                      variant="card"
+                      className="transition-transform duration-500 group-hover:scale-[1.05]"
+                    />
                   </div>
                   <p className="mt-3 text-[17px] font-medium text-inverted">{c.client}</p>
                   <p className="text-[14px] text-inverted/40">{c.category}</p>

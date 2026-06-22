@@ -35,7 +35,7 @@ export function useCountUp<T extends HTMLElement = HTMLSpanElement>(
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) run();
+        if (entries[0]?.isIntersecting) run();
       },
       { threshold: 0.5 },
     );

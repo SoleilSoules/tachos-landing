@@ -41,7 +41,7 @@ export function WordsReveal({
 
     const io = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) run();
+        if (entries[0]?.isIntersecting) run();
       },
       { threshold: 0.2, rootMargin: '-50px 0px' },
     );

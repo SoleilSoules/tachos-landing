@@ -75,7 +75,9 @@ a {
 
 /* lining + proportional figures — matches Figma number styling on chips/stats */
 .nums {
-  font-feature-settings: 'lnum' 1, 'pnum' 1;
+  font-feature-settings:
+    'lnum' 1,
+    'pnum' 1;
 }
 
 /* Cursor companion (ported from v2): orange plectrum with blinking eyes */
@@ -136,17 +138,40 @@ a {
 }
 /* 6 shards fly out along their own angle (--a), tumble, then regroup to centre. */
 @keyframes shard-burst {
-  0% { opacity: 0; transform: rotate(var(--a)) translateY(0) rotate(0) scale(0.5); }
-  18% { opacity: 1; }
-  45% { opacity: 1; transform: rotate(var(--a)) translateY(-26px) rotate(140deg) scale(1); }
-  80% { opacity: 1; transform: rotate(var(--a)) translateY(-26px) rotate(230deg) scale(0.9); }
-  100% { opacity: 0; transform: rotate(var(--a)) translateY(0) rotate(360deg) scale(0.4); }
+  0% {
+    opacity: 0;
+    transform: rotate(var(--a)) translateY(0) rotate(0) scale(0.5);
+  }
+  18% {
+    opacity: 1;
+  }
+  45% {
+    opacity: 1;
+    transform: rotate(var(--a)) translateY(-26px) rotate(140deg) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: rotate(var(--a)) translateY(-26px) rotate(230deg) scale(0.9);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--a)) translateY(0) rotate(360deg) scale(0.4);
+  }
 }
 @keyframes companion-wobble {
-  0%, 100% { transform: rotate(0); }
-  25% { transform: rotate(-16deg); }
-  60% { transform: rotate(12deg); }
-  85% { transform: rotate(-5deg); }
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(-16deg);
+  }
+  60% {
+    transform: rotate(12deg);
+  }
+  85% {
+    transform: rotate(-5deg);
+  }
 }
 .companion.blink .lid {
   animation: blink-once 0.2s ease;
@@ -164,7 +189,9 @@ a {
 .bubble {
   opacity: 0;
   transform: translateY(4px);
-  transition: opacity 0.2s, transform 0.2s;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
 }
 .bubble.show {
   opacity: 1;
@@ -233,16 +260,33 @@ a {
 
 /* letter composer (modal + inline footer): slot popup, typing caret, mail hint */
 @keyframes compose-hint-in {
-  from { opacity: 0; transform: translateY(2px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 @keyframes compose-pop-in {
-  from { opacity: 0; transform: translateY(-6px) scale(0.96); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 @keyframes compose-caret {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 /* hero device — slow vertical float (keeps the horizontal centring) */
@@ -284,8 +328,7 @@ a {
   transform: translateY(34px) scale(0.99);
 }
 .reveal-visible {
-  animation: fade-up var(--reveal-dur, 0.7s)
-    var(--reveal-ease, cubic-bezier(0.16, 1, 0.3, 1)) both;
+  animation: fade-up var(--reveal-dur, 0.7s) var(--reveal-ease, cubic-bezier(0.16, 1, 0.3, 1)) both;
   animation-delay: var(--reveal-delay, 0ms);
 }
 .reveal-visible.reveal-fade {

@@ -33,8 +33,9 @@ export function useFocusTrap<T extends HTMLElement = HTMLDivElement>(active: boo
       if (e.key !== 'Tab') return;
       const f = focusables();
       if (!f.length) return;
-      const first = f[0];
-      const last = f[f.length - 1];
+      // WHY: f.length was just checked > 0, so the first and last elements exist.
+      const first = f[0]!;
+      const last = f[f.length - 1]!;
       if (e.shiftKey && document.activeElement === first) {
         e.preventDefault();
         last.focus();

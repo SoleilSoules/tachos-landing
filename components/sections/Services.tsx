@@ -23,7 +23,7 @@ export function Services() {
   const ref = useReveal<HTMLDivElement>({ threshold: 0.08 });
 
   return (
-    <section id="services" className="bg-white pt-[64px] pb-[72px] lg:pt-[96px] lg:pb-[104px]">
+    <section id="services" className="bg-white pb-[72px] pt-[64px] lg:pb-[104px] lg:pt-[96px]">
       <div ref={ref} className="mx-auto max-w-page px-5 sm:px-8 lg:px-[80px]">
         {/* Keep: "под ключ" framing, but WITHOUT concrete prices (issue #41) */}
         <WordsReveal
@@ -40,8 +40,8 @@ export function Services() {
           start={260}
           className="mt-[20px] block max-w-[520px] text-[19px] leading-[1.4] text-black/50"
         >
-          Не знаете, как назвать задачу, — поможем сформулировать и подберём
-          состав работ. Ниже — направления, в которых мы сильны.
+          Не знаете, как назвать задачу, — поможем сформулировать и подберём состав работ. Ниже —
+          направления, в которых мы сильны.
         </WordsReveal>
 
         {/* Role cards (issue #41): one section heading only (the "под ключ" offer);

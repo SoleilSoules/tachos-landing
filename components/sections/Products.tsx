@@ -50,7 +50,9 @@ function ProductSwitcher({
             onClick={() => onPick(i)}
             aria-current={isActive}
             className={`relative flex h-[64px] min-w-0 flex-1 items-center gap-[10px] overflow-hidden rounded-[16px] border px-[10px] text-left transition-colors duration-500 lg:max-w-[300px] lg:gap-[12px] ${
-              isActive ? 'border-accent/40 bg-accent text-white' : 'border-white/10 bg-white/[0.06] text-white'
+              isActive
+                ? 'border-accent/40 bg-accent text-white'
+                : 'border-white/10 bg-white/[0.06] text-white'
             }`}
           >
             {isActive && (
@@ -108,7 +110,7 @@ export function Products() {
       setInView(true);
       return;
     }
-    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), {
+    const io = new IntersectionObserver(([e]) => setInView(e?.isIntersecting ?? false), {
       rootMargin: '0px 0px -10% 0px',
     });
     io.observe(el);
@@ -140,7 +142,10 @@ export function Products() {
   }, [index, count, inView]);
 
   return (
-    <section id="products" className="overflow-hidden bg-bg pt-[64px] pb-[80px] text-inverted lg:pt-[130px] lg:pb-[150px]">
+    <section
+      id="products"
+      className="overflow-hidden bg-bg pb-[80px] pt-[64px] text-inverted lg:pb-[150px] lg:pt-[130px]"
+    >
       <h2 className="mx-auto max-w-[1000px] px-6 text-center text-[clamp(30px,8vw,52px)] font-semibold leading-[1.05] tracking-[-0.01em] lg:leading-[1.0]">
         <WordsReveal as="span" stagger={48} className="block">
           {productsIntro.titleLead}
@@ -160,7 +165,8 @@ export function Products() {
             // As `index` advances the whole deck rotates, so a switch reads as
             // dealing the top card to the back of the stack.
             const depth = (i - index + count) % count;
-            const rest = REST[Math.min(depth, REST.length - 1)];
+            // WHY: depth is non-negative (modulo count) and clamped to REST.length-1, so the index is always in bounds.
+            const rest = REST[Math.min(depth, REST.length - 1)]!;
             const isActive = depth === 0;
             const mockup = MOCKUPS[p.id];
 
@@ -183,7 +189,11 @@ export function Products() {
                 {/* Clipped panel: rounded body with text/CTA. overflow-hidden keeps
                     the glow + rounding tidy; the tablet lives OUTSIDE it (sibling)
                     so it can bleed past the top edge like Figma. */}
-                <div data-hint="Наш продукт" data-hint-sub={p.name} className="relative h-full overflow-hidden rounded-[40px] border border-[#8d8d8d]/35 bg-white/[0.06] backdrop-blur-md shadow-[0_30px_80px_rgba(0,0,0,0.45)] [clip-path:inset(0_round_40px)]">
+                <div
+                  data-hint="Наш продукт"
+                  data-hint-sub={p.name}
+                  className="relative h-full overflow-hidden rounded-[40px] border border-[#8d8d8d]/35 bg-white/[0.06] shadow-[0_30px_80px_rgba(0,0,0,0.45)] backdrop-blur-md [clip-path:inset(0_round_40px)]"
+                >
                   {/* warm glow behind the device */}
                   <div className="pointer-events-none absolute -right-[40px] top-1/2 h-[560px] w-[600px] -translate-y-1/2 rounded-full bg-accent/25 blur-[150px]" />
 

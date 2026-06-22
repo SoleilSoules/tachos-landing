@@ -59,8 +59,8 @@ function Slot({
           value
             ? 'font-medium text-accent underline decoration-accent/40 underline-offset-[6px]'
             : showPopup
-              ? 'rounded-[4px] bg-accent/15 px-[4px] text-accent/90 underline decoration-dotted decoration-accent/50 underline-offset-[6px]'
-              : 'text-inverted/35 underline decoration-dotted decoration-inverted/25 underline-offset-[6px]'
+              ? 'rounded-[4px] bg-accent/15 px-[4px] text-accent/90 underline decoration-accent/50 decoration-dotted underline-offset-[6px]'
+              : 'text-inverted/35 underline decoration-inverted/25 decoration-dotted underline-offset-[6px]'
         }
       >
         {value || ph}
@@ -360,7 +360,10 @@ export function LetterBody({ active, autofocus = true }: { active: boolean; auto
         <div className="mb-[12px] text-[14px] font-medium text-inverted/90">Куда вам ответить</div>
 
         {isError && (
-          <div role="alert" className="mb-[12px] rounded-[10px] border border-accent/30 bg-accent/10 px-[14px] py-[10px] text-[13px] text-accent">
+          <div
+            role="alert"
+            className="mb-[12px] rounded-[10px] border border-accent/30 bg-accent/10 px-[14px] py-[10px] text-[13px] text-accent"
+          >
             Не удалось отправить — попробуйте ещё раз или скопируйте письмо.
           </div>
         )}
@@ -388,7 +391,9 @@ export function LetterBody({ active, autofocus = true }: { active: boolean; auto
             />
             {contactError && (
               <p id={contactErrId} role="alert" className="mt-[6px] text-[12px] text-accent">
-                {contactError === 'empty' ? 'Оставьте контакт — ответим туда' : 'Не похоже на телефон, почту или @telegram'}
+                {contactError === 'empty'
+                  ? 'Оставьте контакт — ответим туда'
+                  : 'Не похоже на телефон, почту или @telegram'}
               </p>
             )}
           </div>
@@ -400,7 +405,10 @@ export function LetterBody({ active, autofocus = true }: { active: boolean; auto
           >
             {isSending ? (
               <>
-                <span aria-hidden className="size-[14px] animate-spin rounded-full border-2 border-inverted/30 border-t-inverted" />
+                <span
+                  aria-hidden
+                  className="size-[14px] animate-spin rounded-full border-2 border-inverted/30 border-t-inverted"
+                />
                 Отправляем…
               </>
             ) : isError ? (
@@ -423,7 +431,9 @@ export function LetterBody({ active, autofocus = true }: { active: boolean; auto
             aria-describedby={agreeError ? agreeErrId : undefined}
             className="mt-[2px] accent-accent"
           />
-          <span>Даю согласие на обработку персональных данных. Один ответ по делу — без рассылок.</span>
+          <span>
+            Даю согласие на обработку персональных данных. Один ответ по делу — без рассылок.
+          </span>
         </label>
         {agreeError && (
           <p id={agreeErrId} role="alert" className="mt-[6px] text-[12px] text-accent">

@@ -21,7 +21,12 @@ function PlayIcon() {
 function CloseIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
-      <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path
+        d="M1 1l12 12M13 1L1 13"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -62,7 +67,20 @@ export function Founder() {
   const toggleRef = useRef<HTMLButtonElement>(null);
   // Physics state for the draggable corner-magnet widget (kept in a ref so the
   // rAF spring loop never triggers React re-renders — we write transform to DOM).
-  const stRef = useRef({ x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0, grabx: 0, graby: 0, dragging: false, moved: 0, raf: 0, suppressClick: false });
+  const stRef = useRef({
+    x: 0,
+    y: 0,
+    vx: 0,
+    vy: 0,
+    tx: 0,
+    ty: 0,
+    grabx: 0,
+    graby: 0,
+    dragging: false,
+    moved: 0,
+    raf: 0,
+    suppressClick: false,
+  });
   const [mounted, setMounted] = useState(false);
   // Hide the draggable widget on touch devices — drag fights page scroll and the
   // dot has nowhere good to sit on a phone (mirrors the mascot's touch guard).
@@ -113,7 +131,7 @@ export function Founder() {
       ];
     };
     const nearest = () => {
-      let best = corners()[3];
+      let best = corners()[3]!; // WHY: corners() returns a fixed 4-element array; [3] always exists
       let bd = Infinity;
       for (const c of corners()) {
         const d = (c.x - s.x) ** 2 + (c.y - s.y) ** 2;
@@ -132,7 +150,12 @@ export function Founder() {
       s.x += s.vx;
       s.y += s.vy;
       apply();
-      if (Math.abs(s.vx) < 0.12 && Math.abs(s.vy) < 0.12 && Math.abs(s.tx - s.x) < 0.4 && Math.abs(s.ty - s.y) < 0.4) {
+      if (
+        Math.abs(s.vx) < 0.12 &&
+        Math.abs(s.vy) < 0.12 &&
+        Math.abs(s.tx - s.x) < 0.4 &&
+        Math.abs(s.ty - s.y) < 0.4
+      ) {
         s.x = s.tx;
         s.y = s.ty;
         s.vx = 0;
@@ -153,7 +176,7 @@ export function Founder() {
       }
     };
 
-    const init = corners()[3]; // bottom-right
+    const init = corners()[3]!; // bottom-right — WHY: corners() returns a fixed 4-element array; [3] always exists
     s.x = s.tx = init.x;
     s.y = s.ty = init.y;
     s.vx = s.vy = 0;
@@ -269,8 +292,15 @@ export function Founder() {
       >
         <span className="relative grid size-[52px] shrink-0 place-items-center">
           <span className="absolute inset-0 rounded-full bg-accent-bright/40 [animation:fnd-ping_2.6s_ease-out_infinite] motion-reduce:hidden" />
-          <span className="relative size-[52px] overflow-hidden rounded-full ring-2 ring-accent-bright/70 shadow-[0_8px_24px_rgba(0,0,0,0.4)]">
-            <Image src={asset('/figma/founder-container.jpg')} alt={founder.person.name} fill sizes="52px" draggable={false} className="object-cover" />
+          <span className="relative size-[52px] overflow-hidden rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.4)] ring-2 ring-accent-bright/70">
+            <Image
+              src={asset('/figma/founder-container.jpg')}
+              alt={founder.person.name}
+              fill
+              sizes="52px"
+              draggable={false}
+              className="object-cover"
+            />
           </span>
           <span className="absolute -bottom-[1px] -right-[1px] size-[14px] rounded-full border-2 border-ink bg-[#3ad29f]" />
         </span>
@@ -295,7 +325,13 @@ export function Founder() {
             className="relative h-[414px] w-[1030px] max-w-full overflow-hidden rounded-founder bg-ink outline-none [animation:fnd-rise_0.42s_cubic-bezier(0.16,1,0.3,1)_both] motion-reduce:[animation:none]"
             style={{ position: 'fixed', left: '50%', top: '50%' }}
           >
-            <Image src={asset('/figma/founder-card-bg.png')} alt="" fill sizes="1030px" className="object-cover opacity-50" />
+            <Image
+              src={asset('/figma/founder-card-bg.png')}
+              alt=""
+              fill
+              sizes="1030px"
+              className="object-cover opacity-50"
+            />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/70" />
             <div className="absolute inset-0 bg-[radial-gradient(60%_70%_at_72%_72%,rgba(240,81,56,0.28),transparent_70%)]" />
 
@@ -312,10 +348,18 @@ export function Founder() {
             </button>
 
             <div className="absolute inset-y-0 right-0 w-[472px] overflow-hidden rounded-l-[28px]">
-              <Image src={asset('/figma/founder-container.jpg')} alt="Вадим — основатель студии" fill sizes="480px" className="object-cover" />
+              <Image
+                src={asset('/figma/founder-container.jpg')}
+                alt="Вадим — основатель студии"
+                fill
+                sizes="480px"
+                className="object-cover"
+              />
               <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 to-transparent" />
               <div className="absolute bottom-[24px] left-[28px]">
-                <div className="text-[24px] font-semibold leading-tight text-white">{founder.person.name}</div>
+                <div className="text-[24px] font-semibold leading-tight text-white">
+                  {founder.person.name}
+                </div>
                 <div className="text-[15px] text-white/60">{founder.person.role}</div>
               </div>
             </div>
@@ -342,7 +386,10 @@ export function Founder() {
                 <MagneticButton className="h-[56px] shrink-0 whitespace-nowrap rounded-[54px] bg-white px-[28px] text-[16px] font-medium text-black hover:brightness-95">
                   {founder.contactCta}
                 </MagneticButton>
-                <button type="button" className="flex h-[56px] items-center gap-[10px] whitespace-nowrap px-[8px] text-[16px] text-inverted transition hover:opacity-80">
+                <button
+                  type="button"
+                  className="flex h-[56px] items-center gap-[10px] whitespace-nowrap px-[8px] text-[16px] text-inverted transition hover:opacity-80"
+                >
                   <span className="grid size-[36px] shrink-0 place-items-center rounded-full bg-white/15">
                     <PlayIcon />
                   </span>

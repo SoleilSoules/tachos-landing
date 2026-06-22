@@ -16,7 +16,13 @@ function ArrowSquare({ onPeach }: { onPeach?: boolean }) {
       aria-hidden
     >
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <path d="M4 12 12 4M12 4H5M12 4v7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+        <path
+          d="M4 12 12 4M12 4H5M12 4v7"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
       </svg>
     </span>
   );
@@ -29,7 +35,9 @@ function Meta({ post, peach }: { post: Post; peach?: boolean }) {
       <span className="rounded-full bg-white px-[14px] py-[6px] font-medium text-black shadow-[0_4px_14px_rgba(0,0,0,0.06)]">
         {post.tag}
       </span>
-      <span className={`nums rounded-full px-[14px] py-[6px] ${peach ? 'bg-white/45 text-black/55' : 'bg-black/[0.05] text-black/45'}`}>
+      <span
+        className={`nums rounded-full px-[14px] py-[6px] ${peach ? 'bg-white/45 text-black/55' : 'bg-black/[0.05] text-black/45'}`}
+      >
         {post.date} · {post.read}
       </span>
     </div>
@@ -41,7 +49,13 @@ function Author({ post }: { post: Post }) {
   return (
     <div className="flex items-center gap-[10px]">
       <span className="relative size-[54px] shrink-0 overflow-hidden rounded-full bg-black/10">
-        <Image src={asset('/figma/founder-container.jpg')} alt={post.author} fill sizes="54px" className="object-cover" />
+        <Image
+          src={asset('/figma/founder-container.jpg')}
+          alt={post.author}
+          fill
+          sizes="54px"
+          className="object-cover"
+        />
       </span>
       <span className="leading-tight">
         <span className="block text-[16px] tracking-[0.03em] text-black">{post.author}</span>
@@ -60,7 +74,13 @@ function PhotoBlock({ src, bleed }: { src: string; bleed?: boolean }) {
         bleed ? 'w-[142%] translate-x-[24%]' : 'w-full'
       }`}
     >
-      <Image src={asset(src)} alt="" fill sizes="(max-width: 768px) 100vw, 560px" className="object-cover" />
+      <Image
+        src={asset(src)}
+        alt=""
+        fill
+        sizes="(max-width: 768px) 100vw, 560px"
+        className="object-cover"
+      />
     </div>
   );
 }
@@ -84,12 +104,16 @@ function Card({
       data-hint="Статья студии"
       data-hint-sub={post.tag}
       className={`reveal-hidden group flex h-full cursor-pointer flex-col rounded-card transition duration-300 hover:-translate-y-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 ${
-        peach ? 'bg-gradient-to-br from-[#f7d8c5] via-[#f6cdba] to-[#f1bda3]' : 'bg-surface hover:bg-surface2'
+        peach
+          ? 'bg-gradient-to-br from-[#f7d8c5] via-[#f6cdba] to-[#f1bda3]'
+          : 'bg-surface hover:bg-surface2'
       } ${big ? 'min-h-[500px] p-[28px] sm:p-[40px] md:p-[44px]' : 'min-h-[380px] p-[24px] sm:p-[34px]'}`}
     >
       <h3
         className={`font-semibold leading-[1.1] tracking-[-0.01em] text-black ${
-          big ? 'max-w-[560px] text-[26px] sm:text-[34px]' : 'max-w-[300px] text-[22px] sm:text-[26px]'
+          big
+            ? 'max-w-[560px] text-[26px] sm:text-[34px]'
+            : 'max-w-[300px] text-[22px] sm:text-[26px]'
         }`}
       >
         {post.title}
@@ -107,6 +131,7 @@ function Card({
 export function Blog() {
   const [hero, left, right] = posts;
   const ref = useReveal<HTMLDivElement>({ stagger: 90, threshold: 0.1 });
+  if (!hero || !left || !right) return null;
 
   return (
     <section id="blog" className="bg-white pb-[72px] pt-[64px] lg:pb-[140px] lg:pt-[120px]">
@@ -117,10 +142,19 @@ export function Blog() {
       `}</style>
 
       <div className="mx-auto max-w-[680px] px-6 text-center">
-        <WordsReveal as="h2" stagger={48} className="text-[clamp(32px,9vw,52px)] font-semibold leading-[1.05] tracking-[-0.02em] text-fg lg:leading-[1.0]">
+        <WordsReveal
+          as="h2"
+          stagger={48}
+          className="text-[clamp(32px,9vw,52px)] font-semibold leading-[1.05] tracking-[-0.02em] text-fg lg:leading-[1.0]"
+        >
           {blogIntro.title}
         </WordsReveal>
-        <WordsReveal as="p" stagger={20} start={240} className="mx-auto mt-[20px] block max-w-[640px] text-[19px] leading-[1.4] text-black/45">
+        <WordsReveal
+          as="p"
+          stagger={20}
+          start={240}
+          className="mx-auto mt-[20px] block max-w-[640px] text-[19px] leading-[1.4] text-black/45"
+        >
           {blogIntro.body}
         </WordsReveal>
       </div>

@@ -40,7 +40,17 @@ function PauseIcon({ size = 20 }: { size?: number }) {
 // the clip autoplays silently, this toggles sound.
 function MuteIcon({ size = 18 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
       <path d="M11 5 6 9H3v6h3l5 4V5Z" fill="currentColor" stroke="none" />
       <line x1="22" y1="9" x2="16" y2="15" />
       <line x1="16" y1="9" x2="22" y2="15" />
@@ -98,7 +108,9 @@ function Author({ r, light = false }: { r: Review; light?: boolean }) {
     <div className="flex items-center gap-[10px]">
       <Avatar src={asset('/figma/rev-avatar.png')} />
       <div className="leading-tight">
-        <div className={`text-[16px] tracking-[0.03em] ${light ? 'text-black' : 'text-white'}`}>{r.author}</div>
+        <div className={`text-[16px] tracking-[0.03em] ${light ? 'text-black' : 'text-white'}`}>
+          {r.author}
+        </div>
         <div className={`text-[14px] ${light ? 'text-black/45' : 'text-white/50'}`}>{r.role}</div>
       </div>
     </div>
@@ -107,9 +119,9 @@ function Author({ r, light = false }: { r: Review; light?: boolean }) {
 
 // Static waveform heights. Bar count is the seek resolution of the demo player.
 const WAVE = [
-  19, 14, 8, 8, 8, 8, 14, 14, 24, 17, 30, 14, 8, 17, 8, 8, 14, 14, 30, 17, 27, 30, 14, 8, 8, 14,
-  14, 30, 17, 27, 30, 14, 5, 8, 8, 8, 8, 30, 24, 17, 22, 30, 24, 17, 22, 14, 8, 8, 17, 22, 30, 22,
-  14, 8, 14, 8,
+  19, 14, 8, 8, 8, 8, 14, 14, 24, 17, 30, 14, 8, 17, 8, 8, 14, 14, 30, 17, 27, 30, 14, 8, 8, 14, 14,
+  30, 17, 27, 30, 14, 5, 8, 8, 8, 8, 30, 24, 17, 22, 30, 24, 17, 22, 14, 8, 8, 17, 22, 30, 22, 14,
+  8, 14, 8,
 ];
 
 // Parse "mm:ss" → seconds, so the demo player can show a real countdown driven
@@ -118,7 +130,8 @@ function parseDuration(d?: string): number {
   if (!d) return 6;
   const parts = d.split(':').map(Number);
   if (parts.length === 2 && parts.every((n) => Number.isFinite(n))) {
-    return parts[0] * 60 + parts[1];
+    // WHY: length === 2 guarantees both elements exist.
+    return parts[0]! * 60 + parts[1]!;
   }
   return 6;
 }
@@ -211,7 +224,7 @@ function AudioCard({ r }: { r: Review }) {
         <div className="flex items-start justify-between gap-[16px]">
           <Author r={r} />
           {/* glass logo badge (#2): frosted disc holding the handwritten mark */}
-          <span className="grid size-[58px] shrink-0 place-items-center rounded-full bg-white/10 backdrop-blur-md ring-1 ring-white/15">
+          <span className="grid size-[58px] shrink-0 place-items-center rounded-full bg-white/10 ring-1 ring-white/15 backdrop-blur-md">
             <TachosMark className="w-[34px] text-inverted/70" />
           </span>
         </div>
@@ -225,9 +238,15 @@ function AudioCard({ r }: { r: Review }) {
             aria-label={playing ? 'Пауза' : 'Воспроизвести'}
             aria-pressed={playing}
             onClick={toggle}
-            className="grid size-[60px] shrink-0 self-center place-items-center rounded-full bg-accent text-white transition hover:brightness-110"
+            className="grid size-[60px] shrink-0 place-items-center self-center rounded-full bg-accent text-white transition hover:brightness-110"
           >
-            {playing ? <PauseIcon size={22} /> : <span className="translate-x-[2px]"><PlayIcon size={22} /></span>}
+            {playing ? (
+              <PauseIcon size={22} />
+            ) : (
+              <span className="translate-x-[2px]">
+                <PlayIcon size={22} />
+              </span>
+            )}
           </button>
 
           {/* Waveform doubles as a seek bar (role=slider). flex-1 + justify-between
@@ -246,8 +265,10 @@ function AudioCard({ r }: { r: Review }) {
               const keys = ['ArrowRight', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'Home', 'End'];
               if (!keys.includes(e.key)) return;
               e.preventDefault();
-              if (e.key === 'ArrowRight' || e.key === 'ArrowUp') setProgress((p) => Math.min(1, p + 0.05));
-              else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') setProgress((p) => Math.max(0, p - 0.05));
+              if (e.key === 'ArrowRight' || e.key === 'ArrowUp')
+                setProgress((p) => Math.min(1, p + 0.05));
+              else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown')
+                setProgress((p) => Math.max(0, p - 0.05));
               else if (e.key === 'Home') setProgress(0);
               else if (e.key === 'End') setProgress(1);
             }}
@@ -294,7 +315,10 @@ function TextCard({ r }: { r: Review }) {
       </div>
       {/* round badge in the corner, matching the Figma cards */}
       {light && (
-        <span aria-hidden className="absolute bottom-[34px] right-[34px] size-[54px] rounded-full bg-black/[0.06]" />
+        <span
+          aria-hidden
+          className="absolute bottom-[34px] right-[34px] size-[54px] rounded-full bg-black/[0.06]"
+        />
       )}
     </div>
   );
@@ -443,20 +467,22 @@ function Starfield() {
         <span
           key={i}
           className="rev-star absolute rounded-full bg-white"
-          style={{
-            left: `${s.x}%`,
-            top: `${s.y}%`,
-            width: `${s.r * 2}px`,
-            height: `${s.r * 2}px`,
-            opacity: s.o,
-            // brighter stars get a soft halo so sizes read distinct
-            boxShadow: s.r > 1.3 ? `0 0 ${s.r * 4}px rgba(255,255,255,0.6)` : undefined,
-            // --rev-o feeds the twinkle keyframe so each star dims to half ITS
-            // own brightness, not a shared value
-            '--rev-o': s.o,
-            animationDelay: `${s.delay}s`,
-            animationDuration: `${s.dur}s`,
-          } as CSSProperties}
+          style={
+            {
+              left: `${s.x}%`,
+              top: `${s.y}%`,
+              width: `${s.r * 2}px`,
+              height: `${s.r * 2}px`,
+              opacity: s.o,
+              // brighter stars get a soft halo so sizes read distinct
+              boxShadow: s.r > 1.3 ? `0 0 ${s.r * 4}px rgba(255,255,255,0.6)` : undefined,
+              // --rev-o feeds the twinkle keyframe so each star dims to half ITS
+              // own brightness, not a shared value
+              '--rev-o': s.o,
+              animationDelay: `${s.delay}s`,
+              animationDuration: `${s.dur}s`,
+            } as CSSProperties
+          }
         />
       ))}
     </div>
@@ -466,9 +492,13 @@ function Starfield() {
 export function Reviews() {
   const ref = useReveal<HTMLDivElement>({ stagger: 90, threshold: 0.05 });
   const [audio, t1, v1, t2, v2] = reviews.items;
+  if (!audio || !t1 || !v1 || !t2 || !v2) return null;
 
   return (
-    <section id="reviews" className="relative overflow-hidden bg-[#05010d] pb-[56px] pt-[96px] text-white lg:pb-[80px] lg:pt-[168px]">
+    <section
+      id="reviews"
+      className="relative overflow-hidden bg-[#05010d] pb-[56px] pt-[96px] text-white lg:pb-[80px] lg:pt-[168px]"
+    >
       {/* #34 — soft twinkle for the starfield; static under reduced-motion */}
       <style>{`
         @keyframes rev-twinkle {
@@ -490,19 +520,37 @@ export function Reviews() {
 
       {/* starfield + soft accent bloom — Vadim: the bg felt empty, wanted "космос" */}
       <Starfield />
-      <div className="pointer-events-none absolute left-1/2 top-[6%] h-[540px] w-[840px] -translate-x-1/2 rounded-full bg-accent/[0.12] blur-[170px]" aria-hidden />
-      <div className="pointer-events-none absolute -right-[140px] bottom-[14%] h-[420px] w-[420px] rounded-full bg-accent/[0.10] blur-[150px]" aria-hidden />
+      <div
+        className="pointer-events-none absolute left-1/2 top-[6%] h-[540px] w-[840px] -translate-x-1/2 rounded-full bg-accent/[0.12] blur-[170px]"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute -right-[140px] bottom-[14%] h-[420px] w-[420px] rounded-full bg-accent/[0.10] blur-[150px]"
+        aria-hidden
+      />
 
       <div className="relative mx-auto max-w-[861px] px-6 text-center">
-        <WordsReveal as="h2" stagger={48} className="text-[clamp(32px,9vw,52px)] font-semibold leading-[0.95] tracking-[-0.02em] lg:leading-[0.9]">
+        <WordsReveal
+          as="h2"
+          stagger={48}
+          className="text-[clamp(32px,9vw,52px)] font-semibold leading-[0.95] tracking-[-0.02em] lg:leading-[0.9]"
+        >
           {reviews.title}
         </WordsReveal>
-        <WordsReveal as="p" stagger={20} start={240} className="mx-auto mt-[28px] block max-w-[320px] text-[19px] leading-[1.4] text-white/75">
+        <WordsReveal
+          as="p"
+          stagger={20}
+          start={240}
+          className="mx-auto mt-[28px] block max-w-[320px] text-[19px] leading-[1.4] text-white/75"
+        >
           {reviews.subtitle}
         </WordsReveal>
       </div>
 
-      <div ref={ref} className="relative mx-auto mt-[56px] flex max-w-[900px] flex-col gap-[28px] px-6">
+      <div
+        ref={ref}
+        className="relative mx-auto mt-[56px] flex max-w-[900px] flex-col gap-[28px] px-6"
+      >
         {/* audio hero — centred, a touch narrower than the column (Figma) */}
         <div className="mx-auto w-full max-w-[620px]">
           <AudioCard r={audio} />

@@ -26,9 +26,7 @@ export function useReveal<T extends HTMLElement = HTMLElement>({
     const container = ref.current;
     if (!container) return;
 
-    const items = Array.from(
-      container.querySelectorAll<HTMLElement>('.reveal-hidden'),
-    );
+    const items = Array.from(container.querySelectorAll<HTMLElement>('.reveal-hidden'));
     if (items.length === 0) return;
 
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -47,7 +45,7 @@ export function useReveal<T extends HTMLElement = HTMLElement>({
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) reveal();
+        if (entries[0]?.isIntersecting) reveal();
       },
       { threshold, rootMargin },
     );

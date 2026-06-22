@@ -11,17 +11,7 @@ export function nbsp(text: string): string {
 }
 
 // Keys whose values are identifiers / paths / enums — never prose, leave them be.
-const SKIP_KEYS = new Set([
-  'id',
-  'href',
-  'logo',
-  'cover',
-  'avatar',
-  'src',
-  'icon',
-  'kind',
-  'tone',
-]);
+const SKIP_KEYS = new Set(['id', 'href', 'logo', 'cover', 'avatar', 'src', 'icon', 'kind', 'tone']);
 
 // Deep-clone a content value, running nbsp() over every prose string. The return
 // type mirrors the input (literal types survive at the type level; only the

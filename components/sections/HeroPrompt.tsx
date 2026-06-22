@@ -25,7 +25,17 @@ function EnterIcon() {
   // return/enter glyph — replaces the voice icon once the field has text,
   // signalling that Enter (or a click) submits the description.
   return (
-    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <svg
+      width="30"
+      height="30"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
       <path d="M9 10l-4 4 4 4" />
       <path d="M5 14h11a4 4 0 0 0 4-4V6" />
     </svg>
@@ -37,8 +47,7 @@ export function HeroPrompt() {
   const [value, setValue] = useState('');
   const hint = guessType(value);
 
-  const submit = () =>
-    open({ type: guessType(value) ?? 'idk', freeText: value.trim() });
+  const submit = () => open({ type: guessType(value) ?? 'idk', freeText: value.trim() });
 
   const inputRef = useRef<HTMLInputElement>(null);
   const mirrorRef = useRef<HTMLSpanElement>(null);
@@ -54,7 +63,8 @@ export function HeroPrompt() {
     if (!el || !mirror) return;
     const pos = el.selectionStart ?? el.value.length;
     mirror.textContent = el.value.slice(0, pos);
-    const base = el.offsetLeft + el.clientLeft + parseFloat(getComputedStyle(el).paddingLeft || '0');
+    const base =
+      el.offsetLeft + el.clientLeft + parseFloat(getComputedStyle(el).paddingLeft || '0');
     const maxLeft = (el.parentElement?.clientWidth ?? 554) - 127;
     const x = base + mirror.offsetWidth - el.scrollLeft;
     setCaretLeft(Math.max(base, Math.min(x, maxLeft)));
@@ -130,16 +140,16 @@ export function HeroPrompt() {
       </div>
 
       <div className="nums mt-[16px] flex w-full flex-wrap items-center justify-center gap-[8px] sm:gap-[10px]">
-        <span className="px-[2px] text-[13px] text-inverted/60 sm:text-[15px]">{hero.needLabel}</span>
+        <span className="px-[2px] text-[13px] text-inverted/60 sm:text-[15px]">
+          {hero.needLabel}
+        </span>
         {hero.chips.map((chip) => {
           const active = hint != null && chipType[chip] === hint;
           return (
             <button
               key={chip}
               type="button"
-              onClick={() =>
-                open({ type: chipType[chip] ?? 'idk', freeText: value.trim() })
-              }
+              onClick={() => open({ type: chipType[chip] ?? 'idk', freeText: value.trim() })}
               className={`inline-flex h-[31px] items-center rounded-chip px-[12px] text-[13px] font-semibold leading-none transition sm:px-[16px] sm:text-[15px] ${
                 active
                   ? 'bg-accent text-inverted'

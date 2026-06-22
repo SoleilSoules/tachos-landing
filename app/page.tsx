@@ -41,7 +41,7 @@ export default function Home() {
           </video>
           {/* vertical wash: keeps the device muted so the H1 and orange
               sub-head stay readable over its centre */}
-          <div className="absolute inset-0 bg-gradient-to-b from-bg/55 via-bg/38 to-bg" />
+          <div className="via-bg/38 absolute inset-0 bg-gradient-to-b from-bg/55 to-bg" />
         </div>
 
         <Nav />

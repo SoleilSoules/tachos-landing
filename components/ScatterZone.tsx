@@ -124,6 +124,7 @@ export function ScatterZone({
     let active = false;
     const io = new IntersectionObserver(
       ([entry]) => {
+        if (!entry) return;
         if (entry.isIntersecting && !active) {
           active = true;
           rafRef.current = requestAnimationFrame(animate);

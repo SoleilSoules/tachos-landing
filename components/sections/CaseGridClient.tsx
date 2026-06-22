@@ -27,7 +27,11 @@ export function CaseGridClient({ cases }: { cases: CaseItem[] }) {
           // loaded later mount after the observer ran, so they just fade up on add.
           <div
             key={item.id}
-            className={i < INITIAL ? 'reveal-hidden' : '[animation:fade-up_0.5s_ease-out_both] motion-reduce:[animation:none]'}
+            className={
+              i < INITIAL
+                ? 'reveal-hidden'
+                : '[animation:fade-up_0.5s_ease-out_both] motion-reduce:[animation:none]'
+            }
           >
             <CaseCard item={item} />
           </div>

@@ -7,7 +7,9 @@ export function CaseTabs() {
   // Tabs are clickable now (#12). Categories aren't wired to the case data yet
   // (cases have no tab-category field), so this switches the active state; real
   // filtering lands once Vadim's cases are tagged by category.
-  const [active, setActive] = useState(caseTabs.find((t) => t.active)?.label ?? caseTabs[0].label);
+  const [active, setActive] = useState(
+    caseTabs.find((t) => t.active)?.label ?? caseTabs[0]?.label ?? '',
+  );
 
   return (
     <div className="nums mx-auto flex max-w-[861px] flex-wrap items-center justify-center gap-[8px]">
@@ -24,7 +26,9 @@ export function CaseTabs() {
             }`}
           >
             {tab.label}
-            {tab.count != null && <span className={on ? 'text-surface/50' : 'text-fg/50'}>{tab.count}</span>}
+            {tab.count != null && (
+              <span className={on ? 'text-surface/50' : 'text-fg/50'}>{tab.count}</span>
+            )}
           </button>
         );
       })}
