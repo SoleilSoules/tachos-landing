@@ -370,8 +370,11 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* a11y: under reduced-motion never leave content at opacity:0 waiting on the
+     IntersectionObserver — if JS fails or the observer doesn't fire, the section
+     would stay invisible. Show it outright; the reveal animation is decorative. */
   .reveal-hidden {
-    opacity: 0;
+    opacity: 1;
     transform: none;
   }
   .reveal-visible {

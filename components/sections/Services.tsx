@@ -41,22 +41,34 @@ export function Services() {
           className="mt-[20px] block max-w-[520px] text-[19px] leading-[1.4] text-black/50"
         >
           Не знаете, как назвать задачу, — поможем сформулировать и подберём состав работ. Ниже —
-          направления, в которых мы сильны.
+          направления, с которыми работаем.
         </WordsReveal>
 
         {/* Role cards (issue #41): one section heading only (the "под ключ" offer);
             no T&M label. Compact, less-rounded cards, no grades. */}
         <div className="mt-[44px] grid grid-cols-2 gap-[14px] sm:grid-cols-3 lg:grid-cols-4">
-          {tmRoles.map((role) => (
+          {tmRoles.map((role, i) => (
             <div
               key={role}
               data-hint="Роль в команде"
               data-hint-sub={role}
-              className="reveal-hidden flex min-h-[92px] items-center rounded-[20px] bg-surface px-[22px] py-[20px] transition hover:bg-surface2"
+              className="reveal-hidden group relative flex min-h-[112px] flex-col justify-between rounded-[20px] border border-black/[0.08] bg-white px-[22px] py-[18px] transition duration-200 hover:border-black/20 hover:shadow-[0_10px_30px_-12px_rgba(0,0,0,0.18)]"
             >
-              <span className="text-[18px] font-medium leading-[1.2] tracking-[-0.01em] text-fg">
-                {role}
+              <span className="text-[13px] font-medium tabular-nums text-black/30">
+                {String(i + 1).padStart(2, '0')}
               </span>
+              <div className="flex items-end justify-between gap-[10px]">
+                <span className="text-[18px] font-medium leading-[1.2] tracking-[-0.01em] text-fg">
+                  {role}
+                </span>
+                {/* arrow slides in on hover — one transient accent, not a baked-in one */}
+                <span
+                  aria-hidden
+                  className="-translate-x-1 text-[16px] leading-none text-accent opacity-0 transition duration-200 group-hover:translate-x-0 group-hover:opacity-100"
+                >
+                  ↗
+                </span>
+              </div>
             </div>
           ))}
         </div>

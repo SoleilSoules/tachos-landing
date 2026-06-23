@@ -25,6 +25,15 @@ export const hero = deepNbsp({
     lead: 'Студия инжиниринга и дизайна.',
     rest: 'Проектируем и собираем веб и мобильные продукты для фаундеров и компаний — от идеи до релиза в проде',
   },
+  // Proof line woven into the hero copy (not a separate stat-bar): `accent` is the
+  // verifiable figure (rendered in accent colour), `tail` is the plain noun.
+  // Numbers come from real cases (Складно / Хайс / Maginary).
+  facts: [
+    { accent: '750 000', tail: 'загрузок' },
+    { accent: '95+', tail: 'точек сети' },
+    { accent: 'банк для ИП', tail: 'с нуля' },
+    { accent: '2+ года', tail: 'с командами' },
+  ],
   inputPlaceholder: 'Начните описывать задачу, мы поможем',
   needLabel: 'Мне нужен:',
   chips: ['Сайт', 'Приложение', 'Магазин', 'Игра'],
@@ -41,7 +50,6 @@ export const clients: Client[] = [
   { name: 'Добрый', logo: '/logos/dobry-color.svg', height: 28 },
   { name: 'Складно', logo: '/logos/skladno.svg', height: 26 },
   { name: 'Хайс', logo: '/logos/hais-mono.svg', height: 25 },
-  { name: 'Maginary', logo: '/logos/maginary-grunge.svg', height: 30 },
 ];
 
 export const founder = deepNbsp({
@@ -56,8 +64,8 @@ export const casesIntro = deepNbsp({
   titleBlack: 'Успешно запустили',
   titleAccent: { prefix: 'более ', count: 40, suffix: ' цифровых продуктов' },
   body: [
-    'Мы мыслим как владельцы бизнеса — цифрами и метриками.',
-    'Превращаем смелые гипотезы в прибыльные цифровые продукты.',
+    'Считаем продукт цифрами: загрузки, точки сети, сроки до релиза.',
+    'Свой штат и тех-лид в каждом проекте — без подряда.',
     'Ниже — истории, где это уже сработало',
   ],
 } as const);
@@ -518,7 +526,7 @@ export type Post = {
 
 export const blogIntro = deepNbsp({
   title: 'Наш блог',
-  body: 'Делимся новостями и экспертизой в разработке. Рассказываем про нас и наш процесс, публикуем кейсы, новости и хвастаемся достижениями, показываем жизнь студии в «прямом эфире».',
+  body: 'Делимся новостями и экспертизой в разработке. Рассказываем про нас и наш процесс, публикуем кейсы и новости, показываем жизнь студии в «прямом эфире».',
 } as const);
 
 export const posts: Post[] = deepNbsp<Post[]>([
@@ -627,7 +635,7 @@ export const ctaBanner = deepNbsp({
 export const servicesIntro = deepNbsp({
   titleLead: 'Делаем сайты, приложения и сервисы',
   titleAccent: 'под ключ.',
-  body: 'Не знаете, как назвать задачу, — поможем сформулировать и подберём состав работ. Ниже — направления, в которых мы сильны, и ориентиры по бюджету.',
+  body: 'Не знаете, как назвать задачу, — поможем сформулировать и подберём состав работ. Ниже — направления, с которыми работаем.',
 } as const);
 
 export const serviceFeatures: { label: string }[] = deepNbsp<{ label: string }[]>([
