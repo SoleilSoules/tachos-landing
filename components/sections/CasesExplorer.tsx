@@ -32,7 +32,7 @@ export function CasesExplorer({ cases }: { cases: CaseItem[] }) {
 
   return (
     <>
-      <div className="nums mx-auto flex max-w-[861px] flex-wrap items-center justify-center gap-[8px]">
+      <div className="nums mx-auto flex max-w-[861px] flex-nowrap items-center justify-start gap-[8px] overflow-x-auto px-5 [scrollbar-width:none] sm:flex-wrap sm:justify-center sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden">
         {caseTabs.map((tab) => {
           const on = active === tab.label;
           const n = counts.get(tab.label) ?? 0;

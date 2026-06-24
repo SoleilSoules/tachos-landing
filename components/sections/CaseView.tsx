@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { CaseCover } from '@/components/CaseCover';
+import { caseCopy } from '@/lib/case-copy';
 import { Nav } from '@/components/sections/Nav';
 import { Footer } from '@/components/sections/Footer';
 import { ctaBanner, type CaseItem } from '@/lib/content';
@@ -35,9 +36,9 @@ function ImgPlaceholder({ minH = 300 }: { minH?: number }) {
 // SAME grid the footer uses), in Onest (not mono). Fades out at the CTA.
 function NotesPanel({ item, atCta }: { item: CaseItem; atCta: boolean }) {
   const rows = [
-    { k: 'Клиент', v: item.client },
-    { k: 'Направление', v: item.category },
-    { k: 'Что делали', v: item.tags.join(' · ') },
+    { k: 'Клиент', v: caseCopy[item.id]?.notes.client ?? item.client },
+    { k: 'Направление', v: caseCopy[item.id]?.notes.direction ?? item.category },
+    { k: 'Что делали', v: caseCopy[item.id]?.notes.did ?? item.tags.join(' · ') },
   ];
   return (
     <div
@@ -120,11 +121,11 @@ export function CaseView({ item, others }: { item: CaseItem; others: CaseItem[] 
               {item.client}
             </h1>
             <p className="mb-10 max-w-[620px] text-[clamp(17px,1.4vw,21px)] leading-[1.45] text-inverted/55">
-              {item.story.summary}
+              {caseCopy[item.id]?.summary ?? item.story.summary}
             </p>
 
             <div className="flex flex-wrap gap-x-12 gap-y-7">
-              {item.story.metrics.map((m) => (
+              {(caseCopy[item.id]?.metrics ?? item.story.metrics).map((m) => (
                 <div key={m.label}>
                   <p className="nums text-[34px] font-semibold leading-none tracking-[-0.02em] text-inverted">
                     {m.value}
@@ -147,7 +148,7 @@ export function CaseView({ item, others }: { item: CaseItem; others: CaseItem[] 
           </section>
 
           {/* NARRATIVE SECTIONS */}
-          {item.story.sections.map((s) => (
+          {(caseCopy[item.id]?.sections ?? item.story.sections).map((s) => (
             <div key={s.title}>
               <div className="mb-12 h-px w-full max-w-[820px] bg-white/10" />
               <section className="mb-12">

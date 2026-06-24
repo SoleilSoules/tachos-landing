@@ -612,7 +612,7 @@ export const posts: Post[] = deepNbsp<Post[]>([
 // form/socials copy was removed — only the heading, manager and contacts remain.
 export const footer = deepNbsp({
   formTitle: ['Отправьте', 'нам', 'письмо'],
-  manager: { name: 'Анна Кузнецова', role: 'Ваш менеджер проекта' },
+  manager: { name: 'Анна Кузнецова', role: 'Наш менеджер вам ответит' },
   contacts: {
     email: { label: 'E-mail', value: 'hello@tachos.ru' },
     phone: { label: 'Позвонить', value: '+7 930 688-38-38' },

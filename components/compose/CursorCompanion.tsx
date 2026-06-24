@@ -19,6 +19,8 @@ export function CursorCompanion() {
   const rot = useRef<SVGGElement>(null);
   const eyeL = useRef<SVGGElement>(null);
   const eyeR = useRef<SVGGElement>(null);
+  const pupilL = useRef<SVGCircleElement>(null);
+  const pupilR = useRef<SVGCircleElement>(null);
   const bubble = useRef<HTMLDivElement>(null);
   const bTitle = useRef<HTMLElement>(null);
 
@@ -199,8 +201,16 @@ export function CursorCompanion() {
       const k = Math.atan2(my - pos.y, mx - pos.x) - faceAng;
       const ex = Math.cos(k) * 1.3,
         ey = Math.sin(k) * 1.3;
-      if (eyeL.current) eyeL.current.style.transform = `translate(${ex}px,${ey}px)`;
-      if (eyeR.current) eyeR.current.style.transform = `translate(${ex}px,${ey}px)`;
+      // the white drifts a little; the black pupil tracks further INSIDE it (additive),
+      // so the eyes read as actually looking at the cursor (#8)
+      const wx = ex * 0.5,
+        wy = ey * 0.5;
+      const dx = ex * 0.45,
+        dy = ey * 0.45;
+      if (eyeL.current) eyeL.current.style.transform = `translate(${wx}px,${wy}px)`;
+      if (eyeR.current) eyeR.current.style.transform = `translate(${wx}px,${wy}px)`;
+      if (pupilL.current) pupilL.current.style.transform = `translate(${dx}px,${dy}px)`;
+      if (pupilR.current) pupilR.current.style.transform = `translate(${dx}px,${dy}px)`;
     };
 
     // Idle tricks: unhurried (#B5) — flip / squish / wobble, only after a real pause
@@ -322,12 +332,12 @@ export function CursorCompanion() {
             />
             <g ref={eyeL} className="eye">
               <circle cx="10.2" cy="10" r="2.1" fill="#fff" />
-              <circle cx="10.9" cy="10" r="1" fill="#0E0E10" />
+              <circle ref={pupilL} cx="10.9" cy="10" r="1" fill="#0E0E10" />
               <rect className="lid" x="7.6" y="7.4" width="5.2" height="5.2" rx="2.6" fill="#F84800" />
             </g>
             <g ref={eyeR} className="eye">
               <circle cx="10.8" cy="15.6" r="2.1" fill="#fff" />
-              <circle cx="11.5" cy="15.6" r="1" fill="#0E0E10" />
+              <circle ref={pupilR} cx="11.5" cy="15.6" r="1" fill="#0E0E10" />
               <rect className="lid" x="8.2" y="13" width="5.2" height="5.2" rx="2.6" fill="#F84800" />
             </g>
           </g>
