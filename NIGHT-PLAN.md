@@ -17,6 +17,8 @@
 - + #3 (отзывы от первого лица, content reviews r1/r2/r4). git `e670a0f`.
 - СДЕЛАНО ВСЕГО (в git, откат-точки 255160d/b4b6dfe/88addd3/e670a0f): #2,#3,#5(текст),#8,#10,#11,#12,#13,#14,#15,#16,#17,#24.
 
+- + #19 (review avatar 54→44, badge 58→46). git `e98e985`. САМОПРОВЕРКА страницы кейса skladno ✓ (текст Вадима+метрики+заметки+обложка фронт — всё видно, дорого). docs/night/case-check.png.
+
 ## ПРОДОЛЖИТЬ С (после автокомпакта — читать этот файл!)
 Дев на :3000. Процесс: правка → headless-скрин самопроверка → сам проверить внесено → git коммит. tsc/build перед deploy.
 Скрин грида: `node /private/tmp/claude-501/-Users-george/7360b655-a4eb-449f-9d8e-c7ea21b4c8e5/scratchpad/cdp-audit.mjs cases`; мобилка: `cdp-resp.mjs 390 m`; страница: `cdp-ext.mjs <url> <name>`.

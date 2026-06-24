@@ -67,16 +67,14 @@ export function FloatingCompose() {
           visible ? 'pointer-events-auto' : 'pointer-events-none'
         }`}
       >
-        <div className="flex h-[66px] items-center gap-[8px] py-[8px] pl-[18px] pr-[8px]">
+        <div className="flex h-[56px] items-center gap-[8px] py-[7px] pl-[16px] pr-[7px]">
           <span
-            className="h-[26px] w-[2.5px] shrink-0 bg-accent-hot [animation:caret-blink_1.1s_step-end_infinite] motion-reduce:animate-none"
+            className="h-[22px] w-[2.5px] shrink-0 bg-accent-hot [animation:caret-blink_1.1s_step-end_infinite] motion-reduce:animate-none"
             aria-hidden
           />
-          <span className="whitespace-nowrap pr-[4px] text-[15px] text-black/55">
-            Начните описывать задачу, мы поможем
-          </span>
-          <span className="grid size-[50px] shrink-0 place-items-center rounded-[16px] bg-surface2 text-black transition group-hover:bg-accent group-hover:text-white">
-            <WaveIcon size={20} />
+          <span className="whitespace-nowrap pr-[2px] text-[14px] text-black/55">Опишите задачу</span>
+          <span className="grid size-[42px] shrink-0 place-items-center rounded-[14px] bg-surface2 text-black transition group-hover:bg-accent group-hover:text-white">
+            <WaveIcon size={18} />
           </span>
         </div>
       </button>
