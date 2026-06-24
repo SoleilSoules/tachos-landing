@@ -1,6 +1,42 @@
 # Tachos — HANDOFF (для нового чата)
 
-Боевая вёрстка лендинга **tachos.ru**. Обновлено: **2026-06-21** (длинная сессия полировки, Гоша смотрит localhost вживую). Прод: https://soleilsoules.github.io/tachos-landing/.
+Боевая вёрстка лендинга **tachos.ru**. Обновлено: **2026-06-24**. Прод: https://soleilsoules.github.io/tachos-landing/.
+
+## ⭐ СВЕЖЕЕ — сессия 24.06 (задеплоено `2a02f41`, CI ✓, GH Pages deploy)
+Режим: **«делаю весь пакет → Гоша проверяет по списку»**. Гоша просил **экономить токены** (меньше промежуточных скринов, короче ответы).
+
+**ОБЛОЖКИ КЕЙСОВ (`components/CaseCover.tsx`, теперь `'use client'`):**
+- **iPhone = РЕАЛЬНЫЙ фото-фрейм** — CSS-телефон Гоша забраковал ~4 раза («айфонам пиздец»). Сгенерён OpenAI gpt-image-1 → `public/figma/iphone-frame.png` (обрезан по альфе: `ffmpeg -vf crop=614:1290:205:123` из `iphone-frame-1.png`, aspect 0.476). Фрейм = фон (`object-contain`), наш скрин наложен ПОВЕРХ в зоне экрана (`PHONE_SCREEN = inset-x-[3.5%] top-[5.5%] bottom-[2.5%]`; top-5.5 чтобы notch фрейма читался), `rounded-[9%]`. h-114%(hero)/106%(card).
+- **Parallax ГЛОБАЛЬНО по курсору** (Гоша: «реагировать даже без наведения»): слушатель на `window` mousemove, каждая карточка пишет `--px/--py` (норм. от своего центра / полу-viewport, rAF-throttle); `.cv-glow/.cv-shadow/.cv-device` в `globals.css` → transform (device translate12px+tilt5°, glow+6, shadow противоход), transition .45s. touch/reduced — listener не вешается.
+- Bleed за нижний край: слои `h-full items-end` + `translate-y-[8%]` (⚠️ без `h-full` на слоях `h-%` мокапа СХЛОПЫВАЕТСЯ в полоску — ловил дважды). Видео-обложка Складно убрана (`coverVideo` удалён из content+CaseCover).
+- `BrowserMock` (Хайс/Добрый, desktop) НЕ трогали — остался CSS-браузер (возможно Гоша попросит и его реальным фреймом).
+
+**НАЧОС (`components/compose/CursorCompanion.tsx` + `Footer.tsx`):**
+- Футер = **сгенерён острый play-треугольник** `public/figma/nachos-sharp-1.png` (gpt-image: острые углы, глаза, БЕЗ улыбки — «такой же» как курсорный). В Footer `[data-mascot-perch]`, fade+scale-in по `inView`. Смена при доезде: курсорный SVG при `mode==='footer-perch'` гаснет (`root.style.opacity='0'`, transition .5s) → картинка проявляется. НЕ следует за курсором.
+- Подсказки **одна строка** (убран подзаголовок `bSub`). Поведение мягче (#B5): убран shatter, трюки реже (5с покоя/14с), breathe-scale. **Транскрипт** (#B6): `AudioCard` (Reviews) шлёт `CustomEvent('tachos:transcript',{text:r.text,playing})` → companion печатает расшифровку пока играет.
+- Пламя-Начосы (`nachos-1..4`) и скруглённые (`nachos-tri-1..3`) ЗАБРАКОВАНЫ — нужен острый треугольник.
+
+**ТОЧЕЧНОЕ:** футер «Отправьте»/«нам письмо» (`formTitle` рендер `[0]<br/>[1] [2]`); предлог «и» в услугах — фикс `WordsReveal` split `/([^\S ]+)/` (не по nbsp; чинит ВСЕ аним-заголовки); навбар капсула `max-w-[1080px]` только в stuck; `Founder` убран нативный `title`; **ScatterZone убран** в `CaseView`+`BlogView`; блог — заголовки (p2 «Наша разработка — не утопия», p3 «Сделали бортовое устройство для дрифтеров») + прибор `monte-gtr` обрезан (`overflow-hidden` на `Card`); планшет doki внутрь панели `right-[-200px]` (обрезан картой, рука за кадром, `object-top`); Lenis `lerp 0.14 / wheelMultiplier 1.05`.
+
+**ГЕНЕРАЦИЯ КАРТИНОК:** gpt-image-1, ключ Гоши **в env команды, НЕ в файлах репо** (скрипты в scratchpad сессии). ⚠️ **Ключ засветился в чате → Гоше РОТИРОВАТЬ.** Параметры: `size 1024x1024` (маскот) / `1024x1536` (iPhone), `quality high`, `background transparent`, `output_format png`, ответ `data[0].b64_json`. Pillow не ставится (python 3.14 + libexpat) → кроп по альфе через ffmpeg. Мусор генерации (`nachos-1..4`, `nachos-tri-1..3`, `nachos-sharp-2..3`, `iphone-frame-1/2`) + `hero-belt-v5..14.mp4` — untracked, НЕ коммичены (в репо только `iphone-frame.png` + `nachos-sharp-1.png`). Можно почистить.
+
+**ОТКРЫТО:** iPhone-фрейм — Гоша оценивает на проде (камень преткновения, 5 итераций; если опять не зайдёт — взять готовый PSD/PNG-мокап или Rotato); BrowserMock возможно тоже реальным; HANDOFF.md был unstaged при push (не вошёл в коммит). Метод съёмки iPhone-обложки: headless-скрин `/cases/skladno/` (hero-phone виден сразу, без reveal-hidden).
+
+---
+
+## ⭐ Сессия 22.06 (задеплоено `223affb`, оба GH Action ✅)
+Сделано и на проде:
+- **Тень видео-студии** убрана: это был pause/control-оверлей плеера Kinescope → `VideoBlock.tsx` теперь `?background=1&no_poster=1` (декоративный фон без UI).
+- **Feedback-форма** (копия doki в дизайне Тачоса): `components/feedback/FeedbackWidget.tsx`. Логика 1-в-1 doki (bug/idea, title, body, скриншоты paste⌘V/drag/picker ≤5МБ ≤8, email, focus-trap, хоткей ⌘]). Вход — кнопка **«Нашли ошибку?»** (акцентная пилюля) у лого в `Nav` + бургер + событие `tachos:open-feedback`/`[data-feedback]`. **ДЕМО-режим**: env `NEXT_PUBLIC_FEEDBACK_ENDPOINT` пуст → «Спасибо», не шлёт. **БЭК ДЕЛАЕТ ВАДИМ** — контракт в **`FEEDBACK_FOR_VADIM.md`** (Vercel-функция → GitHub Issue).
+- **Структура репо приведена к doki/monte** (НЕ monorepo): Prettier (`.prettierrc` + plugin-tailwindcss, 43 файла отформатировано), строгие TS-флаги (`noUncheckedIndexedAccess` и др., 39 мест guard'нуто, tsc=0), scripts `typecheck`/`format`, `.env.example`, `.nvmrc`+`engines`, CI **`ci.yml`** (typecheck+build, без lint-гейта), `AGENTS.md` conventions.
+- **Дизайн-ревью 3 агентами** → отчёт **`~/Downloads/tachos-design-review.md`**.
+
+**➡️ СЛЕДУЮЩЕЕ (с чего начать новый чат — на выбор Гоши):**
+1. **Дизайн-ревью P0 в работу** (лучший ROI): факт-бар цифр в hero (750k/40+/95+ спрятаны вниз) · услуги показывают РОЛИ вместо услуг+цен (массив `services` с ценами в `content.ts` мёртвый) · копи обещания→факты · метафора тахометра не раскрыта. Детали — в отчёте Downloads.
+2. **13 legacy eslint-errors** (`react-hooks/set-state-in-effect` и пр.) — опц. подчистить рефактором.
+3. Бэк формы — ждёт Вадима (не наша задача).
+
+Метод прежний: Гоша смотрит localhost в Safari вживую, правки по одной → самопроверка скрином → деплой по слову.
 
 ## HERO-ВИДЕО через Remotion + Three.js (активная работа 21.06, НЕ задеплоено)
 

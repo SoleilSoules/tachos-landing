@@ -34,7 +34,7 @@ export const hero = deepNbsp({
     { accent: 'банк для ИП', tail: 'с нуля' },
     { accent: '2+ года', tail: 'с командами' },
   ],
-  inputPlaceholder: 'Начните описывать задачу, мы поможем',
+  inputPlaceholder: 'Опишите задачу',
   needLabel: 'Мне нужен:',
   chips: ['Сайт', 'Приложение', 'Магазин', 'Игра'],
 } as const);
@@ -72,12 +72,13 @@ export const casesIntro = deepNbsp({
 
 export type CaseTab = { label: string; count?: number; icon?: 'star'; active?: boolean };
 
+// Counts are derived from the cases at render time (CasesExplorer), not hardcoded.
 export const caseTabs: CaseTab[] = [
   { label: 'Все', active: true },
-  { label: 'Для банков', count: 12 },
-  { label: 'eCommerce', count: 12 },
-  { label: 'Для маркетплейсов', count: 12 },
-  { label: 'Геймдев', count: 12 },
+  { label: 'Для банков' },
+  { label: 'eCommerce' },
+  { label: 'Для маркетплейсов' },
+  { label: 'Геймдев' },
 ];
 
 export type CaseStory = {
@@ -96,7 +97,9 @@ export type CaseItem = {
   avatar: string;
   shot?: string; // real product screenshot, shown in a device mockup on the cover
   shotKind?: 'phone' | 'desktop'; // which premium mockup frame to use for `shot`
+  tabs?: string[]; // CaseTab labels this case belongs to (drives tab filtering)
   coverVideo?: string; // Remotion-rendered animated cover (overrides the static mockup)
+  mockupVideo?: string; // clip shown inside an animated turning iPhone mockup on the cover
   story: CaseStory; // case-page content (placeholder prose until Vadim confirms)
   verified?: boolean; // confirmed Tachos work (Складно / Хайс / Maginary)
 };
@@ -172,11 +175,76 @@ export const reviews = deepNbsp({
   ] as Review[],
 });
 
+// ── Order + selection set by Гоша for the homepage grid (2 cols × 5 rows):
+//   АльфаСтрахование · Хайс / Складно · Anomalia / Imast · Docmed /
+//   Maginary · Добрый / Alma · Monte
+// New clients have real screenshots pending — they show an EMPTY device mock
+// (shotKind without shot) until the shot is captured. Their story/metrics are
+// placeholders ("—") until Vadim confirms copy. Verified work: Складно/Хайс/Maginary.
 export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
+  {
+    id: 'alfastrah',
+    client: 'АльфаСтрахование',
+    category: 'страхование',
+    tabs: ['Для банков'],
+    desc: { lead: 'Цифровые сервисы для', highlight: 'страховой компании', tail: '' },
+    tags: ['Страхование', 'Web'],
+    cover,
+    avatar,
+    shotKind: 'desktop',
+    story: {
+      summary: 'Цифровые сервисы для страховой компании.',
+      metrics: [
+        { value: '—', label: 'уточняется' },
+        { value: '—', label: 'уточняется' },
+      ],
+      sections: [{ title: 'Контекст', body: 'Описание кейса уточняется.' }],
+    },
+  },
+  {
+    id: 'hais',
+    client: 'Хайс',
+    category: 'финтех',
+    tabs: ['Для банков'],
+    desc: {
+      lead: 'Мобильный банк для ИП с нуля —',
+      highlight: 'счёт, бухгалтерия и валюта',
+      tail: 'в одном приложении',
+    },
+    tags: ['Финтех', 'iOS + Android'],
+    cover,
+    avatar,
+    shot: '/figma/shots/hais.png',
+    shotKind: 'desktop',
+    story: {
+      summary: 'Мобильный банк для ИП с нуля — счёт, бухгалтерия и валюта в одном приложении.',
+      metrics: [
+        { value: 'с нуля', label: 'банк под ключ' },
+        { value: 'iOS + Android', label: 'нативные приложения' },
+        { value: 'анти-фрод', label: 'доработка SDK' },
+      ],
+      sections: [
+        {
+          title: 'Контекст',
+          body: 'Финтех-команда строила мобильный банк для индивидуальных предпринимателей: счёт, бухгалтерия и мультивалютность в одном приложении.',
+        },
+        {
+          title: 'Что сделали',
+          body: 'Спроектировали и собрали нативные приложения под iOS и Android, доработали SDK для анти-фрод сервиса банковских организаций, подготовили инфраструктуру под нагрузку.',
+        },
+        {
+          title: 'Результат',
+          body: 'Запустили мобильный банк для ИП — счёт, бухгалтерия и валюта в едином интерфейсе, с защитой от мошенничества на уровне SDK.',
+        },
+      ],
+    },
+    verified: true,
+  },
   {
     id: 'skladno',
     client: 'Складно',
     category: 'сервис хранения',
+    tabs: ['eCommerce'],
     desc: {
       lead: 'Сеть хранения без персонала: бронь, оплата и доступ к ячейке по Bluetooth — всё в приложении.',
       highlight: '95+ точек, 8 000 пользователей',
@@ -213,47 +281,72 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     verified: true,
   },
   {
-    id: 'hais',
-    client: 'Хайс',
-    category: 'финтех',
-    desc: {
-      lead: 'Мобильный банк для ИП с нуля —',
-      highlight: 'счёт, бухгалтерия и валюта',
-      tail: 'в одном приложении',
-    },
-    tags: ['Финтех', 'iOS + Android'],
+    id: 'anomalia',
+    client: 'Anomalia',
+    category: 'цифровой продукт',
+    desc: { lead: '', highlight: 'Anomalia', tail: '— цифровой продукт' },
+    tags: ['Цифровой продукт', 'Разработка'],
     cover,
     avatar,
-    shot: '/figma/shots/hais.png',
+    shot: '/figma/shots/anomalia.png',
     shotKind: 'desktop',
     story: {
-      summary: 'Мобильный банк для ИП с нуля — счёт, бухгалтерия и валюта в одном приложении.',
+      summary: 'Anomalia — цифровой продукт.',
       metrics: [
-        { value: 'с нуля', label: 'банк под ключ' },
-        { value: 'iOS + Android', label: 'нативные приложения' },
-        { value: 'анти-фрод', label: 'доработка SDK' },
+        { value: '—', label: 'уточняется' },
+        { value: '—', label: 'уточняется' },
       ],
-      sections: [
-        {
-          title: 'Контекст',
-          body: 'Финтех-команда строила мобильный банк для индивидуальных предпринимателей: счёт, бухгалтерия и мультивалютность в одном приложении.',
-        },
-        {
-          title: 'Что сделали',
-          body: 'Спроектировали и собрали нативные приложения под iOS и Android, доработали SDK для анти-фрод сервиса банковских организаций, подготовили инфраструктуру под нагрузку.',
-        },
-        {
-          title: 'Результат',
-          body: 'Запустили мобильный банк для ИП — счёт, бухгалтерия и валюта в едином интерфейсе, с защитой от мошенничества на уровне SDK.',
-        },
-      ],
+      sections: [{ title: 'Контекст', body: 'Описание кейса уточняется.' }],
     },
-    verified: true,
+  },
+  {
+    id: 'imast',
+    client: 'Imast',
+    category: 'благотворительность',
+    tabs: ['eCommerce'],
+    desc: { lead: 'Платформа', highlight: 'благотворительных донатов', tail: '' },
+    tags: ['Благотворительность', 'Mobile'],
+    cover,
+    avatar,
+    shot: '/figma/shots/imast.png',
+    shotKind: 'desktop',
+    story: {
+      summary: 'Платформа благотворительных донатов.',
+      metrics: [
+        { value: '—', label: 'уточняется' },
+        { value: '—', label: 'уточняется' },
+      ],
+      sections: [{ title: 'Контекст', body: 'Описание кейса уточняется.' }],
+    },
+  },
+  {
+    id: 'docmed',
+    client: 'Docmed',
+    category: 'медтех',
+    tabs: ['Для маркетплейсов'],
+    desc: {
+      lead: 'Телемедицина и запись к врачу для',
+      highlight: 'клиники доказательной медицины',
+      tail: '',
+    },
+    tags: ['Медтех', 'Web + mobile'],
+    cover,
+    avatar,
+    shotKind: 'desktop',
+    story: {
+      summary: 'Телемедицина и запись к врачу для клиники доказательной медицины.',
+      metrics: [
+        { value: '—', label: 'уточняется' },
+        { value: '—', label: 'уточняется' },
+      ],
+      sections: [{ title: 'Контекст', body: 'Описание кейса уточняется.' }],
+    },
   },
   {
     id: 'maginary',
     client: 'Maginary',
     category: 'приложение-книга',
+    tabs: ['Геймдев'],
     desc: {
       lead: 'Анимированная книга-игра, где читатель становится героем.',
       highlight: '750 000 загрузок',
@@ -264,6 +357,7 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     avatar,
     shot: '/figma/shots/maginary.png',
     shotKind: 'phone',
+    mockupVideo: '/figma/maginary-demo.mp4',
     story: {
       summary: 'Анимированная книга-игра, где читатель становится героем истории.',
       metrics: [
@@ -289,6 +383,7 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     id: 'dobry',
     client: 'Добрый',
     category: 'FMCG',
+    tabs: ['Геймдев'],
     desc: {
       lead: '',
       highlight: 'Игра за месяц: от идеи до прода',
@@ -322,139 +417,43 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
       ],
     },
   },
-  // ⚠️ placeholder cases (NOT real Tachos work) — заполняют второй ряд под кнопкой
-  // «Показать ещё». Vadim: заменить на реальные кейсы или удалить (и вернуть грид к 4).
   {
-    id: 'potok',
-    client: 'Поток',
-    category: 'логистика',
-    desc: {
-      lead: 'Платформа курьерской доставки: маршруты, трекинг и расчёты для операторов.',
-      highlight: '12 городов, 400 курьеров',
-      tail: '',
-    },
-    tags: ['Логистика', 'Web + mobile'],
+    id: 'alma',
+    client: 'Alma',
+    category: 'мобильное приложение',
+    desc: { lead: '', highlight: 'Alma', tail: '— мобильное приложение' },
+    tags: ['Мобильное приложение', 'iOS + Android'],
     cover,
     avatar,
+    shot: '/figma/shots/alma.png',
+    shotKind: 'phone',
     story: {
-      summary: 'Платформа курьерской доставки: маршруты, трекинг и расчёты для операторов.',
+      summary: 'Alma — мобильное приложение.',
       metrics: [
-        { value: '12', label: 'городов' },
-        { value: '400', label: 'курьеров на платформе' },
-        { value: 'Web + mobile', label: 'связка продуктов' },
+        { value: '—', label: 'уточняется' },
+        { value: '—', label: 'уточняется' },
       ],
-      sections: [
-        {
-          title: 'Контекст',
-          body: 'Оператору доставки нужна была единая платформа для построения маршрутов, отслеживания курьеров и расчётов.',
-        },
-        {
-          title: 'Что сделали',
-          body: 'Собрали веб-панель для операторов и мобильное приложение для курьеров: маршруты, трекинг в реальном времени, расчёты.',
-        },
-        { title: 'Результат', body: 'Платформа работает в 12 городах с 400 курьерами.' },
-      ],
+      sections: [{ title: 'Контекст', body: 'Описание кейса уточняется.' }],
     },
   },
   {
-    id: 'grace',
-    client: 'Грейс',
-    category: 'здоровье',
-    desc: {
-      lead: 'Запись к врачу и телемедицина в одном приложении —',
-      highlight: '60 000 приёмов',
-      tail: 'в месяц',
-    },
-    tags: ['Здоровье', 'iOS + Android'],
+    id: 'monte',
+    client: 'Monte',
+    category: 'автотюнинг',
+    tabs: ['Для маркетплейсов'],
+    desc: { lead: 'Сайт и сервисы для', highlight: 'студии автотюнинга', tail: '' },
+    tags: ['Автотюнинг', 'Web'],
     cover,
     avatar,
+    shot: '/figma/shots/monte.png',
+    shotKind: 'desktop',
     story: {
-      summary: 'Запись к врачу и телемедицина в одном приложении.',
+      summary: 'Сайт и сервисы для студии автотюнинга.',
       metrics: [
-        { value: '60 000', label: 'приёмов в месяц' },
-        { value: 'iOS + Android', label: 'нативные приложения' },
-        { value: 'телемед', label: 'видеоприёмы' },
+        { value: '—', label: 'уточняется' },
+        { value: '—', label: 'уточняется' },
       ],
-      sections: [
-        {
-          title: 'Контекст',
-          body: 'Сервису здоровья нужно было объединить запись к врачу и онлайн-консультации в одном приложении.',
-        },
-        {
-          title: 'Что сделали',
-          body: 'Собрали нативные приложения под iOS и Android: запись к специалисту, видеоприёмы, история обращений.',
-        },
-        { title: 'Результат', body: 'Через сервис проходит 60 000 приёмов в месяц.' },
-      ],
-    },
-  },
-  // ⚠️ placeholder-кейсы (NOT real Tachos work) — нужны, чтобы «Показать ещё»
-  // работал по 2 несколько раз. Vadim: заменить на реальные или удалить.
-  {
-    id: 'vektor',
-    client: 'Вектор',
-    category: 'аналитика',
-    desc: {
-      lead: 'BI-панель для отдела продаж: дашборды, отчёты и прогнозы в реальном времени.',
-      highlight: '40+ дашбордов',
-      tail: '',
-    },
-    tags: ['Аналитика', 'Web'],
-    cover,
-    avatar,
-    story: {
-      summary: 'BI-панель для отдела продаж: дашборды, отчёты и прогнозы в реальном времени.',
-      metrics: [
-        { value: '40+', label: 'дашбордов' },
-        { value: 'real-time', label: 'обновление' },
-        { value: 'Web', label: 'платформа' },
-      ],
-      sections: [
-        {
-          title: 'Контекст',
-          body: 'Отделу продаж не хватало единой картины: данные жили в разных таблицах и выгрузках.',
-        },
-        {
-          title: 'Что сделали',
-          body: 'Собрали BI-панель с дашбордами, автоматическими отчётами и прогнозами на основе исторических данных.',
-        },
-        {
-          title: 'Результат',
-          body: '40+ дашбордов закрыли потребности команды — решения принимаются по цифрам.',
-        },
-      ],
-    },
-  },
-  {
-    id: 'orbita',
-    client: 'Орбита',
-    category: 'образование',
-    desc: {
-      lead: 'Платформа онлайн-курсов: уроки, тесты и прогресс ученика в одном кабинете.',
-      highlight: '20 000 учеников',
-      tail: '',
-    },
-    tags: ['EdTech', 'Web + mobile'],
-    cover,
-    avatar,
-    story: {
-      summary: 'Платформа онлайн-курсов: уроки, тесты и прогресс ученика в одном кабинете.',
-      metrics: [
-        { value: '20 000', label: 'учеников' },
-        { value: 'Web + mobile', label: 'связка' },
-        { value: 'EdTech', label: 'направление' },
-      ],
-      sections: [
-        {
-          title: 'Контекст',
-          body: 'Образовательному проекту нужна была платформа с уроками, тестами и трекингом прогресса.',
-        },
-        {
-          title: 'Что сделали',
-          body: 'Собрали веб-кабинет и мобильное приложение: видеоуроки, тесты, прогресс и сертификаты.',
-        },
-        { title: 'Результат', body: 'На платформе учатся 20 000 человек.' },
-      ],
+      sections: [{ title: 'Контекст', body: 'Описание кейса уточняется.' }],
     },
   },
 ]);

@@ -1,24 +1,23 @@
-// Office/team video, placed before the blog on a white surface (no heading —
-// just the clip). TEMPORARY: embeds the crauch.ru Kinescope clip as a stand-in
-// until Vadim supplies the studio's own footage — swap the iframe src (or replace
-// with a self-hosted <video>) then.
-//
-// background=1 runs the player as a decorative backdrop: it forces autoplay +
-// muted + loop AND hides every control, so a click no longer surfaces the dark
-// pause/control overlay (what read as a "shadow"). no_poster=1 stops the poster
-// flashing on each loop restart.
+import { asset } from '@/lib/asset';
+
+// Office/team video on a white surface (no heading — just the clip). The Kinescope
+// embed was ripped out for good: even in background mode its player kept surfacing a
+// dark overlay/letterbox bar that read as a "shadow". A native <video> has NO player
+// chrome at all — autoplay + muted + loop + object-cover fills the 16:9 frame edge to
+// edge, so a shadow is physically impossible. TEMPORARY stand-in clip; swap the src
+// for Vadim's own studio footage when it lands.
 export function VideoBlock() {
   return (
     <section id="studio" className="bg-white py-[72px] lg:py-[120px]">
       <div className="mx-auto max-w-page px-5 sm:px-8 lg:px-[80px]">
-        <div className="relative aspect-video w-full overflow-hidden rounded-card">
-          <iframe
-            src="https://kinescope.io/embed/nGzuTWL7hcR9SSZHhk1e2i?background=1&no_poster=1"
-            title="Студия Tachos изнутри"
-            allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-            allowFullScreen
-            className="absolute inset-0 h-full w-full"
-            style={{ border: 0 }}
+        <div className="relative aspect-video w-full overflow-hidden rounded-card bg-ink">
+          <video
+            src={asset('/figma/hero-belt-v15.mp4')}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 h-full w-full object-cover"
           />
         </div>
       </div>

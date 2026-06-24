@@ -89,14 +89,14 @@ export function Nav() {
         stuck ? 'pt-[10px]' : 'pt-0'
       }`}
     >
-      {/* The bar keeps a CONSTANT horizontal padding in both states so the logo
-          and CTA never shift sideways when you scroll — only the plate (bg /
-          border / shadow / blur) and the height appear/change on `stuck`. */}
+      {/* The bar keeps a CONSTANT width (max-w-page) and horizontal padding in both
+          states, so it never narrows or shifts sideways when you scroll — only the
+          plate (bg / border / shadow / blur) and the height appear/change on `stuck`. */}
       <div
-        className={`mx-auto flex w-full items-center justify-between rounded-[22px] px-[12px] transition-all duration-300 lg:px-[22px] ${
+        className={`mx-auto flex w-full max-w-page items-center justify-between rounded-[22px] px-[12px] transition-all duration-300 lg:px-[22px] ${
           stuck
-            ? 'max-w-[1080px] border border-white/10 bg-ink/75 shadow-[0_10px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl h-[60px]'
-            : 'max-w-page h-[64px] border border-transparent lg:h-[84px]'
+            ? 'h-[60px] border border-white/10 bg-ink/75 shadow-[0_10px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl'
+            : 'h-[64px] border border-transparent lg:h-[84px]'
         }`}
       >
         {/* logo on the left, with a quiet "report a bug" link beside it */}
@@ -153,14 +153,22 @@ export function Nav() {
           </a>
         </div>
 
-        {/* mobile: burger */}
-        <button
-          type="button"
-          onClick={() => setMenuOpen(true)}
-          aria-label="Открыть меню"
-          aria-expanded={menuOpen}
-          className="grid size-[40px] place-items-center text-inverted lg:hidden"
-        >
+        {/* mobile: CTA + burger together on the right */}
+        <div className="flex items-center gap-[10px] lg:hidden">
+          <a
+            href="#contacts"
+            data-compose
+            className="rounded-button bg-accent-bright px-[14px] py-[7px] text-[14px] font-medium text-inverted"
+          >
+            {nav.cta}
+          </a>
+          <button
+            type="button"
+            onClick={() => setMenuOpen(true)}
+            aria-label="Открыть меню"
+            aria-expanded={menuOpen}
+            className="grid size-[40px] place-items-center text-inverted"
+          >
           <svg
             width="24"
             height="24"
@@ -173,7 +181,8 @@ export function Nav() {
           >
             <path d="M3 6h18M3 12h18M3 18h18" />
           </svg>
-        </button>
+          </button>
+        </div>
       </div>
 
       {/* mobile menu overlay — slides down from the top */}

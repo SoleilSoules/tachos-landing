@@ -94,7 +94,7 @@ export function HeroPrompt() {
         onClick={submit}
         data-hint="Нажмите — соберём письмо"
         data-hint-sub="или выберите чип ниже"
-        className="relative mt-[32px] flex h-[72px] w-full max-w-[554px] cursor-pointer items-center gap-[12px] overflow-hidden rounded-input bg-white pl-[20px] shadow-input sm:mt-[40px] sm:h-[88px] sm:pl-[22px]"
+        className="relative mt-[32px] flex h-[72px] w-full max-w-[554px] cursor-pointer items-center gap-[12px] overflow-hidden rounded-[18px] bg-white pl-[20px] shadow-input sm:mt-[40px] sm:h-[88px] sm:pl-[22px]"
       >
         {/* hidden mirror — measures caret x using the same font as the input */}
         <span
@@ -129,7 +129,7 @@ export function HeroPrompt() {
             submit();
           }}
           aria-label={value.trim() ? 'Отправить — Enter' : 'Голосовой ввод'}
-          className={`grid h-[72px] w-[80px] shrink-0 place-items-center rounded-input shadow-[-14px_0_28px_rgba(0,0,0,0.06)] transition sm:h-[88px] sm:w-[107px] ${
+          className={`grid h-[72px] w-[80px] shrink-0 place-items-center rounded-[18px] shadow-[-14px_0_28px_rgba(0,0,0,0.06)] transition sm:h-[88px] sm:w-[107px] ${
             value.trim()
               ? 'bg-accent text-white'
               : 'bg-white text-black hover:bg-accent hover:text-white'
@@ -150,7 +150,7 @@ export function HeroPrompt() {
               key={chip}
               type="button"
               onClick={() => open({ type: chipType[chip] ?? 'idk', freeText: value.trim() })}
-              className={`inline-flex h-[31px] items-center rounded-chip px-[12px] text-[13px] font-semibold leading-none transition sm:px-[16px] sm:text-[15px] ${
+              className={`${chip === 'Приложение' ? 'hidden sm:inline-flex' : 'inline-flex'} h-[31px] items-center rounded-chip px-[12px] text-[13px] font-semibold leading-none transition sm:px-[16px] sm:text-[15px] ${
                 active
                   ? 'bg-accent text-inverted'
                   : 'bg-surface2 text-black hover:bg-accent hover:text-inverted'

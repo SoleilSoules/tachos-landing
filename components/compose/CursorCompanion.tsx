@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { categorize, nachosLine, type NachosCategory } from '@/lib/nachos-lines';
 import { useCompose } from './ComposeProvider';
 
 // Tachos Nachos — the studio mascot (orange play-triangle with eyes). He calmly
@@ -41,6 +42,7 @@ export function CursorCompanion() {
     };
     const OFF_X = 34,
       OFF_Y = 30; // resting offset from the cursor (lower-right)
+    const FOOTER_SCALE = 15; // how big he grows in the footer perch (base art box is 33px)
 
     let mx = innerWidth / 2,
       my = innerHeight * 0.42;
@@ -100,18 +102,36 @@ export function CursorCompanion() {
     };
     addEventListener('mousemove', onMove, { passive: true });
 
-    // ─── HINT: speak about the element under the cursor ───
-    const hintFor = (el: Element): string | null => {
+    // ─── HINT: say something OF HIS OWN about the element under the cursor (never
+    // echo its label). data-hint = the element TYPE, data-hint-sub = its entity; the
+    // line pool lives in lib/nachos-lines. lastLine avoids an immediate repeat. ───
+    let lastLine = '';
+    const lineFor = (el: Element): string | null => {
       const dh = el.getAttribute('data-hint');
-      if (dh) return dh;
-      const tag = el.tagName.toLowerCase();
-      if (tag === 'textarea') return 'Опишите задачу своими словами';
-      if (tag === 'input') return 'Сюда — ваш контакт';
-      if (tag === 'button' || tag === 'a') {
-        const label = (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 32);
-        if (label) return label;
+      let category: NachosCategory;
+      let name = '';
+      if (dh) {
+        ({ category, name } = categorize(dh, el.getAttribute('data-hint-sub')));
+      } else {
+        const tag = el.tagName.toLowerCase();
+        // bare controls without a hint: the compose textarea reads as the hero prompt,
+        // a stray input as a contact field, anything else clickable stays generic.
+        if (tag === 'textarea') category = 'hero';
+        else if (tag === 'input') category = 'contact';
+        else if (tag === 'button' || tag === 'a') category = 'generic';
+        else return null;
       }
-      return null;
+      const line = nachosLine(category, name, lastLine);
+      lastLine = line;
+      return line;
+    };
+    // Small body reaction when he speaks — bobs once so a new line feels like HE chose
+    // to say it, not a tooltip popping. Skipped if a trick is already playing.
+    const reactNod = () => {
+      const r = root.current;
+      if (!r || r.classList.contains('squish') || r.classList.contains('spin')) return;
+      r.classList.add('squish');
+      setTimeout(() => r.classList.remove('squish'), 600);
     };
     let hintEl: Element | null = null;
     const onOver = (e: MouseEvent) => {
@@ -121,9 +141,11 @@ export function CursorCompanion() {
         null;
       if (el === hintEl) return;
       hintEl = el;
-      const h = el ? hintFor(el) : null;
-      if (h) say(h, 4200);
-      else hush();
+      const line = el ? lineFor(el) : null;
+      if (line) {
+        say(line, 4800);
+        reactNod();
+      } else hush();
     };
     addEventListener('mouseover', onOver, { passive: true });
 
@@ -170,6 +192,8 @@ export function CursorCompanion() {
 
     const render = (scale: number) => {
       if (!root.current) return;
+      // small cursor companion faces the pointer (faceAng); in the footer perch faceAng
+      // eases to π/2 so the BIG mascot points nose-down. Offset = half the 33px box.
       root.current.style.transform = `translate3d(${pos.x - 16.5}px,${pos.y - 16.5}px,0) scale(${scale})`;
       rot.current?.setAttribute('transform', `rotate(${(faceAng * 180) / Math.PI} 13 13)`);
       const k = Math.atan2(my - pos.y, mx - pos.x) - faceAng;
@@ -222,9 +246,19 @@ export function CursorCompanion() {
         render(curScale);
         if (k >= 1) mode = 'companion';
       } else if (mode === 'footer-perch') {
-        // hand off to the big generated Начос image in the footer — the cursor
-        // mascot fades out here and doesn't follow into the footer
-        if (root.current) root.current.style.opacity = '0';
+        // grow into the BIG footer mascot: ease to the perch centre and scale up, but
+        // keep watching the cursor with the EYES (render) — he doesn't chase it here.
+        // Scrolling back up flips mode to companion and he eases back down to the
+        // cursor — the lerps make both directions a smooth grow/shrink transition.
+        if (root.current) root.current.style.opacity = '1';
+        if (perchEl) {
+          const pr = perchEl.getBoundingClientRect();
+          pos.x = lerp(pos.x, pr.left + pr.width / 2, 0.08);
+          pos.y = lerp(pos.y, pr.top + pr.height / 2, 0.08);
+        }
+        curScale = lerp(curScale, FOOTER_SCALE, 0.08);
+        faceAng = lerp(faceAng, Math.PI / 2, 0.08); // turn nose-down in the perch
+        render(curScale);
       } else {
         // companion — lazy orbit + soft repel + gentle breathing scale
         orbit += 0.0035 + Math.sin(now * 0.0004) * 0.0015;
@@ -275,8 +309,11 @@ export function CursorCompanion() {
         ref={root}
         aria-hidden
         className="companion pointer-events-none fixed left-0 top-0 z-[120]"
-        style={{ filter: 'drop-shadow(0 4px 10px rgba(248,72,0,.4))', transition: 'opacity 0.5s ease' }}
+        style={{ transition: 'opacity 0.5s ease' }}
       >
+        {/* glow as a separate layer — NOT a drop-shadow filter on the SVG, which would
+            rasterise the triangle at 33px and blur it when scaled up in the perch */}
+        <span aria-hidden className="comp-glow" />
         <svg width="33" height="33" viewBox="0 0 26 26">
           <g ref={rot}>
             <path

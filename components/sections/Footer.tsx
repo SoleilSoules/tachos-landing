@@ -107,21 +107,16 @@ export function Footer() {
             </div>
           </div>
 
-          {/* right — perch where the cursor mascot (Начос triangle) flies in and
-              GROWS big when the footer scrolls into view; he stays put here (no
-              longer follows the cursor). Rendered by CursorCompanion via this slot. */}
-          <div
-            data-mascot-perch
-            aria-hidden
-            className="pointer-events-none relative hidden min-h-[460px] lg:block"
-          >
+          {/* right — perch the cursor mascot eases into and GROWS big when the footer
+              scrolls into view, watching the cursor with his eyes from here; scrolling
+              up shrinks him back to the cursor. Just a positioned sizer slot — the
+              mascot itself is rendered (and flown into this box's centre) by
+              CursorCompanion.tsx. Hidden on touch/small where the mascot is off. */}
+          <div aria-hidden className="pointer-events-none relative hidden min-h-[460px] lg:block">
             <div
-              className={`absolute right-[20px] top-1/2 h-[440px] w-[440px] -translate-y-1/2 transition-[opacity,transform] duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${
-                inView ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
-              }`}
-            >
-              <Image src={asset('/figma/nachos-sharp-1.png')} alt="" fill className="object-contain" />
-            </div>
+              data-mascot-perch
+              className="absolute right-[20px] top-1/2 h-[440px] w-[440px] -translate-y-1/2"
+            />
           </div>
         </div>
 

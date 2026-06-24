@@ -140,6 +140,7 @@ export function CaseView({ item, others }: { item: CaseItem; others: CaseItem[] 
                 client={item.client}
                 shot={item.shot}
                 shotKind={item.shotKind}
+                mockupVideo={item.mockupVideo}
                 variant="hero"
               />
             </div>
@@ -190,6 +191,7 @@ export function CaseView({ item, others }: { item: CaseItem; others: CaseItem[] 
                       client={c.client}
                       shot={c.shot}
                       shotKind={c.shotKind}
+                      mockupVideo={c.mockupVideo}
                       variant="card"
                       className="transition-transform duration-500 group-hover:scale-[1.05]"
                     />

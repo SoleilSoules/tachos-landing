@@ -87,6 +87,23 @@ a {
 }
 /* Idle "tricks" — applied to the inner <svg> (NOT the root, whose transform is
    driven each frame by rAF) so the playful flip/morph composes cleanly. */
+.comp-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: -1;
+  width: 40px;
+  height: 40px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(
+    circle,
+    rgba(248, 72, 0, 0.5) 0%,
+    rgba(248, 72, 0, 0.18) 45%,
+    transparent 72%
+  );
+}
 .companion.spin svg {
   animation: companion-spin 0.85s cubic-bezier(0.5, 0, 0.2, 1);
 }
@@ -469,5 +486,131 @@ a {
   .cv-device {
     transform: none !important;
     transition: none !important;
+  }
+}
+
+/* studio-lit neutral seamless shared by every case cover: one off-axis soft light
+   (warm top-left -> cool bottom-right) + corner falloff + fine film grain. Replaces
+   the flat grey gradient + radial white glow that read as a stock mockup. */
+.cv-field {
+  background-image:
+    radial-gradient(140% 120% at 82% 96%, transparent 56%, rgba(18, 20, 28, 0.055) 100%),
+    linear-gradient(158deg, rgba(255, 255, 255, 0.55), rgba(20, 22, 30, 0.02) 70%, rgba(20, 22, 30, 0.045)),
+    radial-gradient(125% 115% at 27% 16%, hsl(40 14% 98.5%) 0%, hsl(228 9% 93.5%) 46%, hsl(224 9% 88%) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.03);
+}
+/* fine fractal-noise grain: kills gradient banding, adds paper tooth. Inline data-URI
+   (static-export safe, no runtime dep). overlay blend modulates the gradient. */
+.cv-field::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  border-radius: inherit;
+}
+
+/* ── animated iPhone mockup (CaseVideoMockup): a CSS titanium handset that turns
+   ¾-left → front → ¾-right and back with a real video inside. The stage gives
+   perspective; the device keeps preserve-3d so bezel + island + glare turn as one. ── */
+.cvm-stage {
+  position: relative;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  perspective: 1400px;
+}
+.cvm-device {
+  position: relative;
+  z-index: 1;
+  height: 90%;
+  aspect-ratio: 1000 / 2162; /* matches the source clip so the video never crops */
+  border-radius: 30px;
+  /* brushed titanium: directional gradient, not flat black */
+  background: linear-gradient(135deg, #5c5e63 0%, #242528 27%, #161719 52%, #303236 73%, #4d4f54 100%);
+  padding: 2.4%;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.35),
+    0 0 0 1px rgba(0, 0, 0, 0.35),
+    0 34px 64px -20px rgba(10, 12, 18, 0.55);
+  transform: rotateX(7deg) rotateY(-22deg);
+  transform-style: preserve-3d;
+  animation: cvm-turn 9s ease-in-out infinite;
+  will-change: transform;
+}
+.cvm-screen {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 24px;
+  background: #000;
+}
+.cvm-screen video {
+  display: block;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+.cvm-island {
+  position: absolute;
+  left: 50%;
+  top: 3.6%;
+  z-index: 2;
+  height: 4%;
+  width: 30%;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: #050505;
+}
+.cvm-sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: 30px;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 34%, rgba(255, 255, 255, 0.16) 46%, transparent 58%);
+  mix-blend-mode: screen;
+}
+.cvm-floor {
+  position: absolute;
+  bottom: 3%;
+  left: 50%;
+  z-index: 0;
+  height: 34px;
+  width: 60%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: rgba(18, 20, 28, 0.3);
+  filter: blur(20px);
+}
+@keyframes cvm-turn {
+  0% {
+    transform: rotateX(7deg) rotateY(-22deg);
+  }
+  25% {
+    transform: rotateX(6deg) rotateY(0deg);
+  }
+  50% {
+    transform: rotateX(7deg) rotateY(22deg);
+  }
+  75% {
+    transform: rotateX(6deg) rotateY(0deg);
+  }
+  100% {
+    transform: rotateX(7deg) rotateY(-22deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cvm-device {
+    animation: none;
+    transform: rotateX(6deg) rotateY(-18deg);
   }
 }

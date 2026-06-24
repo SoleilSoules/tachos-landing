@@ -41,6 +41,7 @@ export function CaseCard({ item }: { item: CaseItem }) {
           client={item.client}
           shot={item.shot}
           shotKind={item.shotKind}
+          mockupVideo={item.mockupVideo}
           variant="card"
           className="transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:scale-[1.02]"
         />
@@ -54,12 +55,8 @@ export function CaseCard({ item }: { item: CaseItem }) {
         {/* inner padded frame for the overlay controls */}
         <div className="relative flex h-full flex-col justify-between p-[24px]">
           {/* top row: frosted avatar circle (left) + frosted dark tag pills (right) */}
-          <div className="flex items-start justify-between gap-[12px]">
-            <span
-              className="size-[56px] shrink-0 rounded-full bg-white/15 ring-1 ring-inset ring-white/25 backdrop-blur-md"
-              aria-hidden
-            />
-            <div className="flex max-w-[78%] flex-wrap justify-end gap-[8px]">
+          <div className="flex items-start justify-end gap-[12px]">
+            <div className="flex max-w-[88%] flex-wrap justify-end gap-[8px]">
               <span className="rounded-pill bg-black/30 px-[14px] py-[8px] text-[14px] font-medium tracking-[0.01em] text-white backdrop-blur-md">
                 {domainTag}
               </span>
@@ -85,8 +82,7 @@ export function CaseCard({ item }: { item: CaseItem }) {
 
       {/* caption/meta — pinned to its own card with a small left inset (#33) */}
       <div className="pl-[6px] pr-[10px]">
-        <p className="text-[18px] font-medium tracking-[0.02em] text-black/50">{item.client}</p>
-        <p className="mt-[6px] text-[22px] font-medium leading-[1.22] text-black sm:text-[26px]">
+        <p className="text-[22px] font-medium leading-[1.22] text-black sm:text-[26px]">
           {item.desc.lead && <>{item.desc.lead} </>}
           {/* #31: accent underlay gets real padding + tag radius, cloned across
               line wraps so each line keeps rounded corners. .nums for figures. */}

@@ -1,7 +1,6 @@
 import { cases } from '@/lib/content';
-import { CaseTabs } from './CaseTabs';
 import { CasesHeadingClient } from './CasesHeadingClient';
-import { CaseGridClient } from './CaseGridClient';
+import { CasesExplorer } from './CasesExplorer';
 
 export function Cases() {
   return (
@@ -9,8 +8,7 @@ export function Cases() {
       <CasesHeadingClient />
 
       <div className="mx-auto mt-[44px] max-w-page px-5 sm:px-8 lg:px-[80px]">
-        <CaseTabs />
-        <CaseGridClient cases={cases} />
+        <CasesExplorer cases={cases} />
         {/* anchor: the floating panel expands to "Все кейсы" only past this point */}
         <div id="cases-end" aria-hidden className="h-px w-full" />
       </div>
