@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ScatterZone } from '@/components/ScatterZone';
 import { CaseCover } from '@/components/CaseCover';
 import { Nav } from '@/components/sections/Nav';
 import { Footer } from '@/components/sections/Footer';
@@ -111,7 +110,7 @@ export function CaseView({ item, others }: { item: CaseItem; others: CaseItem[] 
         </div>
 
         {/* content column leaves room on the right for the notes panel (lg) */}
-        <ScatterZone className="lg:pr-[300px]" radius={90} strength={12}>
+        <div className="lg:pr-[300px]">
           {/* HERO */}
           <section className="mb-14 pt-8">
             <p className="mb-3 text-[15px] font-medium tracking-[0.02em] text-accent-warm">
@@ -201,7 +200,7 @@ export function CaseView({ item, others }: { item: CaseItem; others: CaseItem[] 
               ))}
             </div>
           </section>
-        </ScatterZone>
+        </div>
       </div>
 
       <Footer />

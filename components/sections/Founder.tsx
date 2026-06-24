@@ -275,7 +275,6 @@ export function Founder() {
         aria-expanded={expanded}
         aria-controls={panelId}
         data-side="right"
-        title="Вадим — основатель студии. Перетащите или нажмите"
         data-hint={widget.badge}
         data-hint-sub={`${founder.person.name} · ${widget.online}`}
         onDragStart={(e) => e.preventDefault()}

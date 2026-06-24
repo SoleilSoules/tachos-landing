@@ -21,8 +21,9 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
     if (touch || reduced) return;
 
     const lenis = new Lenis({
-      lerp: 0.1,
-      wheelMultiplier: 0.8,
+      // higher lerp = snappier follow (less "laggy" drift) + a touch faster wheel
+      lerp: 0.14,
+      wheelMultiplier: 1.05,
       touchMultiplier: 1.5,
       anchors: { offset: -100 }, // clear the fixed nav when jumping to #anchors
     });

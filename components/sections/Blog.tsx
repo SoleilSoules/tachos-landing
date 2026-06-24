@@ -103,7 +103,7 @@ function Card({
       href={`/blog/${post.slug}`}
       data-hint="Статья студии"
       data-hint-sub={post.tag}
-      className={`reveal-hidden group flex h-full cursor-pointer flex-col rounded-card transition duration-300 hover:-translate-y-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 ${
+      className={`reveal-hidden group flex h-full cursor-pointer flex-col overflow-hidden rounded-card transition duration-300 hover:-translate-y-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 ${
         peach
           ? 'bg-gradient-to-br from-[#f7d8c5] via-[#f6cdba] to-[#f1bda3]'
           : 'bg-surface hover:bg-surface2'

@@ -197,10 +197,25 @@ export function Products() {
                   {/* warm glow behind the device */}
                   <div className="pointer-events-none absolute -right-[40px] top-1/2 h-[560px] w-[600px] -translate-y-1/2 rounded-full bg-accent/25 blur-[150px]" />
 
+                  {/* Tablet mockup INSIDE the panel (Гоша) so the rounded card edge
+                      clips it cleanly; pushed further right — the device bleeds past
+                      the right/top edge and is cut by the card, the hand stays off. */}
+                  {isActive && mockup && (
+                    <div className="pointer-events-none absolute -top-[20px] right-[-200px] hidden h-[620px] w-[1080px] rotate-[-6deg] overflow-hidden lg:block">
+                      <Image
+                        src={asset(mockup.src)}
+                        alt={mockup.alt}
+                        fill
+                        sizes="1080px"
+                        priority={i === 0}
+                        className="object-cover object-top"
+                      />
+                    </div>
+                  )}
+
                   {/* Content lives ONLY on the active (top) card — otherwise the
                       text of the cards behind it shows through/around the top one
-                      (the bug Vadim flagged: "balibali" bleeding through "doki").
-                      Cards in the deck are just dark panels until they reach the top. */}
+                      (the bug Vadim flagged: "balibali" bleeding through "doki"). */}
                   {isActive && (
                     <div className="relative flex h-full max-w-full flex-col justify-between p-[28px] lg:max-w-[440px] lg:p-[40px]">
                       <div>
@@ -221,22 +236,6 @@ export function Products() {
                     </div>
                   )}
                 </div>
-
-                {/* Per-product tablet mockup — sibling of the panel so it bleeds past
-                    the top-right edge like Figma. Only on the active card so the
-                    deck behind stays clean (no doki tablet showing on every layer). */}
-                {isActive && mockup && (
-                  <div className="pointer-events-none absolute -top-[40px] right-[-20px] hidden h-[640px] w-[910px] rotate-[-7deg] lg:block">
-                    <Image
-                      src={asset(mockup.src)}
-                      alt={mockup.alt}
-                      fill
-                      sizes="803px"
-                      priority={i === 0}
-                      className="object-cover object-[center_26%]"
-                    />
-                  </div>
-                )}
               </div>
             );
           })}

@@ -63,7 +63,10 @@ export function WordsReveal({
   const out: ReactNode[] = [];
   let key = 0;
   const pushText = (text: string) => {
-    text.split(/(\s+)/).forEach((tok) => {
+    // Split on whitespace EXCEPT U+00A0 (nbsp): deepNbsp() glues short prepositions
+    // to the next word with nbsp, and we must keep that pair in one animated word
+    // so it never wraps (otherwise "и сервисы" splits and the "и" hangs).
+    text.split(/([^\S ]+)/).forEach((tok) => {
       if (tok.trim() === '') out.push(tok);
       else
         out.push(

@@ -210,6 +210,20 @@ function AudioCard({ r }: { r: Review }) {
   const playedBars = Math.round(progress * WAVE.length);
   const remaining = Math.max(0, total - progress * total);
 
+  // While this review plays, ask Nachos to narrate its transcript (#B6). The
+  // companion listens for tachos:transcript and shows/hides the bubble.
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent('tachos:transcript', { detail: { text: r.text ?? '', playing } }),
+    );
+    return () => {
+      if (playing)
+        window.dispatchEvent(
+          new CustomEvent('tachos:transcript', { detail: { text: '', playing: false } }),
+        );
+    };
+  }, [playing, r.text]);
+
   return (
     // Wide horizontal hero card across its whole row (Гоша #1): header row on
     // top (author left / logo badge right), task title beneath, full-width

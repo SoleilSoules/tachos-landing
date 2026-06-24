@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ScatterZone } from '@/components/ScatterZone';
 import { Nav } from '@/components/sections/Nav';
 import { Footer } from '@/components/sections/Footer';
 import { ctaBanner, type Post } from '@/lib/content';
@@ -80,7 +79,7 @@ export function BlogView({ post, others }: { post: Post; others: Post[] }) {
           </Link>
         </div>
 
-        <ScatterZone className="lg:pr-[252px]" radius={90} strength={12}>
+        <div className="lg:pr-[252px]">
           {/* HERO */}
           <section className="mb-12 pt-8">
             <p className="mb-3 font-mono text-[12px] uppercase tracking-[0.05em] text-accent">
@@ -195,7 +194,7 @@ export function BlogView({ post, others }: { post: Post; others: Post[] }) {
               </div>
             </section>
           )}
-        </ScatterZone>
+        </div>
       </div>
 
       <Footer />

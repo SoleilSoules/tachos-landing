@@ -187,7 +187,6 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     avatar,
     shot: '/figma/shots/skladno.png',
     shotKind: 'phone',
-    coverVideo: '/figma/covers/skladno-v2.mp4',
     story: {
       summary:
         'Сеть хранения без персонала: бронь, оплата и доступ к ячейке по Bluetooth — всё в приложении.',
@@ -560,7 +559,7 @@ export const posts: Post[] = deepNbsp<Post[]>([
   {
     id: 'p2',
     slug: 'razrabotka-ne-utopia',
-    title: 'Наша разработка — это не утопия',
+    title: 'Наша разработка — не утопия',
     tag: 'Кейс',
     date: '20 июня',
     read: '3 минуты',
@@ -586,7 +585,7 @@ export const posts: Post[] = deepNbsp<Post[]>([
   {
     id: 'p3',
     slug: 'ustroistvo-dlya-drifta',
-    title: 'Сделали устройство для дрифта дикого',
+    title: 'Сделали бортовое устройство для дрифтеров',
     tag: 'Новость',
     date: '16 июня',
     read: '3 минуты',

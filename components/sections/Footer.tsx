@@ -80,9 +80,9 @@ export function Footer() {
           {/* left — the smart letter, the very same composer as the modal (synced) */}
           <div>
             <h2 className="max-w-[611px] text-[clamp(30px,8vw,52px)] font-semibold leading-[0.95] tracking-[-0.01em] lg:leading-[0.9]">
-              {footer.formTitle[0]} {footer.formTitle[1]}
+              {footer.formTitle[0]}
               <br />
-              {footer.formTitle[2]}
+              {footer.formTitle[1]} {footer.formTitle[2]}
             </h2>
             <div className="mt-[36px] max-w-[660px]">
               {isSuccess ? <ComposeSent /> : <LetterBody active={inView} autofocus={false} />}
@@ -107,20 +107,20 @@ export function Footer() {
             </div>
           </div>
 
-          {/* right — the perch where the big Начос sits (over the flame glow) */}
+          {/* right — perch where the cursor mascot (Начос triangle) flies in and
+              GROWS big when the footer scrolls into view; he stays put here (no
+              longer follows the cursor). Rendered by CursorCompanion via this slot. */}
           <div
             data-mascot-perch
             aria-hidden
             className="pointer-events-none relative hidden min-h-[460px] lg:block"
           >
-            <div className="absolute right-[10px] top-1/2 h-[600px] w-[520px] -translate-y-1/2">
-              <Image
-                src={asset('/figma/footer-fire.svg')}
-                alt=""
-                fill
-                className="object-contain"
-                priority={false}
-              />
+            <div
+              className={`absolute right-[20px] top-1/2 h-[440px] w-[440px] -translate-y-1/2 transition-[opacity,transform] duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${
+                inView ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
+              }`}
+            >
+              <Image src={asset('/figma/nachos-sharp-1.png')} alt="" fill className="object-contain" />
             </div>
           </div>
         </div>
