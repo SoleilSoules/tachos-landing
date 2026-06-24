@@ -95,7 +95,7 @@ function Glow({ className = '' }: { className?: string }) {
   );
 }
 
-function Avatar({ src, size = 54 }: { src: string; size?: number }) {
+function Avatar({ src, size = 44 }: { src: string; size?: number }) {
   return (
     <span className="shrink-0 overflow-hidden rounded-full" style={{ width: size, height: size }}>
       <Image src={src} alt="" width={size} height={size} className="size-full object-cover" />
@@ -238,8 +238,8 @@ function AudioCard({ r }: { r: Review }) {
         <div className="flex items-start justify-between gap-[16px]">
           <Author r={r} />
           {/* glass logo badge (#2): frosted disc holding the handwritten mark */}
-          <span className="grid size-[58px] shrink-0 place-items-center rounded-full bg-white/10 ring-1 ring-white/15 backdrop-blur-md">
-            <TachosMark className="w-[34px] text-inverted/70" />
+          <span className="grid size-[46px] shrink-0 place-items-center rounded-full bg-white/10 ring-1 ring-white/15 backdrop-blur-md">
+            <TachosMark className="w-[27px] text-inverted/70" />
           </span>
         </div>
 
