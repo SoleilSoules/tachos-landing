@@ -201,7 +201,7 @@ export function Products() {
                       clips it cleanly; pushed further right — the device bleeds past
                       the right/top edge and is cut by the card, the hand stays off. */}
                   {isActive && mockup && (
-                    <div className="pointer-events-none absolute -top-[20px] right-[-200px] hidden h-[620px] w-[1080px] rotate-[-6deg] overflow-hidden lg:block">
+                    <div className="pointer-events-none absolute -top-[20px] right-[-70px] hidden h-[620px] w-[1080px] rotate-[-6deg] overflow-hidden lg:block">
                       <Image
                         src={asset(mockup.src)}
                         alt={mockup.alt}

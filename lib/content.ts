@@ -493,12 +493,12 @@ export const products: Product[] = deepNbsp<Product[]>([
     cta: 'Узнать про MonteHub',
   },
   {
-    id: 'balibali',
-    name: 'BaliBetula',
-    tagline: 'Конструктор ресторанов',
-    heading: '«BaliBetula» — конструктор ресторанов',
-    body: 'Меню, заказы и QR-обслуживание — всё для заведения из коробки',
-    cta: 'Узнать про BaliBetula',
+    id: 'standby',
+    name: 'Standby',
+    tagline: 'Доска фокуса',
+    heading: '«Standby» — доска, которая держит фокус',
+    body: 'Задачи, таймеры и прогресс на одной доске, обновляются в реальном времени',
+    cta: 'Узнать про Standby',
   },
 ]);
 
