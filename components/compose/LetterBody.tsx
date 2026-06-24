@@ -440,6 +440,10 @@ export function LetterBody({ active, autofocus = true }: { active: boolean; auto
             Нужно согласие
           </p>
         )}
+        {/* quiet meta-offer in the corner — this very form is something we build */}
+        <p className="mt-[18px] text-[12px] leading-[1.45] text-inverted/40">
+          P.S. Нравится эта форма? Сделаем такую&nbsp;же на&nbsp;ваш сайт — упомяните в&nbsp;задаче.
+        </p>
       </div>
 
       {toast && (
