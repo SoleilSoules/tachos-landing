@@ -356,7 +356,7 @@ export function LetterBody({ active, autofocus = true }: { active: boolean; auto
         })}
       </div>
 
-      <div className="mt-[10px] border-t border-white/10 pt-[22px]">
+      <div className="mt-[48px] border-t border-white/10 pt-[22px]">
         <div className="mb-[12px] text-[14px] font-medium text-inverted/90">Куда вам ответить</div>
 
         {isError && (
