@@ -1,8 +1,36 @@
 # Tachos — HANDOFF (для нового чата)
 
-Боевая вёрстка лендинга **tachos.ru**. Обновлено: **2026-06-24**. Прод: https://soleilsoules.github.io/tachos-landing/.
+Боевая вёрстка лендинга **tachos.ru**. Обновлено: **2026-06-25 (день 2)**. Прод: https://soleilsoules.github.io/tachos-landing/.
 
-## ⭐⭐ СВЕЖЕЕ — сессия 24–25.06 (8 деплоев, прод `b9f84b9`). ЧИТАТЬ `NIGHT-PLAN.md` + `REVIEW-FINDINGS.md`
+## ⭐⭐⭐ СВЕЖЕЕ — сессия 25.06 день 2 (~12 деплоев, прод `574d46a`)
+
+**МЕТОД (Гоша зафиксировал):** правки летят потоком скринами → **записывать в task-план (TaskCreate), делать по списку, не терять** → деплой по слову. Гоша смотрит ЖИВОЙ localhost сам (НЕ слать ему скрины/headless — он проверяет в Safari, Cmd+Shift+R от кэша).
+
+**КЕЙСЫ — большая переработка обложек:**
+- **`shotKind: 'cover'`** (новый) = фото на ВСЮ обложку (без device-рамки). 5 кейсов на реальных cover-фото: **Monte, Хайс, Добрый, Складно, Maginary** (ассеты `public/figma/*-cover.webp`, давал Гоша из Downloads).
+- **`coverDark: boolean`** на кейсе → инверсия чипов в `CaseCard`: `onDark` (все 5 cover помечены true) = тёмная подложка `bg-black/30` + белый текст; иначе светлая `bg-black/[0.06]` + тёмный текст. (Гоша захотел белый текст даже на светлых Добром/Складно.)
+- **Чипы (теги/лого/стрелка):** ✦ sparkle УБРАН; реальные лого клиентов в круглой плашке слева (`CASE_LOGOS` map → `/logos/*.svg`, те же что в LogoWall; fallback — монограмма); маленькие, мягкий радиус.
+- **Порядок (`lib/content.ts`):** docmed · Monte / Хайс · Добрый / Складно · Anomalia… Видны первые 4 (`INITIAL=4`): но **docmed/anomalia/imast/alfastrah/alma СКРЫТЫ** (`hidden: true` + фильтр `cases.filter(c=>!c.hidden)` в `Cases.tsx`) → реально видны **Monte, Хайс, Добрый, Складно**, Maginary за «Показать ещё». Скрытые = плейсхолдеры без cover-фото (вернуть, когда дадут ассеты).
+- Desktop device-bezel ветка (titanium) ещё есть в `CaseCover` для shotKind desktop/phone, но сейчас все видимые — cover.
+
+**НАЧОС (маскот):**
+- **glow УБРАН** у обоих (мелкий курсорный: удалён `.comp-glow` span+CSS; большой footer: убран `drop-shadow`).
+- **Footer-Начос** (`Footer.tsx`): 540px, **градиент тела** (`#nachos-body` linearGradient) + **блики в глазах**, **зрачки следят за курсором** (`pupil` state + mousemove). Появляется **snap-анимацией** `nachos-snap` (scale 0.4→1.1→1, delay 0.28s).
+- **Анимация «осколок»** (`CursorCompanion.tsx` mode `footer-perch`): курсорный летит к перчу (`tx=innerWidth-300, ty=innerHeight*0.6`) + растёт (scale→5) + носом-вниз, гаснет при `near`; большой защёлкивается snap'ом с задержкой = «осколок прилетел и встроился». ⚠️ Гоша 3× браковал переход — если опять не зайдёт, нужна реальная синхронизация позиции (perch rect) или morph.
+
+**ИНПУТЫ:**
+- **Hero** (`HeroPrompt.tsx`): placeholder адаптивный (desktop «Начните описывать задачу, мы поможем» / mobile «Опишите задачу» через matchMedia), углы `rounded-[28px]`, войс-ввод Web Speech (`ru-RU`) цел. Десктопные размеры = до-ночные (gap-12/caret-26/mt-40 на sm:).
+- **FloatingCompose** (нижняя плавашка): тот же адаптив текста; войс-кнопка `bg-surface2` скруглена со всех сторон + шире (w-64/80); текст левее.
+
+**КНОПКА «Показать ещё»** (`CasesExplorer`): тёмная `bg-[#141416]`, `max-w-[820px]` по центру, `py-[26px]`.
+
+**ВЕС/ЧИСТКА:** удалено ~21MB мёртвых PNG (`iphone-frame*`, `nachos-*` — footer теперь нативный SVG); used PNG → **WebP** (cover/doki-mockup/hero-poster, ~10× сжатие). Удалён мёртвый код: `.cv-*` parallax CSS, поля `cover`/`avatar`/`coverVideo`, мёртвые `shots/*.png`. ⚠️ **ОТКРЫТО:** `hero-belt-v4..v14.mp4` (~60MB, Гошин «запас») не трогал — на проде только v15; можно убрать неиспользуемые по слову.
+
+**GITHUB (для Вадима):** репо приведён к doki-архитектуре — `README.md`, `CONTRIBUTING.md`, `ARCHITECTURE.md`, `.claude/settings.json` (общие Claude-permissions). **Вадим `vtachosteam` уже collaborator** + член org SoleilSoules (приглашать не нужно).
+
+---
+
+## ⭐⭐ Сессия 24–25.06 (8 деплоев, прод `b9f84b9`). ЧИТАТЬ `NIGHT-PLAN.md` + `REVIEW-FINDINGS.md`
 
 Большая автономная сессия (~33 правки Гоши списком). КРАТКО (детали — NIGHT-PLAN.md):
 - **Обложки кейсов** → финал: ФРОНТАЛЬНО + однотонно-серый `#e7e8eb` + без тени (`CaseCover.tsx`). Прошли путь frameless→H&H→Apple→этот.
