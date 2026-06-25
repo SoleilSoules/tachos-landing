@@ -133,8 +133,8 @@ export function Footer() {
           <div aria-hidden className="pointer-events-none relative hidden min-h-[560px] lg:block">
             <div
               data-mascot-perch
-              className={`absolute right-[10px] top-1/2 h-[540px] w-[540px] origin-center -translate-y-1/2 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                inView ? 'scale-100 opacity-100' : 'scale-[0.4] opacity-0'
+              className={`absolute right-[10px] top-1/2 h-[540px] w-[540px] origin-center -translate-y-1/2 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.4,0.5,1)] ${
+                inView ? 'scale-100 opacity-100' : 'scale-[0.1] opacity-0'
               }`}
             >
               {/* Big mascot drawn NATIVELY large (vector) so it stays crisp on retina.

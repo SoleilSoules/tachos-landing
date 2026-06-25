@@ -69,16 +69,16 @@ export function FloatingCompose() {
       >
         {/* compact on mobile; on desktop (sm:) the original roomier pill. Voice button
             is flush to the right edge, full height (no gap to the white field) like hero. */}
-        <div className="flex h-[56px] items-center pl-[16px] sm:h-[66px] sm:pl-[18px]">
+        <div className="flex h-[56px] items-center gap-[8px] py-[7px] pl-[14px] pr-[7px] sm:h-[66px] sm:py-[8px] sm:pl-[16px] sm:pr-[8px]">
           <span
             className="h-[22px] w-[2.5px] shrink-0 bg-accent-hot [animation:caret-blink_1.1s_step-end_infinite] motion-reduce:animate-none sm:h-[26px]"
             aria-hidden
           />
-          <span className="ml-[8px] flex-1 whitespace-nowrap pr-[14px] text-[14px] text-black/55 sm:text-[15px]">
+          <span className="flex-1 whitespace-nowrap pr-[6px] text-[14px] text-black/55 sm:text-[15px]">
             <span className="sm:hidden">Опишите задачу</span>
             <span className="hidden sm:inline">Начните описывать задачу, мы поможем</span>
           </span>
-          <span className="grid h-full w-[52px] shrink-0 place-items-center bg-white text-black shadow-[-14px_0_28px_rgba(0,0,0,0.06)] transition group-hover:bg-accent group-hover:text-white sm:w-[64px]">
+          <span className="grid h-full w-[64px] shrink-0 place-items-center rounded-[16px] bg-surface2 text-black transition group-hover:bg-accent group-hover:text-white sm:w-[80px] sm:rounded-[18px]">
             <WaveIcon size={20} />
           </span>
         </div>

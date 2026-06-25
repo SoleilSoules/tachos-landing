@@ -280,10 +280,18 @@ export function CursorCompanion() {
         render(curScale);
         if (k >= 1) mode = 'companion';
       } else if (mode === 'footer-perch') {
-        // Hand off to the BIG natively-drawn mascot in the footer (crisp on retina —
-        // scaling the tiny cursor SVG up rasterised it). The cursor companion just
-        // fades out here; scrolling back up flips to companion and it returns.
-        if (root.current) root.current.style.opacity = '0';
+        // Fly toward the footer perch and grow + turn nose-down, then fade once big —
+        // the big native mascot (crisp on retina) takes over there. Reads as the small
+        // mascot transforming into the big one. Scrolling up flips back to companion.
+        const tx = innerWidth - 300;
+        const ty = innerHeight * 0.6;
+        pos.x = lerp(pos.x, tx, 0.08);
+        pos.y = lerp(pos.y, ty, 0.08);
+        curScale = lerp(curScale, 5, 0.08);
+        faceAng = lerp(faceAng, Math.PI / 2, 0.08);
+        render(curScale);
+        const near = Math.hypot(pos.x - tx, pos.y - ty) < 44 && curScale > 4.2;
+        if (root.current) root.current.style.opacity = near ? '0' : '1';
       } else {
         // companion — lazy orbit + soft repel + gentle breathing scale
         orbit += 0.0035 + Math.sin(now * 0.0004) * 0.0015;
@@ -336,9 +344,6 @@ export function CursorCompanion() {
         className="companion pointer-events-none fixed left-0 top-0 z-[120]"
         style={{ transition: 'opacity 0.5s ease' }}
       >
-        {/* glow as a separate layer — NOT a drop-shadow filter on the SVG, which would
-            rasterise the triangle at 33px and blur it when scaled up in the perch */}
-        <span aria-hidden className="comp-glow" />
         <svg width="33" height="33" viewBox="0 0 26 26">
           <g ref={rot}>
             <path

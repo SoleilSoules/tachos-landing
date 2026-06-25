@@ -52,7 +52,7 @@ export function Services() {
               key={role}
               data-hint="Роль в команде"
               data-hint-sub={role}
-              className="reveal-hidden group relative flex min-h-[96px] flex-col justify-between rounded-[14px] border border-black/[0.08] bg-white px-[14px] py-[14px] transition duration-200 hover:border-black/20 hover:shadow-[0_10px_30px_-12px_rgba(0,0,0,0.18)] sm:min-h-[112px] sm:rounded-[20px] sm:px-[22px] sm:py-[18px]"
+              className="reveal-hidden group relative flex min-h-[96px] flex-col justify-between rounded-[14px] bg-[#f3f4f6] px-[14px] py-[14px] transition duration-200 hover:bg-[#eceef0] sm:min-h-[112px] sm:rounded-[20px] sm:px-[22px] sm:py-[18px]"
             >
               <span className="text-[13px] font-medium tabular-nums text-black/30">
                 {String(i + 1).padStart(2, '0')}
