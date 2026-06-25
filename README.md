@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# tachos.ru
 
-## Getting Started
+Marketing landing for the **Tachos** engineering & design studio. Next.js 16
+(App Router, Turbopack) with **static export** → GitHub Pages.
 
-First, run the development server:
+**Live:** https://soleilsoules.github.io/tachos-landing/
+
+## Quick start (local dev)
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+nvm use            # node version from .nvmrc
+npm install
+npm run dev        # → http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+No backend or database — it's a fully static site.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| script | what |
+|---|---|
+| `npm run dev` | dev server (Turbopack) → :3000 |
+| `npm run build` | static export to `out/` (run before every push) |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm run lint` | ESLint |
+| `npm run format` | Prettier |
 
-## Learn More
+## Project layout
 
-To learn more about Next.js, take a look at the following resources:
+- `app/` — App Router routes (`page.tsx`, `cases/[slug]`, `blog/[slug]`) + `globals.css` (design tokens)
+- `components/` — shared UI; `components/sections/` — homepage sections
+- `lib/content.ts` — all page copy & data; `lib/` — helpers (`asset.ts`, `compose.ts`, `typography.ts`)
+- `public/figma/` — images, device mockups, cover photos
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Working on it
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Conventions → [AGENTS.md](./AGENTS.md)
+- Contributing (setup, workflow, style) → [CONTRIBUTING.md](./CONTRIBUTING.md)
+- How it's wired → [ARCHITECTURE.md](./ARCHITECTURE.md)
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Deploy:** push to `main` → GitHub Action builds and publishes to GitHub Pages.
+Always run `npm run build` locally first. CI (`ci.yml`) runs typecheck + lint + build on PRs.
