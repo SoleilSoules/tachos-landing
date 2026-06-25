@@ -269,6 +269,7 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     tags: ['Web-игра', '4 недели'],
     shot: '/figma/dobry-cover.webp',
     shotKind: 'cover',
+    coverDark: true,
     story: {
       summary: 'Промо-игра для бренда №1 на рынке соков России — от идеи до прода за месяц.',
       metrics: [

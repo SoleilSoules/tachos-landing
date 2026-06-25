@@ -35,9 +35,9 @@ export function CaseCard({ item }: { item: CaseItem }) {
   // light white/10 chips + white text; light covers (device mockups, brand plate)
   // get dark black/6 chips + dark text — legible either way.
   const onDark = item.coverDark === true;
-  const frost = onDark ? 'bg-white/10 text-white' : 'bg-black/[0.06] text-black/60';
+  const frost = onDark ? 'bg-black/30 text-white' : 'bg-black/[0.06] text-black/60';
   const arrowFrost = onDark
-    ? 'bg-white/10 text-white group-hover:bg-white/20'
+    ? 'bg-black/30 text-white group-hover:bg-black/40'
     : 'bg-black/[0.06] text-black/70 group-hover:bg-black/[0.12]';
   const logo = CASE_LOGOS[item.id];
 

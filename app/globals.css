@@ -127,6 +127,18 @@ a {
     transform: rotate(360deg);
   }
 }
+/* footer mascot "snaps" into place as the small flying shard lands */
+@keyframes nachos-snap {
+  0% {
+    transform: scale(0.4);
+  }
+  62% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
 @keyframes companion-squish {
   40% {
     transform: scale(1.35, 0.62) rotate(10deg);

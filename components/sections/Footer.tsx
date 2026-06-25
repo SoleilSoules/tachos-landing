@@ -133,25 +133,35 @@ export function Footer() {
           <div aria-hidden className="pointer-events-none relative hidden min-h-[560px] lg:block">
             <div
               data-mascot-perch
-              className={`absolute right-[10px] top-1/2 h-[540px] w-[540px] origin-center -translate-y-1/2 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.4,0.5,1)] ${
-                inView ? 'scale-100 opacity-100' : 'scale-[0.1] opacity-0'
+              className={`absolute right-[10px] top-1/2 h-[540px] w-[540px] origin-center -translate-y-1/2 transition-opacity duration-300 ${
+                inView
+                  ? 'opacity-100 [animation:nachos-snap_0.7s_cubic-bezier(0.34,1.5,0.5,1)_0.28s_both] motion-reduce:[animation:none]'
+                  : 'opacity-0'
               }`}
             >
-              {/* Big mascot drawn NATIVELY large (vector) so it stays crisp on retina.
-                  Grows in from the cursor size (scale) and the pupils follow the
-                  cursor (pupil state). Nose-down. No glow. */}
+              {/* Big mascot, vector (crisp on retina). The small cursor mascot flies in
+                  and this one snaps into place like its missing shard. Pupils follow the
+                  cursor; body has a subtle gradient + eye highlights. Nose-down. No glow. */}
               <svg viewBox="0 0 26 26" className="h-full w-full" aria-hidden>
+                <defs>
+                  <linearGradient id="nachos-body" x1="0" y1="0" x2="0.35" y2="1">
+                    <stop offset="0" stopColor="#FF5E1F" />
+                    <stop offset="1" stopColor="#E23C00" />
+                  </linearGradient>
+                </defs>
                 <path
                   d="M6 4.6 L20 4.6 Q23 4.6 21.6 7.4 L14.9 20.4 Q13 23.5 11.1 20.4 L4.4 7.4 Q3 4.6 6 4.6 Z"
-                  fill="#F84800"
+                  fill="url(#nachos-body)"
                 />
                 <g>
                   <circle cx="10" cy="10" r="2.1" fill="#fff" />
                   <circle cx={10.5 + pupil.x} cy={10.4 + pupil.y} r="1" fill="#0E0E10" />
+                  <circle cx={10.05 + pupil.x} cy={9.7 + pupil.y} r="0.32" fill="#fff" />
                 </g>
                 <g>
                   <circle cx="16" cy="10" r="2.1" fill="#fff" />
                   <circle cx={16.5 + pupil.x} cy={10.4 + pupil.y} r="1" fill="#0E0E10" />
+                  <circle cx={16.05 + pupil.x} cy={9.7 + pupil.y} r="0.32" fill="#fff" />
                 </g>
               </svg>
             </div>
