@@ -8,7 +8,7 @@ import { asset } from '@/lib/asset';
 // for Vadim's own studio footage when it lands.
 export function VideoBlock() {
   return (
-    <section id="studio" className="bg-white py-12 lg:py-[120px]">
+    <section id="studio" className="bg-white pb-12 pt-6 lg:pb-[120px] lg:pt-[48px]">
       <div className="mx-auto max-w-page px-5 sm:px-8 lg:px-[80px]">
         <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-ink lg:rounded-card">
           <video

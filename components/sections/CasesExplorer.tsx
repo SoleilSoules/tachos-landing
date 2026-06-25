@@ -100,11 +100,11 @@ function CaseGrid({ cases }: { cases: CaseItem[] }) {
       </div>
 
       {hasMore && (
-        <div className="mt-[48px]">
+        <div className="mt-[48px] flex justify-center">
           <button
             type="button"
             onClick={() => setVisible((v) => v + STEP)}
-            className="w-full rounded-[24px] bg-[#2e2e2e] px-[30px] py-[26px] text-[17px] font-medium text-white transition hover:bg-black"
+            className="w-full rounded-[24px] bg-[#2e2e2e] px-[64px] py-[20px] text-[17px] font-medium text-white transition hover:bg-black sm:w-auto sm:min-w-[600px]"
           >
             Показать ещё
           </button>

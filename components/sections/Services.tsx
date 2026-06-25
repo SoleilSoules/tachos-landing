@@ -23,7 +23,7 @@ export function Services() {
   const ref = useReveal<HTMLDivElement>({ threshold: 0.08 });
 
   return (
-    <section id="services" className="bg-white pb-[56px] pt-[48px] sm:pb-[72px] sm:pt-[64px] lg:pb-[104px] lg:pt-[96px]">
+    <section id="services" className="bg-white pb-[40px] pt-[48px] sm:pb-[48px] sm:pt-[64px] lg:pb-[56px] lg:pt-[96px]">
       <div ref={ref} className="mx-auto max-w-page px-5 sm:px-8 lg:px-[80px]">
         {/* Keep: "под ключ" framing, but WITHOUT concrete prices (issue #41) */}
         <WordsReveal

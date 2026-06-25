@@ -154,7 +154,7 @@ export function HeroPrompt() {
         onClick={submit}
         data-hint="Нажмите — соберём письмо"
         data-hint-sub="или выберите чип ниже"
-        className="relative mt-[32px] flex h-[72px] w-full max-w-[554px] cursor-pointer items-center gap-[12px] overflow-hidden rounded-[18px] bg-white pl-[20px] shadow-input sm:mt-[40px] sm:h-[88px] sm:pl-[22px]"
+        className="relative mt-[32px] flex h-[72px] w-full max-w-[554px] cursor-pointer items-center gap-[12px] overflow-hidden rounded-[28px] bg-white pl-[20px] shadow-input sm:mt-[40px] sm:h-[88px] sm:pl-[22px]"
       >
         {/* hidden mirror — measures caret x using the same font as the input */}
         <span
@@ -192,7 +192,7 @@ export function HeroPrompt() {
           aria-label={
             value.trim() ? 'Отправить — Enter' : listening ? 'Остановить запись' : 'Голосовой ввод'
           }
-          className={`grid h-[72px] w-[80px] shrink-0 place-items-center rounded-[18px] shadow-[-14px_0_28px_rgba(0,0,0,0.06)] transition sm:h-[88px] sm:w-[107px] ${
+          className={`grid h-[72px] w-[80px] shrink-0 place-items-center rounded-[28px] shadow-[-14px_0_28px_rgba(0,0,0,0.06)] transition sm:h-[88px] sm:w-[107px] ${
             value.trim() || listening
               ? 'bg-accent text-white'
               : 'bg-white text-black hover:bg-accent hover:text-white'

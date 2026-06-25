@@ -1,10 +1,18 @@
 import Link from 'next/link';
 import { CaseCover } from '@/components/CaseCover';
+import Image from 'next/image';
+import { asset } from '@/lib/asset';
 import type { CaseItem } from '@/lib/content';
 
-// Local UI copy (kept out of content.ts per task scope). The sparkle marks the
-// "method" tag (e.g. ML) the way the reference shows "✦ ML".
-const SPARKLE = '✦';
+// Real client logos for the cover plate (same assets as the hero logo wall).
+// Cases without one fall back to a monogram.
+const CASE_LOGOS: Record<string, string> = {
+  monte: '/logos/monte.svg',
+  hais: '/logos/hais-mono.svg',
+  dobry: '/logos/dobry-color.svg',
+  skladno: '/logos/skladno.svg',
+  maginary: '/logos/maginary-grunge.svg',
+};
 
 function ArrowIcon() {
   return (
@@ -31,6 +39,7 @@ export function CaseCard({ item }: { item: CaseItem }) {
   const arrowFrost = onDark
     ? 'bg-white/10 text-white group-hover:bg-white/20'
     : 'bg-black/[0.06] text-black/70 group-hover:bg-black/[0.12]';
+  const logo = CASE_LOGOS[item.id];
 
   return (
     <article
@@ -62,9 +71,19 @@ export function CaseCard({ item }: { item: CaseItem }) {
               radius, accent-coloured sparkle. */}
           <div className="flex items-start justify-between gap-[12px]">
             <span
-              className={`grid size-[44px] shrink-0 place-items-center rounded-full ${frost} text-[16px] font-semibold backdrop-blur-md`}
+              className={`grid size-[44px] shrink-0 place-items-center overflow-hidden rounded-full ${frost} text-[16px] font-semibold backdrop-blur-md`}
             >
-              {item.client.trim().charAt(0)}
+              {logo ? (
+                <Image
+                  src={asset(logo)}
+                  alt={item.client}
+                  width={28}
+                  height={20}
+                  className={`h-[18px] w-auto object-contain ${onDark ? 'brightness-0 invert' : 'brightness-0'}`}
+                />
+              ) : (
+                item.client.trim().charAt(0)
+              )}
             </span>
             <div className="flex max-w-[80%] flex-wrap justify-end gap-[10px]">
               <span
@@ -73,14 +92,8 @@ export function CaseCard({ item }: { item: CaseItem }) {
                 {domainTag}
               </span>
               <span
-                className={`inline-flex items-center gap-[7px] rounded-[10px] ${frost} px-[13px] py-[8px] text-[13px] font-medium tracking-[0.01em] backdrop-blur-md`}
+                className={`rounded-[10px] ${frost} px-[13px] py-[8px] text-[13px] font-medium tracking-[0.01em] backdrop-blur-md`}
               >
-                <span
-                  aria-hidden
-                  className="bg-gradient-to-br from-[#ff8a3c] via-[#ff4d6d] to-[#8b5cff] bg-clip-text text-transparent"
-                >
-                  {SPARKLE}
-                </span>
                 {methodTag}
               </span>
             </div>

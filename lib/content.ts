@@ -305,6 +305,7 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     tags: ['Сервис хранения', 'Mobile + бэкенд'],
     shot: '/figma/skladno-cover.png',
     shotKind: 'cover',
+    coverDark: true,
     story: {
       summary:
         'Сеть хранения без персонала: бронь, оплата и доступ к ячейке по Bluetooth — всё в приложении.',
