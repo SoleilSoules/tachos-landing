@@ -44,7 +44,6 @@ export function CursorCompanion() {
     };
     const OFF_X = 34,
       OFF_Y = 30; // resting offset from the cursor (lower-right)
-    const FOOTER_SCALE = 15; // how big he grows in the footer perch (base art box is 33px)
 
     let mx = innerWidth / 2,
       my = innerHeight * 0.42;
@@ -281,19 +280,10 @@ export function CursorCompanion() {
         render(curScale);
         if (k >= 1) mode = 'companion';
       } else if (mode === 'footer-perch') {
-        // grow into the BIG footer mascot: ease to the perch centre and scale up, but
-        // keep watching the cursor with the EYES (render) — he doesn't chase it here.
-        // Scrolling back up flips mode to companion and he eases back down to the
-        // cursor — the lerps make both directions a smooth grow/shrink transition.
-        if (root.current) root.current.style.opacity = '1';
-        if (perchEl) {
-          const pr = perchEl.getBoundingClientRect();
-          pos.x = lerp(pos.x, pr.left + pr.width / 2, 0.08);
-          pos.y = lerp(pos.y, pr.top + pr.height / 2, 0.08);
-        }
-        curScale = lerp(curScale, FOOTER_SCALE, 0.08);
-        faceAng = lerp(faceAng, Math.PI / 2, 0.08); // turn nose-down in the perch
-        render(curScale);
+        // Hand off to the BIG natively-drawn mascot in the footer (crisp on retina —
+        // scaling the tiny cursor SVG up rasterised it). The cursor companion just
+        // fades out here; scrolling back up flips to companion and it returns.
+        if (root.current) root.current.style.opacity = '0';
       } else {
         // companion — lazy orbit + soft repel + gentle breathing scale
         orbit += 0.0035 + Math.sin(now * 0.0004) * 0.0015;

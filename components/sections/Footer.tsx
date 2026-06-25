@@ -115,8 +115,32 @@ export function Footer() {
           <div aria-hidden className="pointer-events-none relative hidden min-h-[460px] lg:block">
             <div
               data-mascot-perch
-              className="absolute right-[20px] top-1/2 h-[440px] w-[440px] -translate-y-1/2"
-            />
+              className={`absolute right-[20px] top-1/2 h-[440px] w-[440px] -translate-y-1/2 transition-opacity duration-700 ${
+                inView ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              {/* Big mascot drawn NATIVELY large (vector) so it stays crisp on retina —
+                  scaling the tiny cursor SVG up rasterised it ("шакал"). Nose-down. */}
+              <svg
+                viewBox="0 0 26 26"
+                className="h-full w-full"
+                style={{ filter: 'drop-shadow(0 14px 54px rgba(248,72,0,0.42))' }}
+                aria-hidden
+              >
+                <path
+                  d="M6 4.6 L20 4.6 Q23 4.6 21.6 7.4 L14.9 20.4 Q13 23.5 11.1 20.4 L4.4 7.4 Q3 4.6 6 4.6 Z"
+                  fill="#F84800"
+                />
+                <g>
+                  <circle cx="10" cy="10" r="2.1" fill="#fff" />
+                  <circle cx="10.5" cy="10.4" r="1" fill="#0E0E10" />
+                </g>
+                <g>
+                  <circle cx="16" cy="10" r="2.1" fill="#fff" />
+                  <circle cx="16.5" cy="10.4" r="1" fill="#0E0E10" />
+                </g>
+              </svg>
+            </div>
           </div>
         </div>
 
