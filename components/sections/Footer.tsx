@@ -73,7 +73,7 @@ export function Footer() {
     <footer
       id="contacts"
       ref={ref}
-      className="relative overflow-hidden rounded-t-[40px] bg-bg text-inverted"
+      className="relative overflow-hidden rounded-t-[24px] bg-bg text-inverted lg:rounded-t-[40px]"
     >
       <div className="relative mx-auto max-w-page px-5 pb-[40px] pt-[64px] sm:px-10 lg:px-[96px] lg:pb-[54px] lg:pt-[100px]">
         <div className="relative grid grid-cols-1 gap-[40px] lg:grid-cols-[minmax(0,1fr)_460px]">
@@ -121,7 +121,8 @@ export function Footer() {
         </div>
 
         {/* requisites — city, tap-to-copy email, phone */}
-        <div className="relative mt-[64px] border-t border-white/10 pt-[40px]">
+        {/* mobile: tighter gap + lighter top padding above requisites; desktop unchanged */}
+        <div className="relative mt-[40px] border-t border-white/10 pt-[28px] lg:mt-[64px] lg:pt-[40px]">
           <div className="flex flex-wrap items-center gap-x-[28px] gap-y-[14px] text-[16px] font-medium tracking-[0.04em]">
             <span className="uppercase text-white/80">{footer.contacts.city}</span>
             <button

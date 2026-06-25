@@ -11,7 +11,9 @@ import { reviews, type Review } from '@/lib/content';
 // One source of truth so every card in the mosaic reads as one family:
 // same 40px radius (rounded-card), same border colour/alpha, same padding.
 const CARD_BORDER = 'border border-[#8d8d8d]/35';
-const CARD_PAD = 'p-[36px]';
+// Mobile-first padding: 24px keeps content room on ~390px screens (card is only
+// ~342px wide after the section gutters); desktop unchanged at 36px via sm:.
+const CARD_PAD = 'p-[24px] sm:p-[36px]';
 const GLASS = 'bg-black/15 backdrop-blur-md';
 
 // Local copy that isn't worth promoting to content.ts (UI affordances only).
@@ -231,10 +233,11 @@ function AudioCard({ r }: { r: Review }) {
     <div
       data-hint="Отзыв клиента"
       data-hint-sub={r.author}
-      className={`reveal-hidden relative w-full overflow-hidden rounded-card [clip-path:inset(0_round_40px)] ${CARD_BORDER} ${GLASS} ${CARD_PAD}`}
+      // Mobile: 28px radius keeps the corner from dominating the narrow card; desktop 40px via sm:
+      className={`reveal-hidden relative w-full overflow-hidden rounded-[28px] [clip-path:inset(0_round_28px)] sm:rounded-card sm:[clip-path:inset(0_round_40px)] ${CARD_BORDER} ${GLASS} ${CARD_PAD}`}
     >
       <Glow className="-left-[80px] bottom-[-40px] h-[280px] w-[280px]" />
-      <div className="relative flex flex-col gap-[28px]">
+      <div className="relative flex flex-col gap-[20px] sm:gap-[28px]">
         <div className="flex items-start justify-between gap-[16px]">
           <Author r={r} />
           {/* glass logo badge (#2): frosted disc holding the handwritten mark */}
@@ -243,16 +246,20 @@ function AudioCard({ r }: { r: Review }) {
           </span>
         </div>
 
-        <p className="text-[22px] font-medium leading-[1.25] text-[#f5f7f6]">{r.text}</p>
+        <p className="text-[18px] font-medium leading-[1.3] text-[#f5f7f6] sm:text-[22px] sm:leading-[1.25]">
+          {r.text}
+        </p>
 
-        <div className="flex h-[80px] items-center gap-[16px] rounded-full bg-white/10 p-[10px]">
+        {/* Player: tighter height/gaps/padding on mobile so the disc, waveform
+            and timer fit the narrow card without crowding; desktop via sm:. */}
+        <div className="flex h-[64px] items-center gap-[10px] rounded-full bg-white/10 p-[8px] sm:h-[80px] sm:gap-[16px] sm:p-[10px]">
           {/* play disc — self-center keeps it on the row's vertical centre (#3) */}
           <button
             type="button"
             aria-label={playing ? 'Пауза' : 'Воспроизвести'}
             aria-pressed={playing}
             onClick={toggle}
-            className="grid size-[60px] shrink-0 place-items-center self-center rounded-full bg-accent text-white transition hover:brightness-110"
+            className="grid size-[48px] shrink-0 place-items-center self-center rounded-full bg-accent text-white transition hover:brightness-110 sm:size-[60px]"
           >
             {playing ? (
               <PauseIcon size={22} />
@@ -300,7 +307,7 @@ function AudioCard({ r }: { r: Review }) {
           </div>
 
           {/* Counts down as it plays; static "mm:ss" reads fine without JS. */}
-          <span className="shrink-0 self-center px-[8px] text-[14px] tabular-nums text-white/60">
+          <span className="shrink-0 self-center px-[4px] text-[13px] tabular-nums text-white/60 sm:px-[8px] sm:text-[14px]">
             {progress > 0 ? formatTime(remaining) : r.duration}
           </span>
         </div>
@@ -315,23 +322,29 @@ function TextCard({ r }: { r: Review }) {
     <div
       data-hint="Отзыв клиента"
       data-hint-sub={r.author}
-      className={`reveal-hidden relative flex h-full w-full flex-col justify-between overflow-hidden rounded-card [clip-path:inset(0_round_40px)] ${CARD_PAD} backdrop-blur-md ${
+      // Mobile: smaller corner radius (28px) + lower min-height so short text
+      // cards don't get tall empty bottoms on a narrow screen. Desktop via sm:.
+      className={`reveal-hidden relative flex h-full w-full flex-col justify-between overflow-hidden rounded-[28px] [clip-path:inset(0_round_28px)] sm:rounded-card sm:[clip-path:inset(0_round_40px)] ${CARD_PAD} backdrop-blur-md ${
         light
-          ? 'min-h-[290px] bg-gradient-to-b from-[#cdc8cd] via-[#e7dddc] to-[#f0a274] text-[#1a1414]'
-          : `min-h-[300px] ${CARD_BORDER} bg-black/15 text-white`
+          ? 'min-h-[240px] bg-gradient-to-b from-[#cdc8cd] via-[#e7dddc] to-[#f0a274] text-[#1a1414] sm:min-h-[290px]'
+          : `min-h-[240px] sm:min-h-[300px] ${CARD_BORDER} bg-black/15 text-white`
       }`}
     >
       {!light && <Glow className="-left-[40px] -top-[120px] h-[300px] w-[300px]" />}
       {light && <Glow className="bottom-[-40px] right-[-20px] h-[260px] w-[260px] bg-accent/30" />}
-      <p className="relative text-[22px] font-medium leading-[1.3]">{r.text}</p>
-      <div className="relative mt-[40px]">
+      <p className="relative text-[18px] font-medium leading-[1.35] sm:text-[22px] sm:leading-[1.3]">
+        {r.text}
+      </p>
+      <div className="relative mt-[24px] sm:mt-[40px]">
         <Author r={r} light={light} />
       </div>
       {/* round badge in the corner, matching the Figma cards */}
       {light && (
         <span
           aria-hidden
-          className="absolute bottom-[34px] right-[34px] size-[54px] rounded-full bg-black/[0.06]"
+          // Track the smaller mobile padding (24px) so the badge keeps its inset
+          // from the card edge; desktop unchanged via sm:.
+          className="absolute bottom-[22px] right-[22px] size-[44px] rounded-full bg-black/[0.06] sm:bottom-[34px] sm:right-[34px] sm:size-[54px]"
         />
       )}
     </div>
@@ -345,7 +358,9 @@ function VideoCard({ r }: { r: Review }) {
     <div
       data-hint="Видео-отзыв"
       data-hint-sub={r.author}
-      className={`reveal-hidden group relative h-full min-h-[510px] w-full overflow-hidden rounded-card ${CARD_PAD} text-white`}
+      // Mobile: shorter card + 28px radius so the video tile isn't a giant
+      // block on a narrow screen; desktop keeps 510px / 40px via sm:.
+      className={`reveal-hidden group relative h-full min-h-[420px] w-full overflow-hidden rounded-[28px] sm:min-h-[510px] sm:rounded-card ${CARD_PAD} text-white`}
     >
       <Image
         src={asset('/figma/founder-isaac.png')}
@@ -358,7 +373,7 @@ function VideoCard({ r }: { r: Review }) {
       <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-transparent to-accent/95" />
       {/* name + caption at the TOP (Figma), role + mute pinned to the BOTTOM */}
       <div className="relative flex h-full flex-col justify-between">
-        <p className="text-[26px] font-medium leading-[1.15]">
+        <p className="text-[22px] font-medium leading-[1.2] sm:text-[26px] sm:leading-[1.15]">
           {r.author}
           <br />
           <span className="text-white/70">{r.caption}</span>
@@ -387,10 +402,13 @@ function PortraitCard({ r }: { r: Review }) {
     <div
       data-hint="Видео-отзыв"
       data-hint-sub={r.author}
-      className={`reveal-hidden group relative flex h-full min-h-[520px] w-full flex-col items-center justify-center gap-[24px] overflow-hidden rounded-card [clip-path:inset(0_round_40px)] ${CARD_BORDER} bg-white/[0.06] ${CARD_PAD} text-center backdrop-blur-md`}
+      // Mobile: shorter card + 28px radius + tighter gap. Desktop unchanged.
+      className={`reveal-hidden group relative flex h-full min-h-[440px] w-full flex-col items-center justify-center gap-[20px] overflow-hidden rounded-[28px] [clip-path:inset(0_round_28px)] sm:min-h-[520px] sm:gap-[24px] sm:rounded-card sm:[clip-path:inset(0_round_40px)] ${CARD_BORDER} bg-white/[0.06] ${CARD_PAD} text-center backdrop-blur-md`}
     >
       <Glow className="left-1/2 top-[40px] h-[260px] w-[260px] -translate-x-1/2 bg-accent/20" />
-      <div className="relative size-[260px] overflow-hidden rounded-full ring-2 ring-accent/70">
+      {/* Portrait scaled down on mobile so it fits inside the narrow padded card
+          without touching the edges; desktop keeps the 260px round photo. */}
+      <div className="relative size-[200px] overflow-hidden rounded-full ring-2 ring-accent/70 sm:size-[260px]">
         <Image
           src={asset('/figma/founder-jennifer.png')}
           alt=""
@@ -424,12 +442,14 @@ function PortraitCard({ r }: { r: Review }) {
         )}
       </div>
       <div className="relative">
-        <p className="text-[26px] font-medium leading-[1.2] text-[#f5f7f6]">
+        <p className="text-[22px] font-medium leading-[1.2] text-[#f5f7f6] sm:text-[26px]">
           {r.author}
           <br />
           <span className="text-white/50">{r.caption}</span>
         </p>
-        <p className="mt-[16px] text-[16px] leading-[1.3] text-white/40">{r.role}</p>
+        <p className="mt-[12px] text-[15px] leading-[1.3] text-white/40 sm:mt-[16px] sm:text-[16px]">
+          {r.role}
+        </p>
       </div>
     </div>
   );
@@ -563,14 +583,15 @@ export function Reviews() {
 
       <div
         ref={ref}
-        className="relative mx-auto mt-[56px] flex max-w-[900px] flex-col gap-[28px] px-6"
+        // Tighter top margin + inter-card gap on mobile; desktop via sm:.
+        className="relative mx-auto mt-[36px] flex max-w-[900px] flex-col gap-[18px] px-6 sm:mt-[56px] sm:gap-[28px]"
       >
         {/* audio hero — centred, a touch narrower than the column (Figma) */}
         <div className="mx-auto w-full max-w-[620px]">
           <AudioCard r={audio} />
         </div>
         {/* row: dark text card (Полина) + Глеб video */}
-        <div className="grid grid-cols-1 items-stretch gap-[28px] md:grid-cols-2">
+        <div className="grid grid-cols-1 items-stretch gap-[18px] sm:gap-[28px] md:grid-cols-2">
           <TextCard r={t1} />
           <VideoCard r={v1} />
         </div>

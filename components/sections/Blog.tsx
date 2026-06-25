@@ -70,8 +70,10 @@ function Author({ post }: { post: Post }) {
 function PhotoBlock({ src, bleed }: { src: string; bleed?: boolean }) {
   return (
     <div
-      className={`relative mt-[20px] aspect-[16/10] overflow-hidden rounded-[22px] ${
-        bleed ? 'w-[142%] translate-x-[24%]' : 'w-full'
+      // Mobile: no bleed — `w-[142%] translate-x-[24%]` overflows the 390px viewport
+      // and gets clipped. Keep the off-edge bleed only from sm: up (desktop unchanged).
+      className={`relative mt-[20px] aspect-[16/10] overflow-hidden rounded-[18px] sm:rounded-[22px] ${
+        bleed ? 'w-full sm:w-[142%] sm:translate-x-[24%]' : 'w-full'
       }`}
     >
       <Image
@@ -107,12 +109,13 @@ function Card({
         peach
           ? 'bg-gradient-to-br from-[#f7d8c5] via-[#f6cdba] to-[#f1bda3]'
           : 'bg-surface hover:bg-surface2'
-      } ${big ? 'min-h-[500px] p-[28px] sm:p-[40px] md:p-[44px]' : 'min-h-[380px] p-[24px] sm:p-[34px]'}`}
+      } ${big ? 'min-h-[340px] p-[24px] sm:min-h-[500px] sm:p-[40px] md:p-[44px]' : 'min-h-[340px] p-[24px] sm:min-h-[380px] sm:p-[34px]'}`}
     >
       <h3
         className={`font-semibold leading-[1.1] tracking-[-0.01em] text-black ${
           big
-            ? 'max-w-[560px] text-[26px] sm:text-[34px]'
+            ? // Mobile: hero title same as regular cards (22px) so the hero card is not oversized.
+              'max-w-[560px] text-[22px] sm:text-[34px]'
             : 'max-w-[300px] text-[22px] sm:text-[26px]'
         }`}
       >
@@ -120,7 +123,7 @@ function Card({
       </h3>
       <Meta post={post} peach={peach} />
       {children && <div className="flex flex-1 flex-col justify-end">{children}</div>}
-      <div className="mt-auto flex items-end justify-between gap-[16px] pt-[28px]">
+      <div className="mt-auto flex items-end justify-between gap-[16px] pt-[20px] sm:pt-[28px]">
         <Author post={post} />
         <ArrowSquare onPeach={peach} />
       </div>
@@ -134,7 +137,7 @@ export function Blog() {
   if (!hero || !left || !right) return null;
 
   return (
-    <section id="blog" className="bg-white pb-[72px] pt-[64px] lg:pb-[140px] lg:pt-[120px]">
+    <section id="blog" className="bg-white pb-[56px] pt-[48px] lg:pb-[140px] lg:pt-[120px]">
       <style>{`
         .blog-arrow svg { transition: transform .3s cubic-bezier(.16,1,.3,1); }
         .group:hover .blog-arrow svg, .group:focus-visible .blog-arrow svg { transform: translate(2px,-2px); }
@@ -159,11 +162,11 @@ export function Blog() {
         </WordsReveal>
       </div>
 
-      <div ref={ref} className="mx-auto mt-[56px] flex max-w-[900px] flex-col gap-[40px] px-6">
+      <div ref={ref} className="mx-auto mt-[36px] flex max-w-[900px] flex-col gap-[20px] px-6 sm:mt-[56px] sm:gap-[40px]">
         {/* hero card — full width, no photo (as before, #2) */}
         <Card post={hero} big />
 
-        <div className="grid grid-cols-1 gap-[40px] md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-[20px] sm:gap-[40px] md:grid-cols-2">
           <Card post={left} />
           <Card post={right} peach>
             <PhotoBlock src="/figma/monte-gtr.png" bleed />

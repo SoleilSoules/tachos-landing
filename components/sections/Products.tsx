@@ -49,7 +49,7 @@ function ProductSwitcher({
             type="button"
             onClick={() => onPick(i)}
             aria-current={isActive}
-            className={`relative flex h-[64px] min-w-0 flex-1 items-center gap-[10px] overflow-hidden rounded-[16px] border px-[10px] text-left transition-colors duration-500 lg:max-w-[300px] lg:gap-[12px] ${
+            className={`relative flex h-[56px] min-w-0 flex-1 items-center gap-[8px] overflow-hidden rounded-[14px] border px-[8px] text-left transition-colors duration-500 sm:h-[64px] sm:gap-[10px] sm:rounded-[16px] sm:px-[10px] lg:max-w-[300px] lg:gap-[12px] ${
               isActive
                 ? 'border-accent/40 bg-accent text-white'
                 : 'border-white/10 bg-white/[0.06] text-white'
@@ -65,17 +65,19 @@ function ProductSwitcher({
             {/* lettermark placeholder (no blue 3rd-party glyph) — real product
                 logos from Vadim later (#23). */}
             <span
-              className={`relative grid size-[44px] shrink-0 place-items-center rounded-[12px] text-[18px] font-semibold text-white ${
+              className={`relative grid size-[34px] shrink-0 place-items-center rounded-[10px] text-[16px] font-semibold text-white sm:size-[44px] sm:rounded-[12px] sm:text-[18px] ${
                 isActive ? 'bg-black/25' : 'bg-white/10'
               }`}
             >
               {p.name.charAt(0)}
             </span>
             <span className="relative min-w-0">
-              <span className="block text-[16px] font-medium leading-[1.15] text-white">
+              <span className="block truncate text-[14px] font-medium leading-[1.15] text-white sm:text-[16px]">
                 {p.name}
               </span>
-              <span className="block truncate text-[14px] leading-[1.2] text-white/65">
+              {/* Tagline truncates to almost nothing in a 1/3-width pill at 390px —
+                  hide it on mobile so the name reads cleanly; back at sm+. */}
+              <span className="hidden truncate text-[14px] leading-[1.2] text-white/65 sm:block">
                 {p.tagline}
               </span>
             </span>
@@ -155,11 +157,11 @@ export function Products() {
         </WordsReveal>
       </h2>
 
-      <div ref={ref} className="mx-auto mt-[56px] max-w-[1080px] px-5 sm:px-6 lg:mt-[120px]">
+      <div ref={ref} className="mx-auto mt-[40px] max-w-[1080px] px-5 sm:mt-[56px] sm:px-6 lg:mt-[120px]">
         {/* Deck stage: every product is a full panel stacked here; the active one
             sits flat on top, the rest fan out behind it. Height is fixed so the
             absolutely-positioned cards reserve layout. */}
-        <div className="reveal-hidden relative h-[420px] lg:h-[540px]">
+        <div className="reveal-hidden relative h-[360px] sm:h-[420px] lg:h-[540px]">
           {products.map((p, i) => {
             // Cyclic depth: 0 = active/top, then the upcoming products peek behind.
             // As `index` advances the whole deck rotates, so a switch reads as
@@ -192,7 +194,7 @@ export function Products() {
                 <div
                   data-hint="Наш продукт"
                   data-hint-sub={p.name}
-                  className="relative h-full overflow-hidden rounded-[40px] border border-[#8d8d8d]/35 bg-white/[0.06] shadow-[0_30px_80px_rgba(0,0,0,0.45)] backdrop-blur-md [clip-path:inset(0_round_40px)]"
+                  className="relative h-full overflow-hidden rounded-[28px] border border-[#8d8d8d]/35 bg-white/[0.06] shadow-[0_30px_80px_rgba(0,0,0,0.45)] backdrop-blur-md [clip-path:inset(0_round_28px)] lg:rounded-[40px] lg:[clip-path:inset(0_round_40px)]"
                 >
                   {/* warm glow behind the device */}
                   <div className="pointer-events-none absolute -right-[40px] top-1/2 h-[560px] w-[600px] -translate-y-1/2 rounded-full bg-accent/25 blur-[150px]" />

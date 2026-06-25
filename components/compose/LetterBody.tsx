@@ -324,7 +324,8 @@ export function LetterBody({ active, autofocus = true }: { active: boolean; auto
       </div>
 
       {/* THE LETTER — types step by step, stopping at each empty slot */}
-      <div className="whitespace-pre-line text-[17px] leading-[1.85] text-inverted/90 lg:text-[20px] lg:leading-[2.2]">
+      {/* Mobile: slightly tighter line-height so the letter reads as a block, not airy lines */}
+      <div className="whitespace-pre-line text-[16px] leading-[1.7] text-inverted/90 sm:text-[17px] sm:leading-[1.85] lg:text-[20px] lg:leading-[2.2]">
         {segments.map((s, i) => {
           if (i > segRef.current) return null;
           if ('text' in s) {
@@ -356,7 +357,8 @@ export function LetterBody({ active, autofocus = true }: { active: boolean; auto
         })}
       </div>
 
-      <div className="mt-[48px] border-t border-white/10 pt-[22px]">
+      {/* Mobile: trim the gap above the reply block — 48px reads as a dead zone on small screens */}
+      <div className="mt-[28px] border-t border-white/10 pt-[18px] sm:mt-[48px] sm:pt-[22px]">
         <div className="mb-[12px] text-[14px] font-medium text-inverted/90">Куда вам ответить</div>
 
         {isError && (

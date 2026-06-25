@@ -8,9 +8,9 @@ import { asset } from '@/lib/asset';
 // for Vadim's own studio footage when it lands.
 export function VideoBlock() {
   return (
-    <section id="studio" className="bg-white py-[72px] lg:py-[120px]">
+    <section id="studio" className="bg-white py-12 lg:py-[120px]">
       <div className="mx-auto max-w-page px-5 sm:px-8 lg:px-[80px]">
-        <div className="relative aspect-video w-full overflow-hidden rounded-card bg-ink">
+        <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-ink lg:rounded-card">
           <video
             src={asset('/figma/hero-belt-v15.mp4')}
             autoPlay

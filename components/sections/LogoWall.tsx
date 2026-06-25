@@ -11,7 +11,7 @@ export function LogoWall() {
   const row = Array.from({ length: 8 }, () => clients).flat();
 
   return (
-    <div className="relative z-10 mt-[100px] pb-[24px]">
+    <div className="relative z-10 mt-[56px] pb-[24px] sm:mt-[100px]">
       {/* gentle dark wash, feathered top & bottom — just enough contrast for the
           white logos, not a hard black band */}
       <div
@@ -23,7 +23,7 @@ export function LogoWall() {
         }}
       />
       <div className="relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]">
-        <div className="flex w-max items-center gap-[72px] pr-[72px] [animation:logo-marquee_76s_linear_infinite] motion-reduce:[animation:none]">
+        <div className="flex w-max items-center gap-[44px] pr-[44px] [animation:logo-marquee_76s_linear_infinite] motion-reduce:[animation:none] sm:gap-[72px] sm:pr-[72px]">
           {row.map((client, i) => (
             <div key={i} className="shrink-0">
               <Image
