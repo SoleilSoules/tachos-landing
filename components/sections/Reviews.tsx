@@ -380,15 +380,16 @@ function VideoCard({ r }: { r: Review }) {
         </p>
         <div className="flex items-end justify-between gap-[12px]">
           <div className="max-w-[72%] text-[15px] leading-[1.3] text-white/90">{r.role}</div>
-          <button
-            type="button"
-            aria-label="Смотреть видео-отзыв"
-            className="grid size-[48px] shrink-0 place-items-center rounded-full bg-white/15 text-white ring-1 ring-white/30 backdrop-blur-md transition hover:scale-105 hover:bg-white/25"
+          {/* decorative until real video exists — not a focusable/announced control
+              that no-ops (a11y). Restore to <button onClick> when Vadim ships video. */}
+          <div
+            aria-hidden
+            className="pointer-events-none grid size-[48px] shrink-0 place-items-center rounded-full bg-white/15 text-white ring-1 ring-white/30 backdrop-blur-md"
           >
             <span className="translate-x-[1px]">
               <PlayIcon size={18} />
             </span>
-          </button>
+          </div>
         </div>
       </div>
     </div>
@@ -416,16 +417,16 @@ function PortraitCard({ r }: { r: Review }) {
           sizes="260px"
           className="object-cover grayscale transition duration-500 group-hover:scale-[1.03]"
         />
-        {/* play centred over the portrait (#37) */}
-        <button
-          type="button"
-          aria-label="Смотреть видео-отзыв"
-          className="absolute inset-0 z-10 m-auto grid size-[64px] place-items-center rounded-full bg-black/45 text-white ring-1 ring-white/30 backdrop-blur-md transition hover:scale-105 hover:bg-black/60"
+        {/* play centred over the portrait (#37) — decorative until real video; not an
+            announced control that no-ops. Restore to <button onClick> with real video. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-10 m-auto grid size-[64px] place-items-center rounded-full bg-black/45 text-white ring-1 ring-white/30 backdrop-blur-md"
         >
           <span className="translate-x-[2px]">
             <PlayIcon size={24} />
           </span>
-        </button>
+        </div>
         {/* mute on the portrait, bottom-right (Figma) */}
         <button
           type="button"

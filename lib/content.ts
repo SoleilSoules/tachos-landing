@@ -57,7 +57,7 @@ export const founder = deepNbsp({
   facts: ['Тех лид во всех проектах — сам пишу код', 'На связи напрямую, без аккаунт-менеджеров'],
   contactCta: 'Написать Вадиму',
   presentation: { label: 'Презентация Вадима', duration: '0:34' },
-  person: { name: 'Вадим Вадимов', role: 'Head of product' },
+  person: { name: 'Вадим Вадимов', role: 'Основатель, тех-лид' },
 } as const);
 
 export const casesIntro = deepNbsp({
