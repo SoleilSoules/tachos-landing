@@ -42,12 +42,61 @@ function EnterIcon() {
   );
 }
 
+// Minimal shape of the Web Speech API we use (no DOM lib types for it in TS).
+type SpeechResultLike = { results: ArrayLike<ArrayLike<{ transcript: string }>> };
+type SpeechRecognitionLike = {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  onresult: (e: SpeechResultLike) => void;
+  onend: () => void;
+  onerror: () => void;
+  start: () => void;
+  stop: () => void;
+};
+
 export function HeroPrompt() {
   const { open } = useCompose();
   const [value, setValue] = useState('');
   const hint = guessType(value);
 
   const submit = () => open({ type: guessType(value) ?? 'idk', freeText: value.trim() });
+
+  // Voice input (#27, draft): dictate into the field via Web Speech API; if the
+  // browser has no SpeechRecognition, fall back to just opening the letter.
+  const recRef = useRef<SpeechRecognitionLike | null>(null);
+  const [listening, setListening] = useState(false);
+  const toggleVoice = () => {
+    if (listening) {
+      recRef.current?.stop();
+      return;
+    }
+    const w = window as unknown as {
+      SpeechRecognition?: new () => SpeechRecognitionLike;
+      webkitSpeechRecognition?: new () => SpeechRecognitionLike;
+    };
+    const SR = w.SpeechRecognition ?? w.webkitSpeechRecognition;
+    if (!SR) {
+      submit();
+      return;
+    }
+    const rec = new SR();
+    rec.lang = 'ru-RU';
+    rec.interimResults = true;
+    rec.continuous = false;
+    rec.onresult = (e) => {
+      setValue(
+        Array.from(e.results)
+          .map((r) => r[0]?.transcript ?? '')
+          .join(''),
+      );
+    };
+    rec.onend = () => setListening(false);
+    rec.onerror = () => setListening(false);
+    rec.start();
+    recRef.current = rec;
+    setListening(true);
+  };
 
   const inputRef = useRef<HTMLInputElement>(null);
   const mirrorRef = useRef<HTMLSpanElement>(null);
@@ -126,14 +175,17 @@ export function HeroPrompt() {
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            submit();
+            if (value.trim()) submit();
+            else toggleVoice();
           }}
-          aria-label={value.trim() ? 'Отправить — Enter' : 'Голосовой ввод'}
+          aria-label={
+            value.trim() ? 'Отправить — Enter' : listening ? 'Остановить запись' : 'Голосовой ввод'
+          }
           className={`grid h-[72px] w-[80px] shrink-0 place-items-center rounded-[18px] shadow-[-14px_0_28px_rgba(0,0,0,0.06)] transition sm:h-[88px] sm:w-[107px] ${
-            value.trim()
+            value.trim() || listening
               ? 'bg-accent text-white'
               : 'bg-white text-black hover:bg-accent hover:text-white'
-          }`}
+          } ${listening ? 'animate-pulse' : ''}`}
         >
           {value.trim() ? <EnterIcon /> : <WaveIcon />}
         </button>
