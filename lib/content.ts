@@ -332,6 +332,7 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     tags: ['Медтех', 'Web + mobile'],
     cover,
     avatar,
+    shot: '/figma/shots/docmed.png',
     shotKind: 'desktop',
     story: {
       summary: 'Телемедицина и запись к врачу для клиники доказательной медицины.',
