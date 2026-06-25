@@ -4,14 +4,18 @@ import { useEffect, useRef } from 'react';
 import { categorize, nachosLine, type NachosCategory } from '@/lib/nachos-lines';
 import { useCompose } from './ComposeProvider';
 
-// Tachos Nachos — the studio mascot (orange play-triangle with eyes). He calmly
-// follows the cursor and SPEAKS ABOUT WHATEVER IS UNDER THE POINTER (one hint line
-// from [data-hint], else a generic line). Alive but not fidgety: gentle breathing,
-// a soft repel, occasional unhurried tricks. When the footer scrolls into view he
-// smoothly GROWS into the big footer mascot and STAYS PUT there (stops following);
-// scrolling away shrinks him back to the cursor. While an audio review plays he
-// shows its transcript (tachos:transcript event). Position + scale are eased every
-// frame by the current mode, so every transition (incl. the grow) is smooth.
+// Tachos Nachos — the studio mascot (a flat orange play-triangle with eyes). He calmly
+// follows the cursor and SPEAKS ABOUT WHATEVER IS UNDER THE POINTER (one hint line from
+// [data-hint], else a generic line). Alive but not fidgety: gentle breathing, a soft
+// repel, occasional unhurried tricks. When the footer scrolls into view he smoothly GROWS
+// into the big footer mascot and STAYS PUT there (stops following), turning nose-down;
+// scrolling away shrinks him back to the cursor. While an audio review plays he shows its
+// transcript (tachos:transcript).
+//
+// The svg renders intrinsically at PERCH_BASE px (≥ the footer slot); every other state is
+// a clean DOWN-scale of it, so the perched mascot is crisp (scale ≈ 1, native render).
+// Size/position/facing are eased every frame, so the grow is seamless — it's the same
+// object, never a swap.
 export function CursorCompanion() {
   const { isOpen } = useCompose();
   const openRef = useRef(isOpen);
@@ -44,6 +48,8 @@ export function CursorCompanion() {
     };
     const OFF_X = 34,
       OFF_Y = 30; // resting offset from the cursor (lower-right)
+    const PERCH_BASE = 640; // intrinsic svg px (≥ the footer slot) → perch stays crisp
+    const MINI = 33 / PERCH_BASE; // cursor-size factor; multiply any "visible-size" target
 
     let mx = innerWidth / 2,
       my = innerHeight * 0.42;
@@ -200,22 +206,24 @@ export function CursorCompanion() {
     const render = (scale: number) => {
       if (!root.current) return;
       // small cursor companion faces the pointer (faceAng); in the footer perch faceAng
-      // eases to π/2 so the BIG mascot points nose-down. Offset = half the 33px box.
-      root.current.style.transform = `translate3d(${pos.x - 16.5}px,${pos.y - 16.5}px,0) scale(${scale})`;
+      // eases to π/2 so the BIG mascot points nose-down. Offset = half the PERCH_BASE box
+      // so it scales about its own centre = pos.
+      root.current.style.transform = `translate3d(${pos.x - PERCH_BASE / 2}px,${pos.y - PERCH_BASE / 2}px,0) scale(${scale})`;
       rot.current?.setAttribute('transform', `rotate(${(faceAng * 180) / Math.PI} 13 13)`);
       const k = Math.atan2(my - pos.y, mx - pos.x) - faceAng;
       const ex = Math.cos(k) * 1.3,
         ey = Math.sin(k) * 1.3;
       // the white drifts a little; the black pupil tracks further INSIDE it (additive),
-      // so the eyes read as actually looking at the cursor (#8)
+      // so the eyes read as actually looking at the cursor (#8). Driven via the SVG
+      // transform attribute (user units) so the drift is size-independent at any scale.
       const wx = ex * 0.5,
         wy = ey * 0.5;
       const dx = ex * 0.45,
         dy = ey * 0.45;
-      if (eyeL.current) eyeL.current.style.transform = `translate(${wx}px,${wy}px)`;
-      if (eyeR.current) eyeR.current.style.transform = `translate(${wx}px,${wy}px)`;
-      if (pupilL.current) pupilL.current.style.transform = `translate(${dx}px,${dy}px)`;
-      if (pupilR.current) pupilR.current.style.transform = `translate(${dx}px,${dy}px)`;
+      eyeL.current?.setAttribute('transform', `translate(${wx} ${wy})`);
+      eyeR.current?.setAttribute('transform', `translate(${wx} ${wy})`);
+      pupilL.current?.setAttribute('transform', `translate(${dx} ${dy})`);
+      pupilR.current?.setAttribute('transform', `translate(${dx} ${dy})`);
     };
 
     // Idle tricks: unhurried (#B5) — flip / squish / wobble, only after a real pause
@@ -244,6 +252,7 @@ export function CursorCompanion() {
       if (mode !== 'appear' && !openRef.current) {
         if (footerVisible && mode !== 'footer-perch') {
           mode = 'footer-perch';
+          hush(); // drop any hint bubble before he flies off to the footer
         } else if (!footerVisible && mode === 'footer-perch') {
           mode = 'companion';
           if (root.current) root.current.style.opacity = '1';
@@ -259,7 +268,7 @@ export function CursorCompanion() {
         my = innerHeight * (footerVisible ? 0.78 : 0.58);
         pos.x = lerp(pos.x, mx, 0.05);
         pos.y = lerp(pos.y, my, 0.05);
-        curScale = lerp(curScale, footerVisible ? 6 : 1.5, 0.05);
+        curScale = lerp(curScale, (footerVisible ? 6 : 1.5) * MINI, 0.05);
         faceAng = lerp(faceAng, Math.PI / 2, 0.05);
         render(curScale);
         if (!openRef.current && !transcribing && now - lastTrick > 9000 && now - lastMove > 1400) {
@@ -273,25 +282,26 @@ export function CursorCompanion() {
 
       if (mode === 'appear') {
         const k = Math.min(Math.max((now - appearStart) / 340, 0), 1);
-        curScale = Math.max(0, easeOutBack(k));
+        curScale = Math.max(0, easeOutBack(k)) * MINI;
         pos.x = lerp(pos.x, mx + OFF_X, 0.06);
         pos.y = lerp(pos.y, my + OFF_Y, 0.06);
         faceAng = lerp(faceAng, Math.atan2(my - pos.y, mx - pos.x), 0.1);
         render(curScale);
         if (k >= 1) mode = 'companion';
       } else if (mode === 'footer-perch') {
-        // Fly toward the footer perch and grow + turn nose-down, then fade once big —
-        // the big native mascot (crisp on retina) takes over there. Reads as the small
-        // mascot transforming into the big one. Scrolling up flips back to companion.
-        const tx = innerWidth - 300;
-        const ty = innerHeight * 0.6;
-        pos.x = lerp(pos.x, tx, 0.08);
-        pos.y = lerp(pos.y, ty, 0.08);
-        curScale = lerp(curScale, 5, 0.08);
+        // The VERY SAME mascot flies into the footer's perch slot and grows to FILL it,
+        // then stays put nose-down — he literally becomes the big footer mascot, so there
+        // is no seam and no second object to swap with. Centre + size come from the slot's
+        // live rect, so he lands exactly on it at any scroll position.
+        const r = perchEl?.getBoundingClientRect();
+        const tx = r ? r.left + r.width / 2 : innerWidth - 280;
+        const ty = r ? r.top + r.height / 2 : innerHeight * 0.6;
+        const target = r && r.width ? r.width / PERCH_BASE : 1;
+        pos.x = lerp(pos.x, tx, 0.09);
+        pos.y = lerp(pos.y, ty, 0.09);
+        curScale = lerp(curScale, target, 0.06);
         faceAng = lerp(faceAng, Math.PI / 2, 0.08);
         render(curScale);
-        const near = Math.hypot(pos.x - tx, pos.y - ty) < 44 && curScale > 4.2;
-        if (root.current) root.current.style.opacity = near ? '0' : '1';
       } else {
         // companion — lazy orbit + soft repel + gentle breathing scale
         orbit += 0.0035 + Math.sin(now * 0.0004) * 0.0015;
@@ -310,7 +320,7 @@ export function CursorCompanion() {
         }
         faceAng = lerp(faceAng, Math.atan2(my - pos.y, mx - pos.x), 0.12);
         const breathe = 1 + Math.sin(now * 0.0018) * 0.04;
-        curScale = lerp(curScale, breathe, 0.12);
+        curScale = lerp(curScale, breathe * MINI, 0.12);
         render(curScale);
         maybeTrick(now);
       }
@@ -344,7 +354,7 @@ export function CursorCompanion() {
         className="companion pointer-events-none fixed left-0 top-0 z-[120]"
         style={{ transition: 'opacity 0.5s ease' }}
       >
-        <svg width="33" height="33" viewBox="0 0 26 26">
+        <svg width="640" height="640" viewBox="0 0 26 26">
           <g ref={rot}>
             <path
               d="M22.5 13 L6.5 4.5 Q3.5 3 3.9 6.3 L5.8 19.7 Q6.2 23 9.2 21.5 Z"

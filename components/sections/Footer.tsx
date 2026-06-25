@@ -35,7 +35,6 @@ export function Footer() {
   const [inView, setInView] = useState(false);
   const [mailCopied, setMailCopied] = useState(false);
   const [phoneCopied, setPhoneCopied] = useState(false);
-  const [pupil, setPupil] = useState({ x: 0, y: 0 });
 
   // Start the inline letter typing once the footer scrolls into view (not on load,
   // since it sits at the very bottom).
@@ -57,23 +56,6 @@ export function Footer() {
     io.observe(el);
     return () => io.disconnect();
   }, []);
-
-  // Footer mascot watches the cursor: nudge the pupils toward the pointer while the
-  // footer is in view. Desktop only (the mascot is hidden on touch).
-  useEffect(() => {
-    if (!inView) return;
-    const onMove = (e: MouseEvent) => {
-      const perch = document.querySelector('[data-mascot-perch]');
-      if (!perch) return;
-      const r = perch.getBoundingClientRect();
-      const dx = e.clientX - (r.left + r.width / 2);
-      const dy = e.clientY - (r.top + r.height / 2);
-      const d = Math.hypot(dx, dy) || 1;
-      setPupil({ x: (dx / d) * 0.9, y: (dy / d) * 0.9 });
-    };
-    window.addEventListener('mousemove', onMove, { passive: true });
-    return () => window.removeEventListener('mousemove', onMove);
-  }, [inView]);
 
   // Copy a contact value with a brief ✓; no fake success if clipboard is blocked.
   const copyContact = async (text: string, setCopied: (v: boolean) => void) => {
@@ -125,43 +107,28 @@ export function Footer() {
             </div>
           </div>
 
-          {/* right — perch the cursor mascot eases into and GROWS big when the footer
-              scrolls into view, watching the cursor with his eyes from here; scrolling
-              up shrinks him back to the cursor. Just a positioned sizer slot — the
-              mascot itself is rendered (and flown into this box's centre) by
-              CursorCompanion.tsx. Hidden on touch/small where the mascot is off. */}
-          <div aria-hidden className="pointer-events-none relative hidden min-h-[560px] lg:block">
+          {/* right — sizer slot the cursor mascot flies into and GROWS to fill (it
+              literally becomes the big footer mascot; rendered + flown here by
+              CursorCompanion.tsx, which reads this slot's live rect). The inline SVG is a
+              STATIC fallback shown only under reduced-motion, where the animated companion
+              is disabled. Hidden on touch/small where the mascot is off. */}
+          <div className="pointer-events-none relative hidden min-h-[580px] lg:block xl:min-h-[660px]">
             <div
               data-mascot-perch
-              className={`absolute right-[10px] top-1/2 h-[540px] w-[540px] origin-center -translate-y-1/2 transition-opacity duration-300 ${
-                inView
-                  ? 'opacity-100 [animation:nachos-snap_0.7s_cubic-bezier(0.34,1.5,0.5,1)_0.28s_both] motion-reduce:[animation:none]'
-                  : 'opacity-0'
-              }`}
+              className="absolute right-[10px] top-1/2 h-[560px] w-[560px] origin-center -translate-y-1/2 opacity-0 motion-reduce:opacity-100 xl:h-[640px] xl:w-[640px]"
             >
-              {/* Big mascot, vector (crisp on retina). The small cursor mascot flies in
-                  and this one snaps into place like its missing shard. Pupils follow the
-                  cursor; body has a subtle gradient + eye highlights. Nose-down. No glow. */}
               <svg viewBox="0 0 26 26" className="h-full w-full" aria-hidden>
-                <defs>
-                  <linearGradient id="nachos-body" x1="0" y1="0" x2="0.35" y2="1">
-                    <stop offset="0" stopColor="#FF5E1F" />
-                    <stop offset="1" stopColor="#E23C00" />
-                  </linearGradient>
-                </defs>
                 <path
                   d="M6 4.6 L20 4.6 Q23 4.6 21.6 7.4 L14.9 20.4 Q13 23.5 11.1 20.4 L4.4 7.4 Q3 4.6 6 4.6 Z"
-                  fill="url(#nachos-body)"
+                  fill="#F84800"
                 />
                 <g>
                   <circle cx="10" cy="10" r="2.1" fill="#fff" />
-                  <circle cx={10.5 + pupil.x} cy={10.4 + pupil.y} r="1" fill="#0E0E10" />
-                  <circle cx={10.05 + pupil.x} cy={9.7 + pupil.y} r="0.32" fill="#fff" />
+                  <circle cx="10.5" cy="10.4" r="1" fill="#0E0E10" />
                 </g>
                 <g>
                   <circle cx="16" cy="10" r="2.1" fill="#fff" />
-                  <circle cx={16.5 + pupil.x} cy={10.4 + pupil.y} r="1" fill="#0E0E10" />
-                  <circle cx={16.05 + pupil.x} cy={9.7 + pupil.y} r="0.32" fill="#fff" />
+                  <circle cx="16.5" cy="10.4" r="1" fill="#0E0E10" />
                 </g>
               </svg>
             </div>
@@ -177,7 +144,7 @@ export function Footer() {
               type="button"
               onClick={() => copyContact(footer.contacts.email.value, setMailCopied)}
               aria-label="Скопировать почту"
-              className="group/c flex items-center gap-[8px] text-white/70 transition hover:text-accent-bright"
+              className="group/c flex items-center gap-[8px] text-white/70 transition hover:text-accent-bright sm:ml-auto"
             >
               <span className="underline decoration-dotted underline-offset-[5px]">
                 {footer.contacts.email.value}
