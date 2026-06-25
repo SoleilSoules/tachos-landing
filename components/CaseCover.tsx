@@ -18,7 +18,7 @@ function PhoneMock({ shot, client, big }: { shot: string; client: string; big: b
   return (
     <div className="flex h-full w-full items-end justify-center">
       <div
-        className={`relative aspect-[780/1688] translate-y-[50%] ${big ? 'h-[170%]' : 'h-[150%]'}`}
+        className={`relative aspect-[780/1688] translate-y-[62%] ${big ? 'h-[170%]' : 'h-[150%]'}`}
       >
         <div
           className="relative h-full w-full rounded-[34px] p-[2.4%] shadow-[0_18px_40px_-22px_rgba(0,0,0,0.4)]"
@@ -62,17 +62,17 @@ export function CaseCover({
   id: string;
   client: string;
   shot?: string;
-  shotKind?: 'phone' | 'desktop';
+  shotKind?: 'phone' | 'desktop' | 'cover';
   mockupVideo?: string;
   variant?: 'card' | 'hero';
   className?: string;
 }) {
   const big = variant === 'hero';
-  const kind: 'phone' | 'desktop' = shotKind ?? 'desktop';
+  const kind: 'phone' | 'desktop' | 'cover' = shotKind ?? 'desktop';
 
   return (
     <div
-      className={`relative flex h-full w-full items-center justify-center overflow-hidden bg-white ${className}`}
+      className={`relative flex h-full w-full items-center justify-center overflow-hidden bg-[#f3f4f6] ${className}`}
     >
       {mockupVideo ? (
         <div className="absolute bottom-[-6%] right-[-2%] h-[80%] w-[66%]">
@@ -81,11 +81,20 @@ export function CaseCover({
       ) : shot ? (
         kind === 'phone' ? (
           <PhoneMock shot={shot} client={client} big={big} />
+        ) : kind === 'cover' ? (
+          // full-bleed cover photo (e.g. Monte) — fills the whole card, per Figma
+          <Image
+            src={asset(shot)}
+            alt={client}
+            fill
+            sizes="(max-width:1024px) 100vw, 640px"
+            className="object-cover"
+          />
         ) : (
           // wide screenshot as a real frontal device (no tilt): titanium body, inner
           // bezel, glass glare. Smaller so it sits on the cover like a product shot.
           <div
-            className={`relative aspect-[16/10] translate-y-[16%] ${big ? 'w-[72%]' : 'w-[78%]'} rounded-[20px] p-[1.3%] shadow-[0_26px_60px_-28px_rgba(0,0,0,0.55)]`}
+            className={`relative aspect-[16/10] translate-y-[28%] ${big ? 'w-[72%]' : 'w-[78%]'} rounded-[20px] p-[1.3%] shadow-[0_26px_60px_-28px_rgba(0,0,0,0.55)]`}
             style={{ background: TITANIUM }}
           >
             <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[12px] bg-black shadow-[inset_0_0_0_1px_rgba(255,255,255,0.07)]">

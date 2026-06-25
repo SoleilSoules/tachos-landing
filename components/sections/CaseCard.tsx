@@ -33,7 +33,7 @@ export function CaseCard({ item }: { item: CaseItem }) {
       <Link
         href={`/cases/${item.id}`}
         aria-label={`Кейс: ${item.client}`}
-        className="relative block h-[360px] overflow-hidden rounded-[32px] shadow-[0_16px_44px_-24px_rgba(0,0,0,0.3)] ring-1 ring-black/[0.06] transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:-translate-y-[6px] motion-safe:group-hover:scale-[1.012] motion-safe:group-hover:shadow-[0_28px_64px_-16px_rgba(0,0,0,0.45)] sm:h-[420px] sm:rounded-[44px]"
+        className="relative block h-[360px] overflow-hidden rounded-[32px] shadow-none transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:-translate-y-[6px] motion-safe:group-hover:scale-[1.012] group-hover:shadow-[0_28px_64px_-16px_rgba(0,0,0,0.45)] sm:h-[420px] sm:rounded-[44px]"
       >
         {/* generated brand cover (real stills come from Vadim later) */}
         <CaseCover
@@ -53,14 +53,14 @@ export function CaseCard({ item }: { item: CaseItem }) {
               light frosted glass (black/25 + heavy blur), roomy padding, soft 22px
               radius, accent-coloured sparkle. */}
           <div className="flex items-start justify-between gap-[12px]">
-            <span className="grid size-[48px] shrink-0 place-items-center rounded-[16px] bg-black/25 text-[19px] font-semibold text-white backdrop-blur-xl">
+            <span className="grid size-[44px] shrink-0 place-items-center rounded-full bg-black/25 text-[16px] font-semibold text-white backdrop-blur-md">
               {item.client.trim().charAt(0)}
             </span>
             <div className="flex max-w-[80%] flex-wrap justify-end gap-[10px]">
-              <span className="rounded-[22px] bg-black/25 px-[18px] py-[12px] text-[16px] font-medium tracking-[0.01em] text-white backdrop-blur-xl">
+              <span className="rounded-[14px] bg-black/25 px-[13px] py-[8px] text-[13px] font-medium tracking-[0.01em] text-white backdrop-blur-md">
                 {domainTag}
               </span>
-              <span className="inline-flex items-center gap-[7px] rounded-[22px] bg-black/25 px-[18px] py-[12px] text-[16px] font-medium tracking-[0.01em] text-white backdrop-blur-xl">
+              <span className="inline-flex items-center gap-[7px] rounded-[14px] bg-black/25 px-[13px] py-[8px] text-[13px] font-medium tracking-[0.01em] text-white backdrop-blur-md">
                 <span
                   aria-hidden
                   className="bg-gradient-to-br from-[#ff8a3c] via-[#ff4d6d] to-[#8b5cff] bg-clip-text text-transparent"

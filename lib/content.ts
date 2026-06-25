@@ -94,7 +94,7 @@ export type CaseItem = {
   desc: { lead: string; highlight: string; tail: string };
   tags: [string, string];
   shot?: string; // real product screenshot, shown in a device mockup on the cover
-  shotKind?: 'phone' | 'desktop'; // which premium mockup frame to use for `shot`
+  shotKind?: 'phone' | 'desktop' | 'cover'; // device frame for `shot`, or 'cover' = full-bleed photo
   tabs?: string[]; // CaseTab labels this case belongs to (drives tab filtering)
   mockupVideo?: string; // clip shown inside an animated turning iPhone mockup on the cover
   story: CaseStory; // case-page content (placeholder prose until Vadim confirms)
@@ -189,6 +189,24 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     shotKind: 'desktop',
     story: {
       summary: 'Телемедицина и запись к врачу для клиники доказательной медицины.',
+      metrics: [
+        { value: '—', label: 'уточняется' },
+        { value: '—', label: 'уточняется' },
+      ],
+      sections: [{ title: 'Контекст', body: 'Описание кейса уточняется.' }],
+    },
+  },
+  {
+    id: 'monte',
+    client: 'Monte',
+    category: 'автотюнинг',
+    tabs: ['Для маркетплейсов'],
+    desc: { lead: 'Сайт и сервисы для', highlight: 'студии автотюнинга', tail: '' },
+    tags: ['Автотюнинг', 'Web'],
+    shot: '/figma/monte-cover.png',
+    shotKind: 'cover',
+    story: {
+      summary: 'Сайт и сервисы для студии автотюнинга.',
       metrics: [
         { value: '—', label: 'уточняется' },
         { value: '—', label: 'уточняется' },
@@ -404,24 +422,6 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     shotKind: 'phone',
     story: {
       summary: 'Alma — мобильное приложение.',
-      metrics: [
-        { value: '—', label: 'уточняется' },
-        { value: '—', label: 'уточняется' },
-      ],
-      sections: [{ title: 'Контекст', body: 'Описание кейса уточняется.' }],
-    },
-  },
-  {
-    id: 'monte',
-    client: 'Monte',
-    category: 'автотюнинг',
-    tabs: ['Для маркетплейсов'],
-    desc: { lead: 'Сайт и сервисы для', highlight: 'студии автотюнинга', tail: '' },
-    tags: ['Автотюнинг', 'Web'],
-    shot: '/figma/shots/monte.png',
-    shotKind: 'desktop',
-    story: {
-      summary: 'Сайт и сервисы для студии автотюнинга.',
       metrics: [
         { value: '—', label: 'уточняется' },
         { value: '—', label: 'уточняется' },
