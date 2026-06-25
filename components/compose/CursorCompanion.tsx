@@ -30,8 +30,8 @@ export function CursorCompanion() {
 
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const touch = window.matchMedia('(hover: none), (pointer: coarse)').matches;
-    if (reduced || touch) {
+    const isTouch = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+    if (reduced) {
       if (root.current) root.current.style.display = 'none';
       return;
     }
@@ -102,7 +102,7 @@ export function CursorCompanion() {
       my = e.clientY;
       lastMove = performance.now();
     };
-    addEventListener('mousemove', onMove, { passive: true });
+    if (!isTouch) addEventListener('mousemove', onMove, { passive: true });
 
     // ─── HINT: say something OF HIS OWN about the element under the cursor (never
     // echo its label). data-hint = the element TYPE, data-hint-sub = its entity; the
@@ -149,7 +149,13 @@ export function CursorCompanion() {
         reactNod();
       } else hush();
     };
-    addEventListener('mouseover', onOver, { passive: true });
+    if (!isTouch) addEventListener('mouseover', onOver, { passive: true });
+    // Touch: no cursor → the mascot lives on the right, travels with the scroll, grows
+    // near the footer and pipes up on its own (the loop's touch branch positions it). #31/#32
+    const onScrollTouch = () => {
+      lastMove = performance.now();
+    };
+    if (isTouch) addEventListener('scroll', onScrollTouch, { passive: true });
 
     // ─── Transcript: while an audio review plays, narrate it (#B6) ───
     const onTranscript = (e: Event) => {
@@ -246,6 +252,25 @@ export function CursorCompanion() {
       }
 
       const now = performance.now();
+
+      if (isTouch) {
+        // touch: no cursor — hang on the right, TRAVEL with the scroll, grow big near
+        // the footer, nose-down, and speak on his own now and then. #31/#32
+        mx = innerWidth - 46;
+        my = innerHeight * (footerVisible ? 0.78 : 0.58);
+        pos.x = lerp(pos.x, mx, 0.05);
+        pos.y = lerp(pos.y, my, 0.05);
+        curScale = lerp(curScale, footerVisible ? 6 : 1.5, 0.05);
+        faceAng = lerp(faceAng, Math.PI / 2, 0.05);
+        render(curScale);
+        if (!openRef.current && !transcribing && now - lastTrick > 9000 && now - lastMove > 1400) {
+          lastTrick = now;
+          say(nachosLine('generic', '', ''), 4200);
+          reactNod();
+        }
+        raf = requestAnimationFrame(loop);
+        return;
+      }
 
       if (mode === 'appear') {
         const k = Math.min(Math.max((now - appearStart) / 340, 0), 1);
