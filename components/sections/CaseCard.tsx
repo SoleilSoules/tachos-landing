@@ -23,6 +23,14 @@ function ArrowIcon() {
 export function CaseCard({ item }: { item: CaseItem }) {
   // Tags arrive as [domain, method]; the method pill gets the sparkle prefix.
   const [domainTag, methodTag] = item.tags;
+  // Frosted chips invert to the cover's tone: a dark cover photo (e.g. Monte) gets
+  // light white/10 chips + white text; light covers (device mockups, brand plate)
+  // get dark black/6 chips + dark text — legible either way.
+  const onDark = item.coverDark === true;
+  const frost = onDark ? 'bg-white/10 text-white' : 'bg-black/[0.06] text-black/60';
+  const arrowFrost = onDark
+    ? 'bg-white/10 text-white group-hover:bg-white/20'
+    : 'bg-black/[0.06] text-black/70 group-hover:bg-black/[0.12]';
 
   return (
     <article
@@ -53,14 +61,20 @@ export function CaseCard({ item }: { item: CaseItem }) {
               light frosted glass (black/25 + heavy blur), roomy padding, soft 22px
               radius, accent-coloured sparkle. */}
           <div className="flex items-start justify-between gap-[12px]">
-            <span className="grid size-[44px] shrink-0 place-items-center rounded-full bg-black/25 text-[16px] font-semibold text-white backdrop-blur-md">
+            <span
+              className={`grid size-[44px] shrink-0 place-items-center rounded-full ${frost} text-[16px] font-semibold backdrop-blur-md`}
+            >
               {item.client.trim().charAt(0)}
             </span>
             <div className="flex max-w-[80%] flex-wrap justify-end gap-[10px]">
-              <span className="rounded-[14px] bg-black/25 px-[13px] py-[8px] text-[13px] font-medium tracking-[0.01em] text-white backdrop-blur-md">
+              <span
+                className={`rounded-[10px] ${frost} px-[13px] py-[8px] text-[13px] font-medium tracking-[0.01em] backdrop-blur-md`}
+              >
                 {domainTag}
               </span>
-              <span className="inline-flex items-center gap-[7px] rounded-[14px] bg-black/25 px-[13px] py-[8px] text-[13px] font-medium tracking-[0.01em] text-white backdrop-blur-md">
+              <span
+                className={`inline-flex items-center gap-[7px] rounded-[10px] ${frost} px-[13px] py-[8px] text-[13px] font-medium tracking-[0.01em] backdrop-blur-md`}
+              >
                 <span
                   aria-hidden
                   className="bg-gradient-to-br from-[#ff8a3c] via-[#ff4d6d] to-[#8b5cff] bg-clip-text text-transparent"
@@ -76,7 +90,9 @@ export function CaseCard({ item }: { item: CaseItem }) {
               frosted light fill. Pinned right; nudges up-right on hover.
               motion-safe gates the translate so reduced-motion users see no shift. */}
           <div className="flex justify-end">
-            <span className="grid size-[56px] place-items-center rounded-[20px] bg-black/25 text-white backdrop-blur-xl transition-[transform,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:bg-black/35 motion-safe:group-hover:-translate-y-[3px] motion-safe:group-hover:translate-x-[3px]">
+            <span
+              className={`grid size-[56px] place-items-center rounded-[20px] ${arrowFrost} backdrop-blur-xl transition-[transform,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:-translate-y-[3px] motion-safe:group-hover:translate-x-[3px]`}
+            >
               <ArrowIcon />
             </span>
           </div>

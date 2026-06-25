@@ -95,10 +95,12 @@ export type CaseItem = {
   tags: [string, string];
   shot?: string; // real product screenshot, shown in a device mockup on the cover
   shotKind?: 'phone' | 'desktop' | 'cover'; // device frame for `shot`, or 'cover' = full-bleed photo
+  coverDark?: boolean; // cover photo is dark → invert overlay chips to light
   tabs?: string[]; // CaseTab labels this case belongs to (drives tab filtering)
   mockupVideo?: string; // clip shown inside an animated turning iPhone mockup on the cover
   story: CaseStory; // case-page content (placeholder prose until Vadim confirms)
   verified?: boolean; // confirmed Tachos work (Складно / Хайс / Maginary)
+  hidden?: boolean; // temporarily hidden from the homepage grid
 };
 
 export type Review = {
@@ -187,6 +189,7 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     tags: ['Медтех', 'Web + mobile'],
     shot: '/figma/shots/docmed.png',
     shotKind: 'desktop',
+    hidden: true,
     story: {
       summary: 'Телемедицина и запись к врачу для клиники доказательной медицины.',
       metrics: [
@@ -205,6 +208,7 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     tags: ['Автотюнинг', 'Web'],
     shot: '/figma/monte-cover.png',
     shotKind: 'cover',
+    coverDark: true,
     story: {
       summary: 'Сайт и сервисы для студии автотюнинга.',
       metrics: [
@@ -225,8 +229,9 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
       tail: 'в одном приложении',
     },
     tags: ['Финтех', 'iOS + Android'],
-    shot: '/figma/shots/hais.png',
-    shotKind: 'desktop',
+    shot: '/figma/hais-cover.png',
+    shotKind: 'cover',
+    coverDark: true,
     story: {
       summary: 'Мобильный банк для ИП с нуля — счёт, бухгалтерия и валюта в одном приложении.',
       metrics: [
@@ -252,6 +257,42 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     verified: true,
   },
   {
+    id: 'dobry',
+    client: 'Добрый',
+    category: 'FMCG',
+    tabs: ['Геймдев'],
+    desc: {
+      lead: '',
+      highlight: 'Игра за месяц: от идеи до прода',
+      tail: 'для бренда №1 на рынке соков России',
+    },
+    tags: ['Web-игра', '4 недели'],
+    shot: '/figma/dobry-cover.png',
+    shotKind: 'cover',
+    story: {
+      summary: 'Промо-игра для бренда №1 на рынке соков России — от идеи до прода за месяц.',
+      metrics: [
+        { value: '4 недели', label: 'от идеи до релиза' },
+        { value: 'Web-игра', label: 'формат' },
+        { value: '№1', label: 'бренд соков в РФ' },
+      ],
+      sections: [
+        {
+          title: 'Контекст',
+          body: 'Бренду нужна была промо-механика к кампании: лёгкая веб-игра, в которую можно играть прямо из браузера, без установки.',
+        },
+        {
+          title: 'Что сделали',
+          body: 'За четыре недели прошли весь путь — идея, прототип, продакшн и релиз веб-игры, готовой к промо-трафику.',
+        },
+        {
+          title: 'Результат',
+          body: 'Игра вышла в срок к запуску кампании бренда №1 на рынке соков России.',
+        },
+      ],
+    },
+  },
+  {
     id: 'skladno',
     client: 'Складно',
     category: 'сервис хранения',
@@ -262,8 +303,8 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
       tail: '',
     },
     tags: ['Сервис хранения', 'Mobile + бэкенд'],
-    shot: '/figma/shots/skladno.png',
-    shotKind: 'phone',
+    shot: '/figma/skladno-cover.png',
+    shotKind: 'cover',
     story: {
       summary:
         'Сеть хранения без персонала: бронь, оплата и доступ к ячейке по Bluetooth — всё в приложении.',
@@ -297,6 +338,7 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     tags: ['Цифровой продукт', 'Разработка'],
     shot: '/figma/shots/anomalia.png',
     shotKind: 'desktop',
+    hidden: true,
     story: {
       summary: 'Anomalia — цифровой продукт.',
       metrics: [
@@ -315,6 +357,7 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     tags: ['Благотворительность', 'Mobile'],
     shot: '/figma/shots/imast.png',
     shotKind: 'desktop',
+    hidden: true,
     story: {
       summary: 'Платформа благотворительных донатов.',
       metrics: [
@@ -332,6 +375,7 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     desc: { lead: 'Цифровые сервисы для', highlight: 'страховой компании', tail: '' },
     tags: ['Страхование', 'Web'],
     shotKind: 'desktop',
+    hidden: true,
     story: {
       summary: 'Цифровые сервисы для страховой компании.',
       metrics: [
@@ -352,9 +396,9 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
       tail: 'в App Store',
     },
     tags: ['Приложение-книга', 'iOS'],
-    shot: '/figma/shots/maginary.png',
-    shotKind: 'phone',
-    mockupVideo: '/figma/maginary-demo.mp4',
+    shot: '/figma/maginary-cover.png',
+    shotKind: 'cover',
+    coverDark: true,
     story: {
       summary: 'Анимированная книга-игра, где читатель становится героем истории.',
       metrics: [
@@ -377,42 +421,6 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     verified: true,
   },
   {
-    id: 'dobry',
-    client: 'Добрый',
-    category: 'FMCG',
-    tabs: ['Геймдев'],
-    desc: {
-      lead: '',
-      highlight: 'Игра за месяц: от идеи до прода',
-      tail: 'для бренда №1 на рынке соков России',
-    },
-    tags: ['Web-игра', '4 недели'],
-    shot: '/figma/shots/dobry.png',
-    shotKind: 'desktop',
-    story: {
-      summary: 'Промо-игра для бренда №1 на рынке соков России — от идеи до прода за месяц.',
-      metrics: [
-        { value: '4 недели', label: 'от идеи до релиза' },
-        { value: 'Web-игра', label: 'формат' },
-        { value: '№1', label: 'бренд соков в РФ' },
-      ],
-      sections: [
-        {
-          title: 'Контекст',
-          body: 'Бренду нужна была промо-механика к кампании: лёгкая веб-игра, в которую можно играть прямо из браузера, без установки.',
-        },
-        {
-          title: 'Что сделали',
-          body: 'За четыре недели прошли весь путь — идея, прототип, продакшн и релиз веб-игры, готовой к промо-трафику.',
-        },
-        {
-          title: 'Результат',
-          body: 'Игра вышла в срок к запуску кампании бренда №1 на рынке соков России.',
-        },
-      ],
-    },
-  },
-  {
     id: 'alma',
     client: 'Alma',
     category: 'мобильное приложение',
@@ -420,6 +428,7 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     tags: ['Мобильное приложение', 'iOS + Android'],
     shot: '/figma/shots/alma.png',
     shotKind: 'phone',
+    hidden: true,
     story: {
       summary: 'Alma — мобильное приложение.',
       metrics: [
