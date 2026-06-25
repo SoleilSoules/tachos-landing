@@ -60,6 +60,17 @@ export function HeroPrompt() {
   const [value, setValue] = useState('');
   const hint = guessType(value);
 
+  // Placeholder differs by viewport: short on mobile (night change), the original
+  // longer copy on desktop (pre-night) — restored per Гоша.
+  const [placeholder, setPlaceholder] = useState('Опишите задачу');
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 640px)');
+    const upd = () => setPlaceholder(mq.matches ? hero.inputPlaceholder : 'Опишите задачу');
+    upd();
+    mq.addEventListener('change', upd);
+    return () => mq.removeEventListener('change', upd);
+  }, []);
+
   const submit = () => open({ type: guessType(value) ?? 'idk', freeText: value.trim() });
 
   // Voice input (#27, draft): dictate into the field via Web Speech API; if the
@@ -143,7 +154,7 @@ export function HeroPrompt() {
         onClick={submit}
         data-hint="Нажмите — соберём письмо"
         data-hint-sub="или выберите чип ниже"
-        className="relative mt-[32px] flex h-[72px] w-full max-w-[554px] cursor-pointer items-center gap-[12px] overflow-hidden rounded-[18px] bg-white pl-[20px] shadow-input sm:mt-[52px] sm:h-[88px] sm:gap-[24px] sm:pl-[24px]"
+        className="relative mt-[32px] flex h-[72px] w-full max-w-[554px] cursor-pointer items-center gap-[12px] overflow-hidden rounded-[18px] bg-white pl-[20px] shadow-input sm:mt-[40px] sm:h-[88px] sm:pl-[22px]"
       >
         {/* hidden mirror — measures caret x using the same font as the input */}
         <span
@@ -154,7 +165,7 @@ export function HeroPrompt() {
         {/* the single rounded caret — identical bar in empty + typing states */}
         <span
           aria-hidden
-          className="pointer-events-none absolute top-1/2 h-[26px] w-[2.5px] -translate-y-1/2 rounded-full bg-accent-hot [animation:caret-blink_1.1s_step-end_infinite] sm:h-[34px]"
+          className="pointer-events-none absolute top-1/2 h-[26px] w-[2.5px] -translate-y-1/2 rounded-full bg-accent-hot [animation:caret-blink_1.1s_step-end_infinite]"
           style={{ left: caretLeft }}
         />
         <input
@@ -165,7 +176,7 @@ export function HeroPrompt() {
           onKeyDown={(e) => {
             if (e.key === 'Enter') submit();
           }}
-          placeholder={hero.inputPlaceholder}
+          placeholder={placeholder}
           aria-label="Опишите задачу"
           className="min-w-0 flex-1 bg-transparent text-[18px] text-black caret-transparent outline-none placeholder:text-black/40"
         />

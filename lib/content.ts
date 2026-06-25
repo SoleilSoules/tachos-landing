@@ -34,7 +34,7 @@ export const hero = deepNbsp({
     { accent: 'банк для ИП', tail: 'с нуля' },
     { accent: '2+ года', tail: 'с командами' },
   ],
-  inputPlaceholder: 'Опишите задачу',
+  inputPlaceholder: 'Начните описывать задачу, мы поможем',
   needLabel: 'Мне нужен:',
   chips: ['Сайт', 'Приложение', 'Магазин', 'Игра'],
 } as const);
