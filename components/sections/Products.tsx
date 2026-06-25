@@ -13,7 +13,7 @@ const SLIDE_MS = 5000;
 // Per-product device mockup. Only doki has a real screen so far; hub/bali show
 // the glassy panel + glow without a tablet until Vadim provides their shots.
 const MOCKUPS: Record<string, { src: string; alt: string } | undefined> = {
-  doki: { src: '/figma/doki-mockup.png', alt: 'Интерфейс doki на планшете' },
+  doki: { src: '/figma/doki-mockup.webp', alt: 'Интерфейс doki на планшете' },
 };
 
 // Resting look of a card by its depth in the deck (0 = top/active). Each card
@@ -203,7 +203,7 @@ export function Products() {
                       clips it cleanly; pushed further right — the device bleeds past
                       the right/top edge and is cut by the card, the hand stays off. */}
                   {isActive && mockup && (
-                    <div className="pointer-events-none absolute -top-[20px] right-[-70px] hidden h-[620px] w-[1080px] rotate-[-6deg] overflow-hidden lg:block">
+                    <div className="pointer-events-none absolute -top-[20px] right-[-160px] hidden h-[620px] w-[1080px] rotate-[-6deg] overflow-hidden lg:block">
                       <Image
                         src={asset(mockup.src)}
                         alt={mockup.alt}

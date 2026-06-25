@@ -104,7 +104,7 @@ function CaseGrid({ cases }: { cases: CaseItem[] }) {
           <button
             type="button"
             onClick={() => setVisible((v) => v + STEP)}
-            className="w-full rounded-[24px] bg-[#2e2e2e] px-[64px] py-[20px] text-[17px] font-medium text-white transition hover:bg-black sm:w-auto sm:min-w-[600px]"
+            className="w-full max-w-[960px] rounded-[24px] bg-[#2e2e2e] px-[64px] py-[20px] text-[17px] font-medium text-white transition hover:bg-black"
           >
             Показать ещё
           </button>

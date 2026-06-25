@@ -206,7 +206,7 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     tabs: ['Для маркетплейсов'],
     desc: { lead: 'Сайт и сервисы для', highlight: 'студии автотюнинга', tail: '' },
     tags: ['Автотюнинг', 'Web'],
-    shot: '/figma/monte-cover.png',
+    shot: '/figma/monte-cover.webp',
     shotKind: 'cover',
     coverDark: true,
     story: {
@@ -229,7 +229,7 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
       tail: 'в одном приложении',
     },
     tags: ['Финтех', 'iOS + Android'],
-    shot: '/figma/hais-cover.png',
+    shot: '/figma/hais-cover.webp',
     shotKind: 'cover',
     coverDark: true,
     story: {
@@ -267,7 +267,7 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
       tail: 'для бренда №1 на рынке соков России',
     },
     tags: ['Web-игра', '4 недели'],
-    shot: '/figma/dobry-cover.png',
+    shot: '/figma/dobry-cover.webp',
     shotKind: 'cover',
     story: {
       summary: 'Промо-игра для бренда №1 на рынке соков России — от идеи до прода за месяц.',
@@ -303,7 +303,7 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
       tail: '',
     },
     tags: ['Сервис хранения', 'Mobile + бэкенд'],
-    shot: '/figma/skladno-cover.png',
+    shot: '/figma/skladno-cover.webp',
     shotKind: 'cover',
     coverDark: true,
     story: {
@@ -397,7 +397,7 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
       tail: 'в App Store',
     },
     tags: ['Приложение-книга', 'iOS'],
-    shot: '/figma/maginary-cover.png',
+    shot: '/figma/maginary-cover.webp',
     shotKind: 'cover',
     coverDark: true,
     story: {

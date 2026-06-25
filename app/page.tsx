@@ -36,7 +36,7 @@ export default function Home() {
             muted
             loop
             playsInline
-            poster={asset('/figma/hero-poster.png')}
+            poster={asset('/figma/hero-poster.webp')}
             className="absolute left-1/2 top-0 h-[1340px] w-full max-w-[1600px] -translate-x-1/2 object-cover object-[center_42%] opacity-95 motion-reduce:hidden"
           >
             <source src={asset('/figma/hero-belt-v15.mp4')} type="video/mp4" />

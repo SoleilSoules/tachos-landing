@@ -35,6 +35,7 @@ export function Footer() {
   const [inView, setInView] = useState(false);
   const [mailCopied, setMailCopied] = useState(false);
   const [phoneCopied, setPhoneCopied] = useState(false);
+  const [pupil, setPupil] = useState({ x: 0, y: 0 });
 
   // Start the inline letter typing once the footer scrolls into view (not on load,
   // since it sits at the very bottom).
@@ -56,6 +57,23 @@ export function Footer() {
     io.observe(el);
     return () => io.disconnect();
   }, []);
+
+  // Footer mascot watches the cursor: nudge the pupils toward the pointer while the
+  // footer is in view. Desktop only (the mascot is hidden on touch).
+  useEffect(() => {
+    if (!inView) return;
+    const onMove = (e: MouseEvent) => {
+      const perch = document.querySelector('[data-mascot-perch]');
+      if (!perch) return;
+      const r = perch.getBoundingClientRect();
+      const dx = e.clientX - (r.left + r.width / 2);
+      const dy = e.clientY - (r.top + r.height / 2);
+      const d = Math.hypot(dx, dy) || 1;
+      setPupil({ x: (dx / d) * 0.9, y: (dy / d) * 0.9 });
+    };
+    window.addEventListener('mousemove', onMove, { passive: true });
+    return () => window.removeEventListener('mousemove', onMove);
+  }, [inView]);
 
   // Copy a contact value with a brief ✓; no fake success if clipboard is blocked.
   const copyContact = async (text: string, setCopied: (v: boolean) => void) => {
@@ -112,32 +130,28 @@ export function Footer() {
               up shrinks him back to the cursor. Just a positioned sizer slot — the
               mascot itself is rendered (and flown into this box's centre) by
               CursorCompanion.tsx. Hidden on touch/small where the mascot is off. */}
-          <div aria-hidden className="pointer-events-none relative hidden min-h-[460px] lg:block">
+          <div aria-hidden className="pointer-events-none relative hidden min-h-[560px] lg:block">
             <div
               data-mascot-perch
-              className={`absolute right-[20px] top-1/2 h-[440px] w-[440px] -translate-y-1/2 transition-opacity duration-700 ${
-                inView ? 'opacity-100' : 'opacity-0'
+              className={`absolute right-[10px] top-1/2 h-[540px] w-[540px] origin-center -translate-y-1/2 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                inView ? 'scale-100 opacity-100' : 'scale-[0.4] opacity-0'
               }`}
             >
-              {/* Big mascot drawn NATIVELY large (vector) so it stays crisp on retina —
-                  scaling the tiny cursor SVG up rasterised it ("шакал"). Nose-down. */}
-              <svg
-                viewBox="0 0 26 26"
-                className="h-full w-full"
-                style={{ filter: 'drop-shadow(0 14px 54px rgba(248,72,0,0.42))' }}
-                aria-hidden
-              >
+              {/* Big mascot drawn NATIVELY large (vector) so it stays crisp on retina.
+                  Grows in from the cursor size (scale) and the pupils follow the
+                  cursor (pupil state). Nose-down. No glow. */}
+              <svg viewBox="0 0 26 26" className="h-full w-full" aria-hidden>
                 <path
                   d="M6 4.6 L20 4.6 Q23 4.6 21.6 7.4 L14.9 20.4 Q13 23.5 11.1 20.4 L4.4 7.4 Q3 4.6 6 4.6 Z"
                   fill="#F84800"
                 />
                 <g>
                   <circle cx="10" cy="10" r="2.1" fill="#fff" />
-                  <circle cx="10.5" cy="10.4" r="1" fill="#0E0E10" />
+                  <circle cx={10.5 + pupil.x} cy={10.4 + pupil.y} r="1" fill="#0E0E10" />
                 </g>
                 <g>
                   <circle cx="16" cy="10" r="2.1" fill="#fff" />
-                  <circle cx="16.5" cy="10.4" r="1" fill="#0E0E10" />
+                  <circle cx={16.5 + pupil.x} cy={10.4 + pupil.y} r="1" fill="#0E0E10" />
                 </g>
               </svg>
             </div>

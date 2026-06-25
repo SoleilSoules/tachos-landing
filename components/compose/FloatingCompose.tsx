@@ -78,7 +78,7 @@ export function FloatingCompose() {
             <span className="sm:hidden">Опишите задачу</span>
             <span className="hidden sm:inline">Начните описывать задачу, мы поможем</span>
           </span>
-          <span className="grid h-full w-[52px] shrink-0 place-items-center bg-surface2 text-black transition group-hover:bg-accent group-hover:text-white sm:w-[64px]">
+          <span className="grid h-full w-[52px] shrink-0 place-items-center bg-white text-black shadow-[-14px_0_28px_rgba(0,0,0,0.06)] transition group-hover:bg-accent group-hover:text-white sm:w-[64px]">
             <WaveIcon size={20} />
           </span>
         </div>
