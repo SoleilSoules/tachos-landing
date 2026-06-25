@@ -46,22 +46,25 @@ export function CaseCard({ item }: { item: CaseItem }) {
           className="transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:scale-[1.02]"
         />
 
-        {/* top + bottom scrims so the glass chips and arrow stay legible on any photo */}
-        <div
-          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/25"
-          aria-hidden
-        />
-
-        {/* inner padded frame for the overlay controls */}
-        <div className="relative flex h-full flex-col justify-between p-[24px]">
-          {/* top row: frosted avatar circle (left) + frosted dark tag pills (right) */}
-          <div className="flex items-start justify-end gap-[12px]">
-            <div className="flex max-w-[88%] flex-wrap justify-end gap-[8px]">
-              <span className="rounded-pill bg-black/30 px-[14px] py-[8px] text-[14px] font-medium tracking-[0.01em] text-white backdrop-blur-md">
+        {/* inner padded frame for the overlay controls — absolute so it overlays the
+            cover (in flow it stacked after the cover and got clipped → tags vanished) */}
+        <div className="absolute inset-0 flex flex-col justify-between p-[24px]">
+          {/* top row: client logo plate (left) + frosted tag pills (right), per Figma —
+              light frosted glass (black/25 + heavy blur), roomy padding, soft 22px
+              radius, accent-coloured sparkle. */}
+          <div className="flex items-start justify-between gap-[12px]">
+            <span className="grid size-[48px] shrink-0 place-items-center rounded-[16px] bg-black/25 text-[19px] font-semibold text-white backdrop-blur-xl">
+              {item.client.trim().charAt(0)}
+            </span>
+            <div className="flex max-w-[80%] flex-wrap justify-end gap-[10px]">
+              <span className="rounded-[22px] bg-black/25 px-[18px] py-[12px] text-[16px] font-medium tracking-[0.01em] text-white backdrop-blur-xl">
                 {domainTag}
               </span>
-              <span className="inline-flex items-center gap-[6px] rounded-pill bg-black/30 px-[14px] py-[8px] text-[14px] font-medium tracking-[0.01em] text-white backdrop-blur-md">
-                <span aria-hidden className="text-white/80">
+              <span className="inline-flex items-center gap-[7px] rounded-[22px] bg-black/25 px-[18px] py-[12px] text-[16px] font-medium tracking-[0.01em] text-white backdrop-blur-xl">
+                <span
+                  aria-hidden
+                  className="bg-gradient-to-br from-[#ff8a3c] via-[#ff4d6d] to-[#8b5cff] bg-clip-text text-transparent"
+                >
                   {SPARKLE}
                 </span>
                 {methodTag}
@@ -73,15 +76,17 @@ export function CaseCard({ item }: { item: CaseItem }) {
               frosted light fill. Pinned right; nudges up-right on hover.
               motion-safe gates the translate so reduced-motion users see no shift. */}
           <div className="flex justify-end">
-            <span className="grid size-[56px] place-items-center rounded-[18px] bg-white/55 text-white ring-1 ring-inset ring-white/40 backdrop-blur-md transition-[transform,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:bg-white/70 motion-safe:group-hover:-translate-y-[3px] motion-safe:group-hover:translate-x-[3px]">
+            <span className="grid size-[56px] place-items-center rounded-[20px] bg-black/25 text-white backdrop-blur-xl transition-[transform,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:bg-black/35 motion-safe:group-hover:-translate-y-[3px] motion-safe:group-hover:translate-x-[3px]">
               <ArrowIcon />
             </span>
           </div>
         </div>
       </Link>
 
-      {/* caption/meta — pinned to its own card with a small left inset (#33) */}
+      {/* caption/meta — pinned to its own card with a small left inset (#33).
+          Client name sits grey above the description (restored). */}
       <div className="pl-[6px] pr-[10px]">
+        <p className="mb-[8px] text-[17px] font-medium text-black/40">{item.client}</p>
         <p className="text-[22px] font-medium leading-[1.22] text-black sm:text-[26px]">
           {item.desc.lead && <>{item.desc.lead} </>}
           {/* #31: accent underlay gets real padding + tag radius, cloned across

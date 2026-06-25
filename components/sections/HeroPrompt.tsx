@@ -143,7 +143,7 @@ export function HeroPrompt() {
         onClick={submit}
         data-hint="Нажмите — соберём письмо"
         data-hint-sub="или выберите чип ниже"
-        className="relative mt-[32px] flex h-[72px] w-full max-w-[554px] cursor-pointer items-center gap-[12px] overflow-hidden rounded-[18px] bg-white pl-[20px] shadow-input sm:mt-[40px] sm:h-[88px] sm:pl-[22px]"
+        className="relative mt-[32px] flex h-[72px] w-full max-w-[554px] cursor-pointer items-center gap-[12px] overflow-hidden rounded-[18px] bg-white pl-[20px] shadow-input sm:mt-[52px] sm:h-[88px] sm:gap-[24px] sm:pl-[24px]"
       >
         {/* hidden mirror — measures caret x using the same font as the input */}
         <span
@@ -154,7 +154,7 @@ export function HeroPrompt() {
         {/* the single rounded caret — identical bar in empty + typing states */}
         <span
           aria-hidden
-          className="pointer-events-none absolute top-1/2 h-[26px] w-[2.5px] -translate-y-1/2 rounded-full bg-accent-hot [animation:caret-blink_1.1s_step-end_infinite]"
+          className="pointer-events-none absolute top-1/2 h-[26px] w-[2.5px] -translate-y-1/2 rounded-full bg-accent-hot [animation:caret-blink_1.1s_step-end_infinite] sm:h-[34px]"
           style={{ left: caretLeft }}
         />
         <input

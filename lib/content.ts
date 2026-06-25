@@ -93,21 +93,13 @@ export type CaseItem = {
   category: string;
   desc: { lead: string; highlight: string; tail: string };
   tags: [string, string];
-  cover: string;
-  avatar: string;
   shot?: string; // real product screenshot, shown in a device mockup on the cover
   shotKind?: 'phone' | 'desktop'; // which premium mockup frame to use for `shot`
   tabs?: string[]; // CaseTab labels this case belongs to (drives tab filtering)
-  coverVideo?: string; // Remotion-rendered animated cover (overrides the static mockup)
   mockupVideo?: string; // clip shown inside an animated turning iPhone mockup on the cover
   story: CaseStory; // case-page content (placeholder prose until Vadim confirms)
   verified?: boolean; // confirmed Tachos work (Складно / Хайс / Maginary)
 };
-
-// Content ported from the v2 prototype. Covers/avatars are shared placeholders
-// (cards blur them into glass); real per-case media comes from Vadim.
-const cover = '/figma/case-cover.png';
-const avatar = '/figma/case-avatar.png';
 
 export type Review = {
   id: string;
@@ -176,24 +168,27 @@ export const reviews = deepNbsp({
 });
 
 // ── Order + selection set by Гоша for the homepage grid (2 cols × 5 rows):
-//   АльфаСтрахование · Хайс / Складно · Anomalia / Imast · Docmed /
+//   Docmed · Хайс / Складно · Anomalia / Imast · АльфаСтрахование /
 //   Maginary · Добрый / Alma · Monte
 // New clients have real screenshots pending — they show an EMPTY device mock
 // (shotKind without shot) until the shot is captured. Their story/metrics are
 // placeholders ("—") until Vadim confirms copy. Verified work: Складно/Хайс/Maginary.
 export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
   {
-    id: 'alfastrah',
-    client: 'АльфаСтрахование',
-    category: 'страхование',
-    tabs: ['Для банков'],
-    desc: { lead: 'Цифровые сервисы для', highlight: 'страховой компании', tail: '' },
-    tags: ['Страхование', 'Web'],
-    cover,
-    avatar,
+    id: 'docmed',
+    client: 'Docmed',
+    category: 'медтех',
+    tabs: ['Для маркетплейсов'],
+    desc: {
+      lead: 'Телемедицина и запись к врачу для',
+      highlight: 'клиники доказательной медицины',
+      tail: '',
+    },
+    tags: ['Медтех', 'Web + mobile'],
+    shot: '/figma/shots/docmed.png',
     shotKind: 'desktop',
     story: {
-      summary: 'Цифровые сервисы для страховой компании.',
+      summary: 'Телемедицина и запись к врачу для клиники доказательной медицины.',
       metrics: [
         { value: '—', label: 'уточняется' },
         { value: '—', label: 'уточняется' },
@@ -212,8 +207,6 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
       tail: 'в одном приложении',
     },
     tags: ['Финтех', 'iOS + Android'],
-    cover,
-    avatar,
     shot: '/figma/shots/hais.png',
     shotKind: 'desktop',
     story: {
@@ -251,8 +244,6 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
       tail: '',
     },
     tags: ['Сервис хранения', 'Mobile + бэкенд'],
-    cover,
-    avatar,
     shot: '/figma/shots/skladno.png',
     shotKind: 'phone',
     story: {
@@ -286,8 +277,6 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     category: 'цифровой продукт',
     desc: { lead: '', highlight: 'Anomalia', tail: '— цифровой продукт' },
     tags: ['Цифровой продукт', 'Разработка'],
-    cover,
-    avatar,
     shot: '/figma/shots/anomalia.png',
     shotKind: 'desktop',
     story: {
@@ -306,8 +295,6 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     tabs: ['eCommerce'],
     desc: { lead: 'Платформа', highlight: 'благотворительных донатов', tail: '' },
     tags: ['Благотворительность', 'Mobile'],
-    cover,
-    avatar,
     shot: '/figma/shots/imast.png',
     shotKind: 'desktop',
     story: {
@@ -320,22 +307,15 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     },
   },
   {
-    id: 'docmed',
-    client: 'Docmed',
-    category: 'медтех',
-    tabs: ['Для маркетплейсов'],
-    desc: {
-      lead: 'Телемедицина и запись к врачу для',
-      highlight: 'клиники доказательной медицины',
-      tail: '',
-    },
-    tags: ['Медтех', 'Web + mobile'],
-    cover,
-    avatar,
-    shot: '/figma/shots/docmed.png',
+    id: 'alfastrah',
+    client: 'АльфаСтрахование',
+    category: 'страхование',
+    tabs: ['Для банков'],
+    desc: { lead: 'Цифровые сервисы для', highlight: 'страховой компании', tail: '' },
+    tags: ['Страхование', 'Web'],
     shotKind: 'desktop',
     story: {
-      summary: 'Телемедицина и запись к врачу для клиники доказательной медицины.',
+      summary: 'Цифровые сервисы для страховой компании.',
       metrics: [
         { value: '—', label: 'уточняется' },
         { value: '—', label: 'уточняется' },
@@ -354,8 +334,6 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
       tail: 'в App Store',
     },
     tags: ['Приложение-книга', 'iOS'],
-    cover,
-    avatar,
     shot: '/figma/shots/maginary.png',
     shotKind: 'phone',
     mockupVideo: '/figma/maginary-demo.mp4',
@@ -391,8 +369,6 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
       tail: 'для бренда №1 на рынке соков России',
     },
     tags: ['Web-игра', '4 недели'],
-    cover,
-    avatar,
     shot: '/figma/shots/dobry.png',
     shotKind: 'desktop',
     story: {
@@ -424,8 +400,6 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     category: 'мобильное приложение',
     desc: { lead: '', highlight: 'Alma', tail: '— мобильное приложение' },
     tags: ['Мобильное приложение', 'iOS + Android'],
-    cover,
-    avatar,
     shot: '/figma/shots/alma.png',
     shotKind: 'phone',
     story: {
@@ -444,8 +418,6 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     tabs: ['Для маркетплейсов'],
     desc: { lead: 'Сайт и сервисы для', highlight: 'студии автотюнинга', tail: '' },
     tags: ['Автотюнинг', 'Web'],
-    cover,
-    avatar,
     shot: '/figma/shots/monte.png',
     shotKind: 'desktop',
     story: {

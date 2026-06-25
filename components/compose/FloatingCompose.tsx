@@ -67,14 +67,18 @@ export function FloatingCompose() {
           visible ? 'pointer-events-auto' : 'pointer-events-none'
         }`}
       >
-        <div className="flex h-[56px] items-center gap-[8px] py-[7px] pl-[16px] pr-[7px]">
+        {/* compact on mobile; on desktop (sm:) restored to the original roomier pill */}
+        <div className="flex h-[56px] items-center gap-[8px] py-[7px] pl-[16px] pr-[7px] sm:h-[66px] sm:py-[8px] sm:pl-[18px] sm:pr-[8px]">
           <span
-            className="h-[22px] w-[2.5px] shrink-0 bg-accent-hot [animation:caret-blink_1.1s_step-end_infinite] motion-reduce:animate-none"
+            className="h-[22px] w-[2.5px] shrink-0 bg-accent-hot [animation:caret-blink_1.1s_step-end_infinite] motion-reduce:animate-none sm:h-[26px]"
             aria-hidden
           />
-          <span className="whitespace-nowrap pr-[2px] text-[14px] text-black/55">Опишите задачу</span>
-          <span className="grid size-[42px] shrink-0 place-items-center rounded-[14px] bg-surface2 text-black transition group-hover:bg-accent group-hover:text-white">
-            <WaveIcon size={18} />
+          <span className="whitespace-nowrap pr-[2px] text-[14px] text-black/55 sm:pr-[4px] sm:text-[15px]">
+            <span className="sm:hidden">Опишите задачу</span>
+            <span className="hidden sm:inline">Начните описывать задачу, мы поможем</span>
+          </span>
+          <span className="grid size-[42px] shrink-0 place-items-center rounded-[14px] bg-surface2 text-black transition group-hover:bg-accent group-hover:text-white sm:size-[50px] sm:rounded-[16px]">
+            <WaveIcon size={20} />
           </span>
         </div>
       </button>

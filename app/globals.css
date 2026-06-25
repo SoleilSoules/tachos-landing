@@ -457,38 +457,6 @@ a {
   }
 }
 
-/* case cover parallax — layers react to the cursor (vars set on .cv-root in JS);
-   the CARD itself never moves. Kept here (not inline) so the CSS text doesn't leak
-   into the link's textContent (the mascot was reading it as a hint). */
-.cv-root {
-  perspective: 900px;
-}
-.cv-glow,
-.cv-shadow,
-.cv-device {
-  will-change: transform;
-  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.cv-glow {
-  transform: translate3d(calc(var(--px, 0) * 6px), calc(var(--py, 0) * 6px), 0);
-}
-.cv-shadow {
-  transform: translate3d(calc(var(--px, 0) * -9px), calc(var(--py, 0) * -5px), 0);
-}
-.cv-device {
-  transform: translate3d(calc(var(--px, 0) * 12px), calc(var(--py, 0) * 9px), 0)
-    rotateY(calc(var(--px, 0) * 5deg)) rotateX(calc(var(--py, 0) * -5deg));
-  transform-style: preserve-3d;
-}
-@media (prefers-reduced-motion: reduce) {
-  .cv-glow,
-  .cv-shadow,
-  .cv-device {
-    transform: none !important;
-    transition: none !important;
-  }
-}
-
 /* studio-lit neutral seamless shared by every case cover: one off-axis soft light
    (warm top-left -> cool bottom-right) + corner falloff + fine film grain. Replaces
    the flat grey gradient + radial white glow that read as a stock mockup. */
