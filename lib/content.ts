@@ -98,6 +98,7 @@ export type CaseItem = {
   coverDark?: boolean; // cover photo is dark → invert overlay chips to light
   tabs?: string[]; // CaseTab labels this case belongs to (drives tab filtering)
   mockupVideo?: string; // clip shown inside an animated turning iPhone mockup on the cover
+  coverVideo?: string; // full-bleed animated cover (storyboard reel) — overrides `shot`
   story: CaseStory; // case-page content (placeholder prose until Vadim confirms)
   verified?: boolean; // confirmed Tachos work (Складно / Хайс / Maginary)
   hidden?: boolean; // temporarily hidden from the homepage grid
@@ -169,9 +170,8 @@ export const reviews = deepNbsp({
   ] as Review[],
 });
 
-// ── Order + selection set by Гоша for the homepage grid (2 cols × 5 rows):
-//   Docmed · Хайс / Складно · Anomalia / Imast · АльфаСтрахование /
-//   Maginary · Добрый / Alma · Monte
+// ── Order set by Гоша: the first visible four are the animated-cover cases
+//   (Monte / Хайс / Maginary / Складно), Добрый moved down to Maginary's old slot.
 // New clients have real screenshots pending — they show an EMPTY device mock
 // (shotKind without shot) until the shot is captured. Their story/metrics are
 // placeholders ("—") until Vadim confirms copy. Verified work: Складно/Хайс/Maginary.
@@ -207,6 +207,7 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     desc: { lead: 'Сайт и сервисы для', highlight: 'студии автотюнинга', tail: '' },
     tags: ['Автотюнинг', 'Web'],
     shot: '/figma/monte-cover.webp',
+    coverVideo: '/covers/monte-cover.mp4',
     shotKind: 'cover',
     coverDark: true,
     story: {
@@ -230,6 +231,7 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     },
     tags: ['Финтех', 'iOS + Android'],
     shot: '/figma/hais-cover.webp',
+    coverVideo: '/covers/hais-cover.mp4',
     shotKind: 'cover',
     coverDark: true,
     story: {
@@ -257,41 +259,40 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     verified: true,
   },
   {
-    id: 'dobry',
-    client: 'Добрый',
-    category: 'FMCG',
+    id: 'maginary',
+    client: 'Maginary',
+    category: 'приложение-книга',
     tabs: ['Геймдев'],
     desc: {
-      lead: '',
-      highlight: 'Игра за месяц: от идеи до прода',
-      tail: 'для бренда №1 на рынке соков России',
+      lead: 'Анимированная книга-игра, где читатель становится героем.',
+      highlight: '750 000 загрузок',
+      tail: 'в App Store',
     },
-    tags: ['Web-игра', '4 недели'],
-    shot: '/figma/dobry-cover.webp',
+    tags: ['Приложение-книга', 'iOS'],
+    shot: '/figma/maginary-cover.webp',
+    coverVideo: '/covers/maginary-cover.mp4',
     shotKind: 'cover',
     coverDark: true,
     story: {
-      summary: 'Промо-игра для бренда №1 на рынке соков России — от идеи до прода за месяц.',
+      summary: 'Анимированная книга-игра, где читатель становится героем истории.',
       metrics: [
-        { value: '4 недели', label: 'от идеи до релиза' },
-        { value: 'Web-игра', label: 'формат' },
-        { value: '№1', label: 'бренд соков в РФ' },
+        { value: '750 000', label: 'загрузок в App Store' },
+        { value: 'iOS', label: 'нативное приложение' },
+        { value: 'книга-игра', label: 'формат продукта' },
       ],
       sections: [
         {
           title: 'Контекст',
-          body: 'Бренду нужна была промо-механика к кампании: лёгкая веб-игра, в которую можно играть прямо из браузера, без установки.',
+          body: 'Студия делала интерактивную книгу-игру: вместо линейного чтения пользователь принимает решения и влияет на сюжет, а сцены оживают анимацией.',
         },
         {
           title: 'Что сделали',
-          body: 'За четыре недели прошли весь путь — идея, прототип, продакшн и релиз веб-игры, готовой к промо-трафику.',
+          body: 'Собрали нативное iOS-приложение с анимированными сценами, ветвлением сюжета и плавными переходами между главами.',
         },
-        {
-          title: 'Результат',
-          body: 'Игра вышла в срок к запуску кампании бренда №1 на рынке соков России.',
-        },
+        { title: 'Результат', body: 'Приложение набрало 750 000 загрузок в App Store.' },
       ],
     },
+    verified: true,
   },
   {
     id: 'skladno',
@@ -305,6 +306,7 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     },
     tags: ['Сервис хранения', 'Mobile + бэкенд'],
     shot: '/figma/skladno-cover.webp',
+    coverVideo: '/covers/skladno-cover.mp4',
     shotKind: 'cover',
     coverDark: true,
     story: {
@@ -388,39 +390,41 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     },
   },
   {
-    id: 'maginary',
-    client: 'Maginary',
-    category: 'приложение-книга',
+    id: 'dobry',
+    client: 'Добрый',
+    category: 'FMCG',
     tabs: ['Геймдев'],
     desc: {
-      lead: 'Анимированная книга-игра, где читатель становится героем.',
-      highlight: '750 000 загрузок',
-      tail: 'в App Store',
+      lead: '',
+      highlight: 'Игра за месяц: от идеи до прода',
+      tail: 'для бренда №1 на рынке соков России',
     },
-    tags: ['Приложение-книга', 'iOS'],
-    shot: '/figma/maginary-cover.webp',
+    tags: ['Web-игра', '4 недели'],
+    shot: '/figma/dobry-cover.webp',
     shotKind: 'cover',
     coverDark: true,
     story: {
-      summary: 'Анимированная книга-игра, где читатель становится героем истории.',
+      summary: 'Промо-игра для бренда №1 на рынке соков России — от идеи до прода за месяц.',
       metrics: [
-        { value: '750 000', label: 'загрузок в App Store' },
-        { value: 'iOS', label: 'нативное приложение' },
-        { value: 'книга-игра', label: 'формат продукта' },
+        { value: '4 недели', label: 'от идеи до релиза' },
+        { value: 'Web-игра', label: 'формат' },
+        { value: '№1', label: 'бренд соков в РФ' },
       ],
       sections: [
         {
           title: 'Контекст',
-          body: 'Студия делала интерактивную книгу-игру: вместо линейного чтения пользователь принимает решения и влияет на сюжет, а сцены оживают анимацией.',
+          body: 'Бренду нужна была промо-механика к кампании: лёгкая веб-игра, в которую можно играть прямо из браузера, без установки.',
         },
         {
           title: 'Что сделали',
-          body: 'Собрали нативное iOS-приложение с анимированными сценами, ветвлением сюжета и плавными переходами между главами.',
+          body: 'За четыре недели прошли весь путь — идея, прототип, продакшн и релиз веб-игры, готовой к промо-трафику.',
         },
-        { title: 'Результат', body: 'Приложение набрало 750 000 загрузок в App Store.' },
+        {
+          title: 'Результат',
+          body: 'Игра вышла в срок к запуску кампании бренда №1 на рынке соков России.',
+        },
       ],
     },
-    verified: true,
   },
   {
     id: 'alma',
