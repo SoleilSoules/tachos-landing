@@ -1,6 +1,17 @@
 # Tachos — HANDOFF (для нового чата)
 
-Боевая вёрстка лендинга **tachos.ru**. Обновлено: **2026-06-25 (день 2)**. Прод: https://soleilsoules.github.io/tachos-landing/.
+Боевая вёрстка лендинга **tachos.ru**. Обновлено: **2026-07-08**. Прод: https://soleilsoules.github.io/tachos-landing/.
+
+## 🟡 СЕССИЯ 08.07 — обложки замедлены + HERO «оранжевый восход» (НЕ закоммичено, dev localhost:3000)
+
+**ОБЛОЖКИ кейсов ×1.4 медленнее:** в `~/tachos-hero-remotion/src/covers/{Skladno,Hais,Maginary,Monte}.tsx` — `const SLOW=1.4`, `frame=useCurrentFrame()/SLOW`, `X_DURATION=round(DUR*SLOW)`. Отрендерены → web-сжаты → `public/covers/*.mp4` (заменены). Ждут вердикт по темпу + разбор Гоши по каждому ролику.
+
+**HERO — активная задача: свой WebGL шейдер восхода** `public/sunrise-shader.html`. Причина: Unicorn Project JSON теперь ПЛАТНЫЙ, embed=вотермарк (детали — memory `unicorn-studio-embed`). Шейдер воссоздаёт их «beyond horizons»: солнце ПОД КУРСОРОМ (trackMouse) → турбулентный fbm-факел вверх → линия горизонта → тёмная планета. Палитра 1-в-1 (их 7-стоп градиент swap синий→оранж), speed 0.5. Версия **v5**. Эталон: `scratchpad/their-scene.mov` + кадры `their-0.60/0.85.png`.
+- Сейчас на hero (`page.tsx`) стоит **`HeroBeyond`** (видео `public/figma/hero-beyond.mp4`). Запас-компоненты: `HeroUnicorn`, `HeroAsciiImage`, `HeroSunrise` + `public/hero-lab.html`.
+- **➡️ ДАЛЬШЕ:** финальная подгонка шейдера по эталону → обернуть в React-компонент → в hero вместо HeroBeyond, восход за лого-стеной. Оранжевый восход как композицию Гоша ОДОБРИЛ.
+
+---
+
 
 ## ⭐⭐⭐ СВЕЖЕЕ — сессия 25.06 день 2 (~12 деплоев, прод `574d46a`)
 

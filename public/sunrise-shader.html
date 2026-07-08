@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tachos — восход (свой шейдер, реакция на мышь)</title>
+<style>
+  :root{ --accent:#f05138; }
+  *{margin:0;box-sizing:border-box}
+  html,body{height:100%;background:#050506;overflow:hidden;
+    font-family:'Onest',ui-sans-serif,system-ui,-apple-system,sans-serif;color:#f5f4f2}
+  #gl{position:fixed;inset:0;width:100%;height:100%;display:block}
+  .copy{position:absolute;left:0;right:0;top:26%;text-align:center;z-index:2;pointer-events:none;padding:0 24px}
+  .copy .kick{color:var(--accent);font-weight:600;font-size:19px;margin-bottom:14px}
+  .copy h1{font-size:clamp(38px,6vw,82px);line-height:1.02;letter-spacing:-.03em;font-weight:800}
+  .copy .sub{margin-top:20px;color:#cfcfd2;font-size:18px;line-height:1.4}
+  .hint{position:absolute;left:24px;bottom:22px;z-index:2;color:#8a8a8f;font-size:13px}
+  .hint b{color:#c9c9cd}
+</style>
+</head>
+<body>
+  <canvas id="gl"></canvas>
+  <div class="copy">
+    <div class="kick">Студия инжиниринга и дизайна</div>
+    <h1>Стоим за сильными<br/>продуктами и брендами</h1>
+    <div class="sub">Проектируем и собираем продукты, которыми пользуются миллионы.</div>
+  </div>
+  <div class="hint">свой шейдер v9 · <b>калибровка под запись</b> · оранжевый, без вотермарка</div>
+
+<script type="text/plain" id="frag">
+precision highp float;
+uniform vec2 uRes;
+uniform vec2 uMouse;   // 0..1, y up
+uniform float uTime;
+
+// hash noise for subtle grain
+float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+
+// The Unicorn scene's exact 7-stop gradient (blue), recoloured blue→orange by an
+// R/B channel swap — keeps the same luminance structure, just warm. Stops at the
+// scene's own positions 0 / .181 / .366 / .538 / .7 / .85 / 1.
+vec3 ramp(float t){
+  vec3 c0 = vec3(0.059, 0.027, 0.000);  // #00070f -> #0f0700
+  vec3 c1 = vec3(0.318, 0.149, 0.000);  // #002651 -> #512600
+  vec3 c2 = vec3(0.549, 0.278, 0.000);  // #00478c -> #8c4700
+  vec3 c3 = vec3(0.827, 0.427, 0.000);  // #006dd3 -> #d36d00
+  vec3 c4 = vec3(1.000, 0.604, 0.271);  // #459aff -> #ff9a45
+  vec3 c5 = vec3(1.000, 0.780, 0.612);  // #9cc7ff -> #ffc79c
+  vec3 c6 = vec3(1.000, 0.949, 0.910);  // #e8f2ff -> #fff2e8
+  if (t < 0.181) return mix(c0, c1, t / 0.181);
+  if (t < 0.366) return mix(c1, c2, (t - 0.181) / 0.185);
+  if (t < 0.538) return mix(c2, c3, (t - 0.366) / 0.172);
+  if (t < 0.700) return mix(c3, c4, (t - 0.538) / 0.162);
+  if (t < 0.850) return mix(c4, c5, (t - 0.700) / 0.150);
+  return mix(c5, c6, (t - 0.850) / 0.150);
+}
+
+// --- noise toolkit for the turbulent aurora flare ---
+float vnoise(vec2 p){
+  vec2 i = floor(p), f = fract(p);
+  f = f*f*(3.0-2.0*f);
+  float a = hash(i), b = hash(i+vec2(1,0)), c = hash(i+vec2(0,1)), d = hash(i+vec2(1,1));
+  return mix(mix(a,b,f.x), mix(c,d,f.x), f.y);
+}
+// smooth fbm — used only to warp the domain (bends the flare into vortices)
+float fbm(vec2 p){
+  float s = 0.0, a = 0.5, norm = 0.0;
+  for (int k = 0; k < 5; k++){ s += a*vnoise(p); norm += a; p = p*2.0 + 11.5; a *= 0.5; }
+  return s / norm;
+}
+// ridged fbm — sharp bright filaments (light streaks) instead of soft blobs
+float ridged(vec2 p){
+  float s = 0.0, a = 0.55, norm = 0.0;
+  for (int k = 0; k < 5; k++){
+    float n = vnoise(p);
+    n = 1.0 - abs(2.0*n - 1.0);   // ridge: peaks become bright veins
+    s += a*n*n; norm += a;
+    p = p*2.0 + 7.3; a *= 0.55;
+  }
+  return s / norm;
+}
+
+void main(){
+  vec2 uv = gl_FragCoord.xy / uRes;          // 0..1, y up
+  float aspect = uRes.x / uRes.y;
+
+  // ---- curved horizon (huge far planet edge) — shallow arc, low (their top≈0.78) ----
+  float hor = 0.26 - 0.04 * (1.0 - cos((uv.x - 0.5) * 3.14159));
+  float above = uv.y - hor;
+
+  // ---- sun centred on the horizon (their scene: trackMouse off) ----
+  float gx = 0.5;
+  float dx = (uv.x - gx) * aspect;
+  float mnudge = uMouse.x - 0.5;                      // mouse only stirs the smoke a touch
+
+  // fierce compact white core right on the horizon
+  float core = exp(-(dx*dx*42.0 + (above-0.004)*(above-0.004)*460.0));
+
+  // Their scene = a "beam" (smooth glow cone) with "nebula" turbulence riding on
+  // it. Splitting shape from texture keeps the dome filled — no holes/streaks —
+  // which is what reads as the original (my earlier version modulated everything).
+  float fy = max(above, 0.0);
+  float fx = dx + fy * mnudge * 0.15;
+
+  // beam: soft cone of light rising from the sun — sets the dome shape.
+  // Steeper vertical falloff pulls the smoke lower (dark sky up top, like theirs).
+  float wb = 0.06 + fy * 0.50;                        // widens with height
+  float breath = 1.55 + 0.20*sin(uTime*0.2);
+  float beam = exp(-(fx*fx) / (2.0*wb*wb)) * smoothstep(-0.004, 0.045, fy) * exp(-fy*breath);
+
+  // nebula: slow billowing turbulence (domain-warped), modulating the beam.
+  // Lateral-biased warp -> horizontal billows/folds, as in their scene.
+  vec2 fp = vec2(fx*2.4, fy*2.7 - uTime*0.34);
+  vec2 q  = vec2(fbm(fp + vec2(mnudge*0.3, uTime*0.16)),
+                 fbm(fp + vec2(3.7, 2.1) - uTime*0.13));
+  vec2 wp = fp + vec2(1.35, 0.70)*q;                  // wider lateral warp = folds
+  float neb = mix(fbm(wp*1.2), ridged(wp*1.4), 0.20);
+  float pulse = 0.85 + 0.15*sin(uTime*0.3 + 0.6);
+  float column = beam * (0.45 + 0.8*neb) * pulse;     // 0.45 base keeps the dome filled
+
+  // broad soft halo of glow around the base (their wide atmospheric bloom)
+  float halo = exp(-(dx*dx*2.8 + max(above + 0.02, 0.0)*3.4));
+
+  // thin bright band bleeding sideways ALONG the whole horizon line
+  float band = exp(-above*above*1700.0) * exp(-dx*dx*0.20);
+
+  float glow = core*1.7 + column*1.15 + halo*0.32 + band*0.5;
+  glow *= 0.97 + 0.03*sin(uTime*0.5);                // gentle breathing (their speed ~0.2)
+
+  // ---- map onto the scene's exact 7-stop gradient (recoloured orange) ----
+  float t = clamp(glow*0.85 + core*0.45, 0.0, 1.0);
+  float bright = clamp(glow, 0.0, 1.0);
+  bright = bright*bright*(3.0 - 2.0*bright);          // tone curve: darks darker, more space
+  vec3 col = mix(ramp(0.0), ramp(t), bright);
+
+  // clean dark planet below the horizon
+  if (uv.y < hor) col *= smoothstep(hor - 0.14, hor, uv.y) * 0.09;
+
+  // vignette centred on the sun + faint grain
+  float vig = smoothstep(1.25, 0.40, distance(uv, vec2(gx, 0.5)));
+  col *= 0.78 + 0.22*vig;
+  col += (hash(uv*uRes.xy + uTime) - 0.5) * 0.012;
+
+  gl_FragColor = vec4(col, 1.0);
+}
+</script>
+
+<script>
+const cv = document.getElementById('gl');
+const gl = cv.getContext('webgl');
+const mouse = { x: 0.5, y: 0.42, tx: 0.5, ty: 0.42 };
+
+const vsrc = `attribute vec2 p; void main(){ gl_Position = vec4(p,0.0,1.0); }`;
+const fsrc = document.getElementById('frag').textContent;
+
+function compile(type, src){
+  const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+  if(!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s));
+  return s;
+}
+const prog = gl.createProgram();
+gl.attachShader(prog, compile(gl.VERTEX_SHADER, vsrc));
+gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, fsrc));
+gl.linkProgram(prog); gl.useProgram(prog);
+
+const buf = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+const loc = gl.getAttribLocation(prog, 'p');
+gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+const uRes = gl.getUniformLocation(prog, 'uRes');
+const uMouse = gl.getUniformLocation(prog, 'uMouse');
+const uTime = gl.getUniformLocation(prog, 'uTime');
+
+function resize(){
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  cv.width = innerWidth * dpr; cv.height = innerHeight * dpr;
+  gl.viewport(0,0,cv.width,cv.height);
+}
+addEventListener('resize', resize); resize();
+addEventListener('mousemove', e => { mouse.tx = e.clientX/innerWidth; mouse.ty = 1 - e.clientY/innerHeight; });
+
+const t0 = performance.now();
+(function loop(){
+  // ease the light toward the cursor for a soft, weighty follow
+  mouse.x += (mouse.tx - mouse.x) * 0.06;
+  mouse.y += (mouse.ty - mouse.y) * 0.06;
+  gl.uniform2f(uRes, cv.width, cv.height);
+  gl.uniform2f(uMouse, mouse.x, mouse.y);
+  gl.uniform1f(uTime, (performance.now()-t0)/1000);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

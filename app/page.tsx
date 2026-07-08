@@ -1,4 +1,3 @@
-import { asset } from '@/lib/asset';
 import { Nav } from '@/components/sections/Nav';
 import { Hero } from '@/components/sections/Hero';
 import { LogoWall } from '@/components/sections/LogoWall';
@@ -10,40 +9,28 @@ import { Blog } from '@/components/sections/Blog';
 import { Footer } from '@/components/sections/Footer';
 import { Services } from '@/components/sections/Services';
 import { VideoBlock } from '@/components/sections/VideoBlock';
+import { HeroBg } from '@/components/sections/HeroBg';
+import { HeroGlow } from '@/components/sections/HeroGlow';
 
 export default function Home() {
   return (
     /* Full-bleed dark canvas; nav + logo wall stretch to the screen edges,
        while text/founder blocks keep their fixed widths and self-centre. */
     <main className="w-full bg-bg">
-      <section className="relative min-h-[88vh] overflow-hidden bg-bg text-inverted">
+      <section className="relative min-h-[86vh] overflow-hidden bg-bg text-inverted">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-x-0 top-0 h-[1340px] overflow-hidden"
         >
           <div className="absolute inset-0 bg-ink" />
-          {/* warm brand glow behind the device, as in the concept */}
-          <div className="absolute left-1/2 top-[110px] h-[760px] w-[1040px] -translate-x-1/2 rounded-full bg-accent/30 blur-[150px]" />
-          {/* Our own hero render (Remotion + Three.js): a choreographed device
-              flythrough on a clean dark floor with a warm orange glow — phone shows
-              the real Складно site (powers on → tap → scroll), then the camera pushes
-              into a desktop, a third device, and a cluster of phones (devices 2-4 are
-              blank placeholders pending real projects). poster falls back to the warm
-              mockup for reduced-motion. */}
-          <video
-            aria-hidden
-            autoPlay
-            muted
-            loop
-            playsInline
-            poster={asset('/figma/hero-poster.webp')}
-            className="absolute left-1/2 top-0 h-[1340px] w-full max-w-[1600px] -translate-x-1/2 object-cover object-[center_42%] opacity-95 motion-reduce:hidden"
-          >
-            <source src={asset('/figma/hero-belt-v15.mp4')} type="video/mp4" />
-          </video>
-          {/* vertical wash: keeps the device muted so the H1 and orange
-              sub-head stay readable over its centre */}
-          <div className="via-bg/38 absolute inset-0 bg-gradient-to-b from-bg/55 to-bg" />
+          {/* soft blurred brand glow behind the text — phone variant only */}
+          <HeroGlow />
+          {/* Animated orange "beyond horizons" sunrise — our WebGL shader by
+              default, or the HQ recoloured video via ?bg=video (client swap). */}
+          <HeroBg />
+          {/* vertical wash: lighter now so the ascii effect stays visible, still
+              enough at top/bottom to keep the H1 and orange sub-head readable */}
+          <div className="via-bg/10 absolute inset-0 bg-gradient-to-b from-bg/35 to-bg" />
         </div>
 
         <Nav />
