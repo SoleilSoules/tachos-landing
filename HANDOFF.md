@@ -1,6 +1,20 @@
 # Tachos — HANDOFF (для нового чата)
 
-Боевая вёрстка лендинга **tachos.ru**. Обновлено: **2026-07-08**. Прод: https://soleilsoules.github.io/tachos-landing/.
+Боевая вёрстка лендинга **tachos.ru**. Обновлено: **2026-07-11**. Прод: https://soleilsoules.github.io/tachos-landing/.
+
+## 🟢 СЕССИЯ 10–11.07 — 19 правок потоком (НЕ закоммичено, dev :3000, tsc чист)
+Метод: по одной, качество, самопроверка код+визуал (headless НЕ ловит секции ниже сгиба из-за reveal, и `<video>`/fixed — проверять вживую в Chrome). Сделано #1–19:
+- **hero-фон**: дефолт `smoke` (дым-видео `hero-smoke-orange.mp4`), переключатель `?bg=` в `HeroBg.tsx` (smoke/beam/shader/phone/v1-3, у каждого `key` чтоб `<video>` пересоздавался). Шейдер восхода `HeroSunriseShader.tsx`=v10 (+искры/клубы, лаб `public/sunrise-shader.html` OK). ⚠️ `?bg=shader` СЕРО — WebGL-контекст не создаётся (много canvas: 7 PixelLogo + shader), ЧИНИТЬ.
+- **Начос** `CursorCompanion.tsx`: орбита блуждает (`orbitVel` дрейфует, НЕ по часовой); тексты `lib/nachos-lines.ts` с характером; баг гиганта при загрузке пофикшен (root начальный `translate off-screen scale(0)`).
+- **Лого-стена** `PixelLogo.tsx`/`LogoWall.tsx`: pixel-reveal REVEAL/DISSOLVE 320, 7 слотов, мобилка адаптив (W/H/logoH мельче + 4 слота base).
+- **Родина-мать** `PixelSilhouette.tsx`+`Footer.tsx`: public-domain `public/figma/rodina.png`, pixel-reveal у «ГОРОД-ГЕРОЙ ВОЛГОГРАД».
+- **Отзывы** `Reviews.tsx`: Maginary → реальное имя **Семён Поляковский** (#19; Складно/Хайс реальны, имён нет — до Вадима).
+- **Кейсы** `CaseCard.tsx`: лого 56/26; карточки моб `aspect-[4/3]`.
+- **Тексты** `content.ts`: убраны финальные точки, «5 лет», «вам ответит наш менеджер», подзаг кейсов короче.
+- **Мобилка**: продукты `Products.tsx` (cta→картинка вниз, отступ mt-68), аудио-время `Reviews.tsx` (waveform `min-w-0 overflow-hidden`).
+- **Плавашка/заметки** в футере не пропадают (`FloatingCompose.tsx`/`CaseView.tsx`), **теги письма** одна строка+мельче на моб (`LetterBody.tsx`), **VideoBlock скрыт** (`page.tsx`).
+
+**⛔ ОТКРЫТО (правки Гоши 11.07 ночь, В РАБОТЕ):** (1) Родина-мать в 2× МЕНЬШЕ (`PixelSilhouette` w22/h39); (2) отзывы — лого попали ВМЕСТО фоток авторов в аватары, ВЕРНУТЬ фото людей, лого в badge (сейчас `TachosMark`); (3) кейс-лого сделать ВСЕ БЕЛЫМИ (`CaseCard` убрать `onDark?invert:brightness-0` → всегда белый); (4) шейдер `?bg=shader` серый (context lost, чинить); деплой по слову.
 
 ## 🟡 СЕССИЯ 08.07 — обложки замедлены + HERO «оранжевый восход» (НЕ закоммичено, dev localhost:3000)
 

@@ -50,7 +50,7 @@ export function CaseCard({ item }: { item: CaseItem }) {
       <Link
         href={`/cases/${item.id}`}
         aria-label={`Кейс: ${item.client}`}
-        className="relative block h-[360px] overflow-hidden rounded-[32px] shadow-none transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:-translate-y-[6px] motion-safe:group-hover:scale-[1.012] group-hover:shadow-[0_28px_64px_-16px_rgba(0,0,0,0.45)] sm:h-[420px] sm:rounded-[44px]"
+        className="relative block aspect-[4/3] overflow-hidden rounded-[32px] shadow-none transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:-translate-y-[6px] motion-safe:group-hover:scale-[1.012] group-hover:shadow-[0_28px_64px_-16px_rgba(0,0,0,0.45)] sm:aspect-auto sm:h-[420px] sm:rounded-[44px]"
       >
         {/* generated brand cover (real stills come from Vadim later) */}
         <CaseCover
@@ -72,15 +72,15 @@ export function CaseCard({ item }: { item: CaseItem }) {
               radius, accent-coloured sparkle. */}
           <div className="flex items-start justify-between gap-[12px]">
             <span
-              className={`grid size-[44px] shrink-0 place-items-center overflow-hidden rounded-full ${frost} text-[16px] font-semibold backdrop-blur-md`}
+              className={`grid size-[56px] shrink-0 place-items-center overflow-hidden rounded-full ${frost} text-[18px] font-semibold backdrop-blur-md`}
             >
               {logo ? (
                 <Image
                   src={asset(logo)}
                   alt={item.client}
-                  width={28}
-                  height={20}
-                  className={`h-[18px] w-auto object-contain ${onDark ? 'brightness-0 invert' : 'brightness-0'}`}
+                  width={40}
+                  height={28}
+                  className="h-[26px] w-auto max-w-[40px] object-contain brightness-0 invert"
                 />
               ) : (
                 item.client.trim().charAt(0)

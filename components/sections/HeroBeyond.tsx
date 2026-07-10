@@ -16,6 +16,10 @@ const VARIANTS = {
     poster: '/figma/hero-smoke-orange-poster.jpg',
     top: '-24%',
   },
+  // three live product shots (hand + phone), warm-graded to fit the dark site
+  v1: { src: '/figma/hero-var1.mp4', poster: '/figma/hero-var1-poster.jpg', top: '-5%' },
+  v2: { src: '/figma/hero-var2.mp4', poster: '/figma/hero-var2-poster.jpg', top: '-5%' },
+  v3: { src: '/figma/hero-var3.mp4', poster: '/figma/hero-var3-poster.jpg', top: '-5%' },
 } as const;
 
 export function HeroBeyond({ variant = 'beam' }: { variant?: keyof typeof VARIANTS }) {
@@ -33,6 +37,15 @@ export function HeroBeyond({ variant = 'beam' }: { variant?: keyof typeof VARIAN
       >
         <source src={asset(v.src)} type="video/mp4" />
       </video>
+      {/* live product footage sits behind the text like the concept: darken the
+          top (under the headline) and lay a light overall wash so it reads as a
+          dim background texture, not a bright video */}
+      {variant.startsWith('v') && (
+        <>
+          <div className="absolute inset-x-0 top-0 h-[58%] bg-gradient-to-b from-bg/90 via-bg/45 to-transparent" />
+          <div className="bg-bg/25 absolute inset-0" />
+        </>
+      )}
       {/* fade the video's lower edge so its bottom border never reads as a hard
           line. Beam fades into WHITE (flat seam → white Cases, no dark band);
           smoke fades into the dark bg (the white arc handles that seam). */}

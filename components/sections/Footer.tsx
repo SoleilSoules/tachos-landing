@@ -6,6 +6,7 @@ import { asset } from '@/lib/asset';
 import { useCompose } from '@/components/compose/ComposeProvider';
 import { footer } from '@/lib/content';
 import { LetterBody, ComposeSent } from '@/components/compose/LetterBody';
+import { PixelSilhouette } from './PixelSilhouette';
 
 function CopyIcon() {
   return (
@@ -139,7 +140,10 @@ export function Footer() {
         {/* mobile: tighter gap + lighter top padding above requisites; desktop unchanged */}
         <div className="relative mt-[40px] border-t border-white/10 pt-[28px] lg:mt-[64px] lg:pt-[40px]">
           <div className="flex flex-wrap items-center gap-x-[28px] gap-y-[14px] text-[16px] font-medium tracking-[0.04em]">
-            <span className="uppercase text-white/80">{footer.contacts.city}</span>
+            <span className="flex items-center gap-[12px] uppercase text-white/80">
+              <PixelSilhouette className="shrink-0" />
+              {footer.contacts.city}
+            </span>
             <button
               type="button"
               onClick={() => copyContact(footer.contacts.email.value, setMailCopied)}

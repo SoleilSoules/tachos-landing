@@ -23,7 +23,7 @@ const SLOTS = 7;
 const OFFSETS = [0, 2600, 900, 3700, 1500, 3100, 1900];
 const rotate = (n: number): WallLogo[] => [...POOL.slice(n % POOL.length), ...POOL.slice(0, n % POOL.length)];
 const SLOT_VISIBILITY = [
-  '', '', 'hidden sm:block', 'hidden sm:block', 'hidden lg:block', 'hidden lg:block', 'hidden lg:block',
+  '', '', '', '', 'hidden sm:block', 'hidden lg:block', 'hidden lg:block',
 ];
 
 export function LogoWall() {

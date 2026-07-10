@@ -42,9 +42,7 @@ function NotesPanel({ item, atCta }: { item: CaseItem; atCta: boolean }) {
   ];
   return (
     <div
-      className={`fixed top-0 z-10 hidden h-screen w-[240px] flex-col pb-10 pt-28 transition-opacity duration-500 lg:flex ${
-        atCta ? 'pointer-events-none opacity-0' : 'opacity-100'
-      }`}
+      className="fixed top-0 z-10 hidden h-screen w-[240px] flex-col pb-10 pt-28 opacity-100 transition-opacity duration-500 lg:flex"
       style={{ right: 'max(48px, calc((100vw - 1440px) / 2 + 60px))' }}
     >
       <p className="mb-5 text-[13px] font-semibold uppercase tracking-[0.06em] text-inverted/80">

@@ -31,7 +31,7 @@ export function CasesHeadingClient() {
         start={220}
         className="mx-auto mt-[28px] block max-w-[753px] text-[19px] leading-[1.4] text-fg"
       >
-        {casesIntro.body[0]} {casesIntro.body[1]} {casesIntro.body[2]}
+        {casesIntro.body[0]} {casesIntro.body[1]}
       </WordsReveal>
     </div>
   );

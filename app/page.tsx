@@ -8,7 +8,6 @@ import { Products } from '@/components/sections/Products';
 import { Blog } from '@/components/sections/Blog';
 import { Footer } from '@/components/sections/Footer';
 import { Services } from '@/components/sections/Services';
-import { VideoBlock } from '@/components/sections/VideoBlock';
 import { HeroBg } from '@/components/sections/HeroBg';
 import { HeroGlow } from '@/components/sections/HeroGlow';
 
@@ -45,7 +44,7 @@ export default function Home() {
           scroll zone where it expands into the "Обсудить проект" state. */}
       <div id="cta-zone" aria-hidden className="h-[220px] bg-bg" />
       <Services />
-      <VideoBlock />
+      {/* VideoBlock («Студия изнутри») temporarily hidden per Gosha */}
       <Products />
       <Blog />
       <Footer />

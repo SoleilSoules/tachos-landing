@@ -59,6 +59,7 @@ export function CursorCompanion() {
     const appearStart = performance.now() + 160;
     let curScale = 0; // eased every frame toward the mode's target scale
     let orbit = -0.6;
+    let orbitVel = 0.0035;
     let lastMove = performance.now();
     let lastTrick = performance.now();
     let faceAng = Math.PI / 2,
@@ -303,10 +304,15 @@ export function CursorCompanion() {
         faceAng = lerp(faceAng, Math.PI / 2, 0.08);
         render(curScale);
       } else {
-        // companion — lazy orbit + soft repel + gentle breathing scale
-        orbit += 0.0035 + Math.sin(now * 0.0004) * 0.0015;
-        let tx = mx + Math.cos(orbit) * 112,
-          ty = my + Math.sin(orbit) * 80;
+        // companion — wandering orbit + soft repel + gentle breathing scale.
+        // Orbit speed drifts and reverses (not a monotonic clockwise spin), and
+        // the ellipse breathes, so the motion around the cursor reads as random.
+        orbitVel = lerp(orbitVel, Math.sin(now * 0.00022) * 0.0075, 0.012);
+        orbit += orbitVel;
+        const rx = 108 + Math.sin(now * 0.00048) * 28;
+        const ry = 78 + Math.cos(now * 0.0007) * 22;
+        let tx = mx + Math.cos(orbit) * rx,
+          ty = my + Math.sin(orbit) * ry;
         tx = Math.max(32, Math.min(innerWidth - 44, tx));
         ty = Math.max(72, Math.min(innerHeight - 50, ty));
         pos.x = lerp(pos.x, tx, 0.05);
@@ -352,7 +358,9 @@ export function CursorCompanion() {
         ref={root}
         aria-hidden
         className="companion pointer-events-none fixed left-0 top-0 z-[120]"
-        style={{ transition: 'opacity 0.5s ease' }}
+        // start off-screen + scaled to nothing so the 640px svg never flashes at
+        // full size before useEffect's first render positions & scales it.
+        style={{ transition: 'opacity 0.5s ease', transform: 'translate3d(-9999px,-9999px,0) scale(0)' }}
       >
         <svg width="640" height="640" viewBox="0 0 26 26">
           <g ref={rot}>

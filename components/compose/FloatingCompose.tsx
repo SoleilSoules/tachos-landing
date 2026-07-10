@@ -21,30 +21,15 @@ export function FloatingCompose() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Hide the floating pill once the footer (which carries the inline letter
-    // form) is in view — no point duplicating the compose CTA over the real form.
-    let footerVisible = false;
-    const compute = () => setVisible(!isOpen && window.scrollY >= 620 && !footerVisible);
-    const footer = document.getElementById('contacts');
-    const io =
-      footer && 'IntersectionObserver' in window
-        ? new IntersectionObserver(
-            ([e]) => {
-              if (!e) return;
-              footerVisible = e.isIntersecting;
-              compute();
-            },
-            { threshold: 0.01 },
-          )
-        : null;
-    if (footer) io?.observe(footer);
+    // Stay visible all the way down (incl. the footer) — Gosha wants the pill to
+    // persist rather than disappear near the bottom.
+    const compute = () => setVisible(!isOpen && window.scrollY >= 620);
     compute();
     window.addEventListener('scroll', compute, { passive: true });
     window.addEventListener('resize', compute);
     return () => {
       window.removeEventListener('scroll', compute);
       window.removeEventListener('resize', compute);
-      io?.disconnect();
     };
   }, [isOpen]);
 

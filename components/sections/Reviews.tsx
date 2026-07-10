@@ -241,8 +241,18 @@ function AudioCard({ r }: { r: Review }) {
         <div className="flex items-start justify-between gap-[16px]">
           <Author r={r} />
           {/* glass logo badge (#2): frosted disc holding the handwritten mark */}
-          <span className="grid size-[46px] shrink-0 place-items-center rounded-full bg-white/10 ring-1 ring-white/15 backdrop-blur-md">
-            <TachosMark className="w-[27px] text-inverted/70" />
+          <span className="grid size-[46px] shrink-0 place-items-center overflow-hidden rounded-full bg-white/10 ring-1 ring-white/15 backdrop-blur-md">
+            {r.logo ? (
+              <Image
+                src={asset(r.logo)}
+                alt=""
+                width={32}
+                height={22}
+                className="max-h-[22px] w-auto max-w-[30px] object-contain brightness-0 invert"
+              />
+            ) : (
+              <TachosMark className="w-[27px] text-inverted/70" />
+            )}
           </span>
         </div>
 
@@ -293,7 +303,7 @@ function AudioCard({ r }: { r: Review }) {
               else if (e.key === 'Home') setProgress(0);
               else if (e.key === 'End') setProgress(1);
             }}
-            className="flex h-full flex-1 cursor-pointer items-center justify-between rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="flex h-full min-w-0 flex-1 cursor-pointer items-center justify-between overflow-hidden rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
             {WAVE.map((h, i) => (
               <span

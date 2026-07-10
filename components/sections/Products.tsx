@@ -157,7 +157,7 @@ export function Products() {
         </WordsReveal>
       </h2>
 
-      <div ref={ref} className="mx-auto mt-[40px] max-w-[1080px] px-5 sm:mt-[56px] sm:px-6 lg:mt-[120px]">
+      <div ref={ref} className="mx-auto mt-[68px] max-w-[1080px] px-5 sm:mt-[80px] sm:px-6 lg:mt-[120px]">
         {/* Deck stage: every product is a full panel stacked here; the active one
             sits flat on top, the rest fan out behind it. Height is fixed so the
             absolutely-positioned cards reserve layout. */}
@@ -228,13 +228,25 @@ export function Products() {
                           {p.body}
                         </p>
                       </div>
+                      {/* desktop: text CTA; mobile: product image at the bottom instead */}
                       <button
                         type="button"
                         data-compose
-                        className="w-fit text-[14px] font-medium tracking-[0.04em] text-white underline-offset-4 transition hover:text-accent-bright hover:underline"
+                        className="hidden w-fit text-[14px] font-medium tracking-[0.04em] text-white underline-offset-4 transition hover:text-accent-bright hover:underline lg:block"
                       >
                         {p.cta}
                       </button>
+                      {mockup && (
+                        <div className="relative mt-[20px] h-[168px] w-full overflow-hidden rounded-[16px] lg:hidden">
+                          <Image
+                            src={asset(mockup.src)}
+                            alt={mockup.alt}
+                            fill
+                            sizes="100vw"
+                            className="object-cover object-top"
+                          />
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

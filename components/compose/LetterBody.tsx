@@ -69,13 +69,13 @@ function Slot({
         // Opaque floating plate (its own bg + shadow) so the option pills read
         // as a deliberate popover ON TOP of the letter — never a see-through mush
         // overlapping the divider/text below.
-        <span className="absolute left-0 top-[calc(100%+8px)] z-40 flex w-max max-w-[min(78vw,300px)] flex-wrap gap-[8px] rounded-[14px] bg-ink p-[8px] leading-none shadow-[0_18px_44px_rgba(0,0,0,0.55)] ring-1 ring-white/10 [animation:compose-pop-in_.22s_ease-out] max-sm:left-auto max-sm:right-0 motion-reduce:[animation:none]">
+        <span className="absolute left-0 top-[calc(100%+8px)] z-40 flex max-w-[min(95vw,460px)] flex-nowrap gap-[4px] overflow-x-auto rounded-[14px] bg-ink p-[6px] leading-none shadow-[0_18px_44px_rgba(0,0,0,0.55)] ring-1 ring-white/10 [-ms-overflow-style:none] [animation:compose-pop-in_.22s_ease-out] [scrollbar-width:none] motion-reduce:[animation:none] sm:gap-[6px] sm:p-[8px] [&::-webkit-scrollbar]:hidden">
           {options.map((o) => (
             <button
               key={o.label}
               type="button"
               onClick={() => onPick(o.v)}
-              className="inline-flex h-[32px] items-center whitespace-nowrap rounded-[11px] border border-accent/30 bg-accent/15 px-[13px] text-[13.5px] font-semibold text-accent transition hover:bg-accent hover:text-inverted"
+              className="inline-flex h-[27px] shrink-0 items-center whitespace-nowrap rounded-[9px] border border-accent/30 bg-accent/15 px-[8px] text-[11.5px] font-semibold text-accent transition hover:bg-accent hover:text-inverted sm:h-[30px] sm:rounded-[10px] sm:px-[11px] sm:text-[13px]"
             >
               {o.label}
             </button>
