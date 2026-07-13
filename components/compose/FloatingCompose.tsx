@@ -21,9 +21,15 @@ export function FloatingCompose() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Stay visible all the way down (incl. the footer) — Gosha wants the pill to
-    // persist rather than disappear near the bottom.
-    const compute = () => setVisible(!isOpen && window.scrollY >= 620);
+    // Visible after the hero, but HIDE it once the footer reaches the pill — the
+    // footer has its own inline composer, so the floating pill overlapping it read
+    // as clutter (Гоша). The pill sits ~90px tall off the bottom edge; when the
+    // footer's top crosses that line it's sitting under the pill → hide.
+    const compute = () => {
+      const footer = document.getElementById('contacts');
+      const inFooter = footer ? footer.getBoundingClientRect().top < window.innerHeight - 90 : false;
+      setVisible(!isOpen && window.scrollY >= 620 && !inFooter);
+    };
     compute();
     window.addEventListener('scroll', compute, { passive: true });
     window.addEventListener('resize', compute);

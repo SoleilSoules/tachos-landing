@@ -69,7 +69,7 @@ function Slot({
         // Opaque floating plate (its own bg + shadow) so the option pills read
         // as a deliberate popover ON TOP of the letter — never a see-through mush
         // overlapping the divider/text below.
-        <span className="absolute left-0 top-[calc(100%+8px)] z-40 flex max-w-[min(95vw,460px)] flex-nowrap gap-[4px] overflow-x-auto rounded-[14px] bg-ink p-[6px] leading-none shadow-[0_18px_44px_rgba(0,0,0,0.55)] ring-1 ring-white/10 [-ms-overflow-style:none] [animation:compose-pop-in_.22s_ease-out] [scrollbar-width:none] motion-reduce:[animation:none] sm:gap-[6px] sm:p-[8px] [&::-webkit-scrollbar]:hidden">
+        <span className="absolute left-1/2 top-[calc(100%+8px)] z-40 flex max-w-[min(95vw,460px)] -translate-x-1/2 flex-nowrap gap-[4px] overflow-x-auto rounded-[14px] bg-ink p-[6px] leading-none shadow-[0_18px_44px_rgba(0,0,0,0.55)] ring-1 ring-white/10 [-ms-overflow-style:none] [animation:compose-pop-in_.22s_ease-out] [scrollbar-width:none] motion-reduce:[animation:none] sm:gap-[6px] sm:p-[8px] [&::-webkit-scrollbar]:hidden">
           {options.map((o) => (
             <button
               key={o.label}

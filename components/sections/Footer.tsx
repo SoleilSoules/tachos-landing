@@ -116,7 +116,10 @@ export function Footer() {
           <div className="pointer-events-none relative hidden min-h-[580px] lg:block xl:min-h-[660px]">
             <div
               data-mascot-perch
-              className="absolute right-[10px] top-1/2 h-[560px] w-[560px] origin-center -translate-y-1/2 opacity-0 motion-reduce:opacity-100 xl:h-[640px] xl:w-[640px]"
+              // pushed further right (into the page gutter) so the big mascot clears
+              // the smart-letter's option pills on the left (Гоша) — CursorCompanion
+              // reads this slot's live rect, so moving it moves where he lands.
+              className="absolute right-[-48px] top-1/2 h-[560px] w-[560px] origin-center -translate-y-1/2 opacity-0 motion-reduce:opacity-100 xl:h-[640px] xl:w-[640px]"
             >
               <svg viewBox="0 0 26 26" className="h-full w-full" aria-hidden>
                 <path
@@ -141,7 +144,7 @@ export function Footer() {
         <div className="relative mt-[40px] border-t border-white/10 pt-[28px] lg:mt-[64px] lg:pt-[40px]">
           <div className="flex flex-wrap items-center gap-x-[28px] gap-y-[14px] text-[16px] font-medium tracking-[0.04em]">
             <span className="flex items-center gap-[12px] uppercase text-white/80">
-              <PixelSilhouette className="shrink-0" />
+              <PixelSilhouette className="shrink-0 translate-y-[6px]" />
               {footer.contacts.city}
             </span>
             <button

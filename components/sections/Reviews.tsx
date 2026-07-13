@@ -119,6 +119,31 @@ function Author({ r, light = false }: { r: Review; light?: boolean }) {
   );
 }
 
+// The frosted round badge that carries the CLIENT's logo (mono, forced to a solid
+// tone so it reads on any card). Falls back to the Tachos mark when a review has
+// no logo. `light` flips it for the peach card: dark disc + black logo.
+function LogoBadge({ r, light = false, className = '' }: { r: Review; light?: boolean; className?: string }) {
+  return (
+    <span
+      className={`grid size-[46px] shrink-0 place-items-center overflow-hidden rounded-full backdrop-blur-md ${
+        light ? 'bg-black/[0.06]' : 'bg-white/10 ring-1 ring-white/15'
+      } ${className}`}
+    >
+      {r.logo ? (
+        <Image
+          src={asset(r.logo)}
+          alt=""
+          width={32}
+          height={22}
+          className={`max-h-[22px] w-auto max-w-[30px] object-contain brightness-0 ${light ? '' : 'invert'}`}
+        />
+      ) : (
+        <TachosMark className={`w-[27px] ${light ? 'text-black/40' : 'text-inverted/70'}`} />
+      )}
+    </span>
+  );
+}
+
 // Static waveform heights. Bar count is the seek resolution of the demo player.
 const WAVE = [
   19, 14, 8, 8, 8, 8, 14, 14, 24, 17, 30, 14, 8, 17, 8, 8, 14, 14, 30, 17, 27, 30, 14, 8, 8, 14, 14,
@@ -240,20 +265,8 @@ function AudioCard({ r }: { r: Review }) {
       <div className="relative flex flex-col gap-[20px] sm:gap-[28px]">
         <div className="flex items-start justify-between gap-[16px]">
           <Author r={r} />
-          {/* glass logo badge (#2): frosted disc holding the handwritten mark */}
-          <span className="grid size-[46px] shrink-0 place-items-center overflow-hidden rounded-full bg-white/10 ring-1 ring-white/15 backdrop-blur-md">
-            {r.logo ? (
-              <Image
-                src={asset(r.logo)}
-                alt=""
-                width={32}
-                height={22}
-                className="max-h-[22px] w-auto max-w-[30px] object-contain brightness-0 invert"
-              />
-            ) : (
-              <TachosMark className="w-[27px] text-inverted/70" />
-            )}
-          </span>
+          {/* glass logo badge (#2): frosted disc holding the CLIENT logo */}
+          <LogoBadge r={r} />
         </div>
 
         <p className="text-[18px] font-medium leading-[1.3] text-[#f5f7f6] sm:text-[22px] sm:leading-[1.25]">
@@ -348,15 +361,13 @@ function TextCard({ r }: { r: Review }) {
       <div className="relative mt-[24px] sm:mt-[40px]">
         <Author r={r} light={light} />
       </div>
-      {/* round badge in the corner, matching the Figma cards */}
-      {light && (
-        <span
-          aria-hidden
-          // Track the smaller mobile padding (24px) so the badge keeps its inset
-          // from the card edge; desktop unchanged via sm:.
-          className="absolute bottom-[22px] right-[22px] size-[44px] rounded-full bg-black/[0.06] sm:bottom-[34px] sm:right-[34px] sm:size-[54px]"
-        />
-      )}
+      {/* client logo badge in the bottom-right corner, matching the Figma cards
+          (was an empty decorative disc — Гоша wanted the company's logo there) */}
+      <LogoBadge
+        r={r}
+        light={light}
+        className="absolute bottom-[22px] right-[22px] sm:bottom-[34px] sm:right-[34px]"
+      />
     </div>
   );
 }

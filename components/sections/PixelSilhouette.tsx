@@ -7,7 +7,7 @@ import { asset } from '@/lib/asset';
 // the hero logo wall — when it scrolls into view, then holds. Public-domain
 // silhouette (Rones, publicdomainvectors.org). Sits by «ГОРОД-ГЕРОЙ ВОЛГОГРАД».
 const CELL = 3; // pixel-cell size (css px)
-const REVEAL_MS = 950;
+const REVEAL_MS = 1400; // slow enough that the assemble is legible at this tiny size
 
 export function PixelSilhouette({
   w = 22,
@@ -56,6 +56,12 @@ export function PixelSilhouette({
     let start = 0;
     let running = false;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // canvas currently in the viewport? (the image usually loads while the footer
+    // is still far below — without this the reveal would play once, unseen)
+    const inView = () => {
+      const r = canvas.getBoundingClientRect();
+      return r.top < window.innerHeight && r.bottom > 0;
+    };
     const anim = (t: number) => {
       if (!start) start = t;
       const p = Math.min(1, (t - start) / REVEAL_MS);
@@ -85,7 +91,7 @@ export function PixelSilhouette({
       o.fillStyle = '#fff';
       o.fillRect(0, 0, w, h);
       white = off;
-      kick(); // in case it's already in view
+      if (inView()) kick(); // only if already on screen; else the observer fires it
     };
     img.src = asset('/figma/rodina.png');
 
