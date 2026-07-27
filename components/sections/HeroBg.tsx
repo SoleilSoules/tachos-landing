@@ -6,16 +6,17 @@ import { HeroBeyond } from './HeroBeyond';
 import { HeroPhone } from './HeroPhone';
 
 // Hero background switch, read client-side so it survives static export. Default
-// is the orange sunrise-smoke video; the rest are kept for comparison:
-//   default / ?bg=smoke → orange sunrise-smoke video
+// is our own hero reel (full-bleed); the rest are kept for comparison:
+//   default / ?bg=reel  → the hero reel we shot
+//   ?bg=smoke           → orange sunrise-smoke video
 //   ?bg=beam            → orange laser-beam video
 //   ?bg=shader          → our WebGL shader
 //   ?bg=phone           → the original static iPhone mockup
-type Bg = 'beam' | 'smoke' | 'shader' | 'phone' | 'v1' | 'v2' | 'v3';
-const VALID: Bg[] = ['smoke', 'beam', 'shader', 'phone', 'v1', 'v2', 'v3'];
+type Bg = 'reel' | 'beam' | 'smoke' | 'shader' | 'phone' | 'v1' | 'v2' | 'v3';
+const VALID: Bg[] = ['reel', 'smoke', 'beam', 'shader', 'phone', 'v1', 'v2', 'v3'];
 
 export function HeroBg() {
-  const [bg, setBg] = useState<Bg>('smoke');
+  const [bg, setBg] = useState<Bg>('reel');
 
   useEffect(() => {
     const q = new URLSearchParams(window.location.search).get('bg') as Bg | null;

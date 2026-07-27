@@ -55,7 +55,9 @@ type SpeechRecognitionLike = {
   stop: () => void;
 };
 
-export function HeroPrompt() {
+// `chips` toggles the «Мне нужен: …» row under the field — hidden in the hero for
+// now (Гоша), the component keeps working without it.
+export function HeroPrompt({ chips = true }: { chips?: boolean } = {}) {
   const { open } = useCompose();
   const [value, setValue] = useState('');
   const hint = guessType(value);
@@ -152,9 +154,9 @@ export function HeroPrompt() {
           The whole pill is clickable — it focuses the input. */}
       <div
         onClick={submit}
-        data-hint="Нажмите — соберём письмо"
+        data-hint="Нажмите — соберем письмо"
         data-hint-sub="или выберите чип ниже"
-        className="relative mt-[32px] flex h-[72px] w-full max-w-[554px] cursor-pointer items-center gap-[12px] overflow-hidden rounded-[28px] bg-white pl-[20px] shadow-input sm:mt-[40px] sm:h-[88px] sm:pl-[22px]"
+        className="relative flex h-[72px] w-full max-w-[554px] cursor-pointer items-center gap-[12px] overflow-hidden rounded-[28px] bg-white pl-[20px] shadow-input sm:h-[88px] sm:pl-[22px]"
       >
         {/* hidden mirror — measures caret x using the same font as the input */}
         <span
@@ -202,7 +204,9 @@ export function HeroPrompt() {
         </button>
       </div>
 
-      <div className="nums mt-[16px] flex w-full flex-wrap items-center justify-center gap-[8px] sm:gap-[10px]">
+      {/* chips sit under the field, flush left with it (hero is left-aligned now) */}
+      {chips && (
+      <div className="nums mt-[16px] flex w-full flex-wrap items-center justify-start gap-[8px] sm:gap-[10px]">
         <span className="px-[2px] text-[13px] text-inverted/60 sm:text-[15px]">
           {hero.needLabel}
         </span>
@@ -224,6 +228,7 @@ export function HeroPrompt() {
           );
         })}
       </div>
+      )}
     </>
   );
 }

@@ -430,7 +430,7 @@ export function FeedbackWidget() {
                   role="alert"
                   className="rounded-[10px] border border-accent/30 bg-accent/10 px-[14px] py-[10px] text-[13px] text-accent"
                 >
-                  Не удалось отправить — попробуйте ещё раз.
+                  Не удалось отправить — попробуйте еще раз.
                 </div>
               )}
 
@@ -496,7 +496,7 @@ function FeedbackSent({ kind, onClose }: { kind: Kind; onClose: () => void }) {
       <h3 className="text-[22px] font-semibold">Спасибо, получили</h3>
       <p className="max-w-[380px] text-[14px] leading-[1.45] text-inverted/60">
         {kind === 'bug'
-          ? 'Разберёмся с проблемой. Если оставили почту — напишем, когда починим.'
+          ? 'Разберемся с проблемой. Если оставили почту — напишем, когда починим.'
           : 'Спасибо за идею — посмотрим и подумаем, как применить.'}
       </p>
       <button

@@ -6,6 +6,14 @@ import { asset } from '@/lib/asset';
 // Both are his own Unicorn recordings, recoloured in ffmpeg. Oversized and pulled
 // up so the effect sits low behind the hero. Lower edge fades into the page bg.
 const VARIANTS = {
+  // our own hero reel — fills the whole viewport (object-cover), no inner
+  // gradients: the section itself lays the readability wash over it
+  reel: {
+    src: '/figma/hero-reel.mp4',
+    poster: '/figma/hero-reel-poster.jpg',
+    top: '0',
+    cover: true,
+  },
   beam: {
     src: '/figma/hero-beam-orange.mp4',
     poster: '/figma/hero-beam-orange-poster.jpg',
@@ -24,6 +32,7 @@ const VARIANTS = {
 
 export function HeroBeyond({ variant = 'beam' }: { variant?: keyof typeof VARIANTS }) {
   const v = VARIANTS[variant];
+  const cover = 'cover' in v && v.cover;
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
       <video
@@ -32,8 +41,16 @@ export function HeroBeyond({ variant = 'beam' }: { variant?: keyof typeof VARIAN
         loop
         playsInline
         poster={asset(v.poster)}
-        style={{ top: v.top }}
-        className="absolute left-1/2 w-[140%] min-w-[1500px] max-w-none -translate-x-1/2 motion-reduce:hidden"
+        style={cover ? undefined : { top: v.top }}
+        className={
+          cover
+            ? // desktop: full width, height follows the 16:9 frame — nothing is
+              // cropped, the reel scales with the viewport. Phones are far too
+              // narrow for that (the reel would be a 220px strip), so there it
+              // fills the screen instead.
+              'absolute inset-0 h-full w-full object-cover motion-reduce:hidden lg:h-auto lg:object-fill'
+            : 'absolute left-1/2 w-[140%] min-w-[1500px] max-w-none -translate-x-1/2 motion-reduce:hidden'
+        }
       >
         <source src={asset(v.src)} type="video/mp4" />
       </video>
@@ -48,14 +65,17 @@ export function HeroBeyond({ variant = 'beam' }: { variant?: keyof typeof VARIAN
       )}
       {/* fade the video's lower edge so its bottom border never reads as a hard
           line. Beam fades into WHITE (flat seam → white Cases, no dark band);
-          smoke fades into the dark bg (the white arc handles that seam). */}
-      <div
-        className={
-          variant === 'beam'
-            ? 'absolute inset-x-0 bottom-0 h-[62%] bg-[linear-gradient(to_bottom,transparent_0%,#ffffff_72%)]'
-            : 'absolute inset-x-0 bottom-0 h-[38%] bg-gradient-to-b from-transparent to-bg'
-        }
-      />
+          smoke fades into the dark bg (the white arc handles that seam). The
+          reel skips this — the section's own wash already covers its bottom. */}
+      {!cover && (
+        <div
+          className={
+            variant === 'beam'
+              ? 'absolute inset-x-0 bottom-0 h-[62%] bg-[linear-gradient(to_bottom,transparent_0%,#ffffff_72%)]'
+              : 'absolute inset-x-0 bottom-0 h-[38%] bg-gradient-to-b from-transparent to-bg'
+          }
+        />
+      )}
     </div>
   );
 }

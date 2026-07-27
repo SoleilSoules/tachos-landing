@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local hero composition snapshots (see hero-variants/README.md)
+/hero-variants

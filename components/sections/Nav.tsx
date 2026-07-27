@@ -85,15 +85,19 @@ export function Nav() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 px-3 transition-all duration-300 lg:px-[14px] ${
+      /* Outer padding = the page grid MINUS the bar's own inner padding, so the
+         logo lands exactly on the hero headline's left edge (one shared grid:
+         20 / 32 / 80). The plate itself bleeds slightly wider, which is what
+         makes it read as a floating capsule. */
+      className={`fixed inset-x-0 top-0 z-50 px-[8px] transition-all duration-300 sm:px-[20px] lg:px-[58px] ${
         stuck ? 'pt-[10px]' : 'pt-0'
       }`}
     >
-      {/* The bar keeps a CONSTANT width (max-w-page) and horizontal padding in both
-          states, so it never narrows or shifts sideways when you scroll — only the
-          plate (bg / border / shadow / blur) and the height appear/change on `stuck`. */}
+      {/* The bar keeps a CONSTANT width and horizontal padding in both states, so
+          it never narrows or shifts sideways when you scroll — only the plate
+          (bg / border / shadow / blur) and the height appear/change on `stuck`. */}
       <div
-        className={`mx-auto flex w-full max-w-page items-center justify-between rounded-[22px] px-[12px] transition-all duration-300 lg:px-[22px] ${
+        className={`mx-auto flex w-full items-center justify-between rounded-[22px] px-[12px] transition-all duration-300 lg:px-[22px] ${
           stuck
             ? 'h-[60px] border border-white/10 bg-ink/75 shadow-[0_10px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl'
             : 'h-[64px] border border-transparent lg:h-[84px]'
@@ -120,13 +124,8 @@ export function Nav() {
               <LogoImg />
             </Link>
           )}
-          <button
-            type="button"
-            data-feedback
-            className="hidden rounded-full border border-accent/40 bg-accent/10 px-[13px] py-[5px] text-[13px] font-medium text-accent-bright transition hover:bg-accent hover:text-inverted sm:block"
-          >
-            Нашли ошибку?
-          </button>
+          {/* the «Нашли ошибку?» pill used to sit here — removed per Гоша; the
+              feedback widget is still reachable from the burger menu and ⌘] */}
         </div>
 
         {/* desktop: links + CTA inline */}

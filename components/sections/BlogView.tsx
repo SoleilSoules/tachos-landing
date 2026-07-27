@@ -171,7 +171,7 @@ export function BlogView({ post, others }: { post: Post; others: Post[] }) {
             <section className="mt-16 pb-4">
               <div className="h-px w-full bg-white/10" />
               <p className="mb-6 pt-5 font-mono text-[13px] uppercase tracking-[0.04em] text-inverted/45">
-                Ещё в блоге
+                Еще в блоге
               </p>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {others.map((p) => (

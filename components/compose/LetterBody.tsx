@@ -366,7 +366,7 @@ export function LetterBody({ active, autofocus = true }: { active: boolean; auto
             role="alert"
             className="mb-[12px] rounded-[10px] border border-accent/30 bg-accent/10 px-[14px] py-[10px] text-[13px] text-accent"
           >
-            Не удалось отправить — попробуйте ещё раз или скопируйте письмо.
+            Не удалось отправить — попробуйте еще раз или скопируйте письмо.
           </div>
         )}
 
@@ -375,7 +375,7 @@ export function LetterBody({ active, autofocus = true }: { active: boolean; auto
             <input
               ref={contactRef}
               data-autofocus={autofocus || undefined}
-              data-hint="Сюда придёт ответ"
+              data-hint="Сюда придет ответ"
               data-hint-sub="телефон, почта или @telegram"
               type="text"
               value={contact}

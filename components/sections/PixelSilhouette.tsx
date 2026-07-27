@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { asset } from '@/lib/asset';
 
-// "Родина-мать зовёт" silhouette that assembles out of pixels — the same effect as
+// "Родина-мать зовет" silhouette that assembles out of pixels — the same effect as
 // the hero logo wall — when it scrolls into view, then holds. Public-domain
 // silhouette (Rones, publicdomainvectors.org). Sits by «ГОРОД-ГЕРОЙ ВОЛГОГРАД».
 const CELL = 3; // pixel-cell size (css px)

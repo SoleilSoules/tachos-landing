@@ -56,7 +56,7 @@ function NotesPanel({ item, atCta }: { item: CaseItem; atCta: boolean }) {
           </div>
         ))}
         {item.verified && (
-          <p className="text-[14px] font-medium text-accent">✦ Подтверждённый кейс</p>
+          <p className="text-[14px] font-medium text-accent">✦ Подтвержденный кейс</p>
         )}
       </div>
     </div>

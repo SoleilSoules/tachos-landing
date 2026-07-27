@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useReveal } from '@/hooks/useReveal';
 import { caseTabs, type CaseItem } from '@/lib/content';
 import { CaseCard } from './CaseCard';
@@ -11,7 +11,7 @@ import { CaseCard } from './CaseCard';
 // counts are derived from the data here, not hardcoded.
 
 const INITIAL = 4; // first batch shown
-const STEP = 2; // "Показать ещё" increment
+const STEP = 2; // "Показать еще" increment
 const ALL = 'Все';
 
 export function CasesExplorer({ cases }: { cases: CaseItem[] }) {
@@ -23,39 +23,74 @@ export function CasesExplorer({ cases }: { cases: CaseItem[] }) {
   const counts = useMemo(() => {
     const m = new Map<string, number>();
     for (const t of caseTabs) {
-      m.set(t.label, t.label === ALL ? cases.length : cases.filter((c) => c.tabs?.includes(t.label)).length);
+      m.set(
+        t.label,
+        t.label === ALL ? cases.length : cases.filter((c) => c.tabs?.includes(t.label)).length,
+      );
     }
     return m;
   }, [cases]);
+
+  // The sliding highlight is positioned from the active button's own box, so it
+  // stays correct at any font size / label length / horizontal scroll offset.
+  const trackRef = useRef<HTMLDivElement>(null);
+  const btnRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const [pill, setPill] = useState({ x: 0, w: 0 });
+
+  const measure = useCallback(() => {
+    const el = btnRefs.current[active];
+    if (!el) return;
+    setPill({ x: el.offsetLeft, w: el.offsetWidth });
+  }, [active]);
+
+  useLayoutEffect(measure, [measure]);
+  useEffect(() => {
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [measure]);
 
   const filtered = active === ALL ? cases : cases.filter((c) => c.tabs?.includes(active));
 
   return (
     <>
-      <div className="nums mx-auto flex max-w-[861px] flex-nowrap items-center justify-start gap-[8px] overflow-x-auto px-5 [scrollbar-width:none] sm:flex-wrap sm:justify-center sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden">
-        {caseTabs.map((tab) => {
-          const on = active === tab.label;
-          const n = counts.get(tab.label) ?? 0;
-          return (
-            <button
-              key={tab.label}
-              type="button"
-              onClick={() => setActive(tab.label)}
-              aria-pressed={on}
-              className={`flex h-[48px] shrink-0 items-center gap-[8px] rounded-pill px-[20px] text-[16px] font-medium tracking-[0.03em] transition ${
-                on ? 'bg-black text-surface' : 'bg-surface text-fg hover:brightness-95'
-              }`}
-            >
-              {tab.label}
-              {tab.label !== ALL && (
-                <span className={on ? 'text-surface/50' : 'text-fg/50'}>{n}</span>
-              )}
-            </button>
-          );
-        })}
+      {/* One grey track carrying all the filters. The highlight is a single pill
+          that SLIDES between tabs instead of jumping — same colour family as the
+          track, told apart by its lift (shadow), not by going white. */}
+      <div className="flex justify-center px-5 sm:px-0">
+        <div
+          ref={trackRef}
+          className="nums relative flex max-w-full flex-nowrap items-center overflow-x-auto rounded-pill bg-surface2 [scrollbar-width:none] sm:overflow-visible [&::-webkit-scrollbar]:hidden"
+        >
+          <span
+            aria-hidden
+            className="pointer-events-none absolute bottom-0 top-0 z-0 rounded-pill bg-surface shadow-[0_2px_14px_rgba(0,0,0,0.10)] transition-[transform,width] duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+            style={{ width: pill.w, transform: `translateX(${pill.x}px)`, opacity: pill.w ? 1 : 0 }}
+          />
+          {caseTabs.map((tab) => {
+            const on = active === tab.label;
+            const n = counts.get(tab.label) ?? 0;
+            return (
+              <button
+                key={tab.label}
+                ref={(el) => {
+                  btnRefs.current[tab.label] = el;
+                }}
+                type="button"
+                onClick={() => setActive(tab.label)}
+                aria-pressed={on}
+                className={`relative z-10 flex h-[52px] shrink-0 items-center gap-[8px] rounded-pill px-[22px] text-[16px] font-medium tracking-[0.03em] transition-colors ${
+                  on ? 'text-fg' : 'text-fg/55 hover:text-fg'
+                }`}
+              >
+                {tab.label}
+                {tab.label !== ALL && <span className={on ? 'text-fg/40' : 'text-fg/30'}>{n}</span>}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* key on `active` remounts the grid per tab → reveal replays + "Показать ещё"
+      {/* key on `active` remounts the grid per tab → reveal replays + "Показать еще"
           resets to the first batch for the new filter. */}
       <CaseGrid key={active} cases={filtered} />
     </>
@@ -106,7 +141,7 @@ function CaseGrid({ cases }: { cases: CaseItem[] }) {
             onClick={() => setVisible((v) => v + STEP)}
             className="w-full max-w-[820px] rounded-[24px] bg-[#141416] px-[64px] py-[26px] text-[17px] font-medium text-white transition hover:bg-black"
           >
-            Показать ещё
+            Показать еще
           </button>
         </div>
       )}

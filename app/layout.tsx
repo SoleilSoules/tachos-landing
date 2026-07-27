@@ -23,9 +23,9 @@ const ptMono = PT_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Tachos — студия инжиниринга и дизайна',
+  title: 'Tachos — технологический партнер',
   description:
-    'Проектируем и собираем веб- и мобильные продукты для фаундеров и компаний — от идеи до релиза в проде.',
+    'Проектируем, собираем и развиваем веб- и мобильные продукты для фаундеров и компаний — от идеи до релиза в проде.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
