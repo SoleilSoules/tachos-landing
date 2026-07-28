@@ -44,11 +44,14 @@ export function HeroBeyond({ variant = 'beam' }: { variant?: keyof typeof VARIAN
         style={cover ? undefined : { top: v.top }}
         className={
           cover
-            ? // desktop: full width, height follows the 16:9 frame — nothing is
-              // cropped, the reel scales with the viewport. Phones are far too
-              // narrow for that (the reel would be a 220px strip), so there it
-              // fills the screen instead.
-              'absolute inset-0 h-full w-full object-cover motion-reduce:hidden lg:h-auto lg:object-fill'
+            ? // Desktop: full width, height follows the 16:9 frame — nothing is
+              // cropped, the reel scales with the viewport. Pinned to the BOTTOM
+              // so the frame meets the white sheet: when the section ends up
+              // taller than 16:9, the leftover strip falls above the reel (behind
+              // the nav) instead of showing as a black band under it. Phones are
+              // far too narrow for that ratio (the reel would be a 220px strip),
+              // so there it fills the screen instead.
+              'absolute inset-x-0 top-0 h-full w-full object-cover motion-reduce:hidden lg:top-auto lg:bottom-0 lg:h-auto lg:object-fill'
             : 'absolute left-1/2 w-[140%] min-w-[1500px] max-w-none -translate-x-1/2 motion-reduce:hidden'
         }
       >
