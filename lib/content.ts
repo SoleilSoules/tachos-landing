@@ -96,8 +96,6 @@ export type CaseItem = {
   shotKind?: 'phone' | 'desktop' | 'cover'; // device frame for `shot`, or 'cover' = full-bleed photo
   coverDark?: boolean; // cover photo is dark → invert overlay chips to light
   tabs?: string[]; // CaseTab labels this case belongs to (drives tab filtering)
-  mockupVideo?: string; // clip shown inside an animated turning iPhone mockup on the cover
-  coverVideo?: string; // full-bleed animated cover (storyboard reel) — overrides `shot`
   story: CaseStory; // case-page content (placeholder prose until Vadim confirms)
   verified?: boolean; // confirmed Tachos work (Складно / Хайс / Maginary)
   hidden?: boolean; // temporarily hidden from the homepage grid
@@ -206,7 +204,6 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     desc: { lead: 'Сайт и сервисы для', highlight: 'студии автотюнинга', tail: '' },
     tags: ['Автотюнинг', 'Web'],
     shot: '/figma/monte-cover.webp',
-    coverVideo: '/covers/monte-cover.mp4',
     shotKind: 'cover',
     coverDark: true,
     story: {
@@ -230,7 +227,6 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     },
     tags: ['Финтех', 'iOS + Android'],
     shot: '/figma/hais-cover.webp',
-    coverVideo: '/covers/hais-cover.mp4',
     shotKind: 'cover',
     coverDark: true,
     story: {
@@ -269,7 +265,6 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     },
     tags: ['Приложение-книга', 'iOS'],
     shot: '/figma/maginary-cover.webp',
-    coverVideo: '/covers/maginary-cover.mp4',
     shotKind: 'cover',
     coverDark: true,
     story: {
@@ -305,7 +300,6 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     },
     tags: ['Сервис хранения', 'Mobile + бэкенд'],
     shot: '/figma/skladno-cover.webp',
-    coverVideo: '/covers/skladno-cover.mp4',
     shotKind: 'cover',
     coverDark: true,
     story: {

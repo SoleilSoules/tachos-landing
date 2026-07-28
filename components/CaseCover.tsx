@@ -1,47 +1,5 @@
-'use client';
-
 import Image from 'next/image';
-import { useEffect, useRef } from 'react';
 import { asset } from '@/lib/asset';
-import { CaseVideoMockup } from '@/components/CaseVideoMockup';
-
-// Full-bleed animated cover (the storyboard reel rendered in Remotion). Muted
-// autoplay loop; decoding pauses while the card is offscreen (same policy as
-// CaseVideoMockup). Reduced-motion users get the poster still instead.
-function CoverVideo({ src, poster, client }: { src: string; poster?: string; client: string }) {
-  const video = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    const v = video.current;
-    if (!v) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (!e) return;
-        if (e.isIntersecting) void v.play().catch(() => {});
-        else v.pause();
-      },
-      { threshold: 0.2 },
-    );
-    io.observe(v);
-    return () => io.disconnect();
-  }, []);
-
-  return (
-    <video
-      ref={video}
-      src={asset(src)}
-      poster={poster ? asset(poster) : undefined}
-      muted
-      loop
-      playsInline
-      autoPlay
-      preload="metadata"
-      aria-label={client}
-      className="absolute inset-0 h-full w-full object-cover"
-    />
-  );
-}
 
 // Case cover: the product screenshot sits FLAT and FRONTAL — no grey field, no tilt,
 // no cursor parallax (calm + static per Гоша). Wide desktop shots fill the whole
@@ -93,16 +51,12 @@ export function CaseCover({
   client,
   shot,
   shotKind,
-  mockupVideo,
-  coverVideo,
   variant = 'card',
   className = '',
 }: {
   client: string;
   shot?: string;
   shotKind?: 'phone' | 'desktop' | 'cover';
-  mockupVideo?: string;
-  coverVideo?: string;
   variant?: 'card' | 'hero';
   className?: string;
 }) {
@@ -113,13 +67,7 @@ export function CaseCover({
     <div
       className={`relative flex h-full w-full items-center justify-center overflow-hidden bg-[#f3f4f6] ${className}`}
     >
-      {coverVideo ? (
-        <CoverVideo src={coverVideo} poster={shot} client={client} />
-      ) : mockupVideo ? (
-        <div className="absolute bottom-[-6%] right-[-2%] h-[80%] w-[66%]">
-          <CaseVideoMockup src={mockupVideo} />
-        </div>
-      ) : shot ? (
+      {shot ? (
         kind === 'phone' ? (
           <PhoneMock shot={shot} client={client} big={big} />
         ) : kind === 'cover' ? (
