@@ -183,7 +183,8 @@ export function HeroPrompt({ chips = true }: { chips?: boolean } = {}) {
           className="min-w-0 flex-1 bg-transparent text-[18px] text-black caret-transparent outline-none placeholder:text-black/40"
         />
         {/* Empty field → voice affordance; once there's text the button flips to
-            an Enter glyph and goes accent — both submit (open the letter). */}
+            an Enter glyph. Full accent in every state — it's the one warm mark on
+            the white field and reads as a button before you hover it. */}
         <button
           type="button"
           onClick={(e) => {
@@ -194,13 +195,14 @@ export function HeroPrompt({ chips = true }: { chips?: boolean } = {}) {
           aria-label={
             value.trim() ? 'Отправить — Enter' : listening ? 'Остановить запись' : 'Голосовой ввод'
           }
-          className={`grid h-[72px] w-[80px] shrink-0 place-items-center rounded-[28px] shadow-[-14px_0_28px_rgba(0,0,0,0.06)] transition sm:h-[88px] sm:w-[107px] ${
-            value.trim() || listening
-              ? 'bg-accent text-white'
-              : 'bg-white text-black hover:bg-accent hover:text-white'
-          } ${listening ? 'animate-pulse' : ''}`}
+          // 45° gradient with a lit top-left edge — the flat fill read as a
+          // sticker, the diagonal gives the button a sheen.
+          className={`relative grid h-[72px] w-[80px] shrink-0 place-items-center overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#ff7a55_0%,#f4573b_38%,#e0472c_72%,#c93d24_100%)] text-white shadow-[-14px_0_28px_rgba(0,0,0,0.06),inset_1px_1px_0_rgba(255,255,255,0.28)] transition hover:brightness-110 sm:h-[88px] sm:w-[107px] ${
+            listening ? 'animate-pulse' : ''
+          }`}
         >
-          {value.trim() ? <EnterIcon /> : <WaveIcon />}
+          {/* above the sweep layer */}
+          <span className="relative z-10">{value.trim() ? <EnterIcon /> : <WaveIcon />}</span>
         </button>
       </div>
 

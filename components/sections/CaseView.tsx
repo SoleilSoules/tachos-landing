@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { CaseCover } from '@/components/CaseCover';
 import { caseCopy } from '@/lib/case-copy';
@@ -34,7 +33,7 @@ function ImgPlaceholder({ minH = 300 }: { minH?: number }) {
 
 // Side notes panel (#13) — pinned to the right edge of the max-w-page grid (the
 // SAME grid the footer uses), in Onest (not mono). Fades out at the CTA.
-function NotesPanel({ item, atCta }: { item: CaseItem; atCta: boolean }) {
+function NotesPanel({ item }: { item: CaseItem }) {
   const rows = [
     { k: 'Клиент', v: caseCopy[item.id]?.notes.client ?? item.client },
     { k: 'Направление', v: caseCopy[item.id]?.notes.direction ?? item.category },
@@ -66,25 +65,12 @@ function NotesPanel({ item, atCta }: { item: CaseItem; atCta: boolean }) {
 // Case page — Onest + max-w-page grid (the same grid as the footer), with the
 // side "Заметки" panel pinned to the right edge.
 export function CaseView({ item, others }: { item: CaseItem; others: CaseItem[] }) {
-  const [atCta, setAtCta] = useState(false);
-  const ctaRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = ctaRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver(([e]) => setAtCta(e?.isIntersecting ?? false), {
-      rootMargin: '0px 0px -40% 0px',
-    });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
   const [domainTag, methodTag] = item.tags;
 
   return (
     <main className="min-h-screen bg-bg text-inverted [animation:fade-in_0.4s_ease-out]">
       <Nav />
-      <NotesPanel item={item} atCta={atCta} />
+      <NotesPanel item={item} />
 
       {/* same container as the footer: max-w-page + lg:px-[96px] */}
       <div className="mx-auto max-w-page px-5 sm:px-8 lg:px-[96px]">
@@ -135,7 +121,6 @@ export function CaseView({ item, others }: { item: CaseItem; others: CaseItem[] 
 
             <div className="mt-10 aspect-[16/9] max-w-[820px] overflow-hidden rounded-[24px]">
               <CaseCover
-                id={item.id}
                 client={item.client}
                 shot={item.shot}
                 shotKind={item.shotKind}
@@ -163,7 +148,7 @@ export function CaseView({ item, others }: { item: CaseItem; others: CaseItem[] 
 
           {/* CTA */}
           <div className="mb-12 h-px w-full max-w-[820px] bg-white/10" />
-          <div ref={ctaRef} id="contacts" className="max-w-[820px]">
+          <div id="contacts" className="max-w-[820px]">
             <button
               type="button"
               data-compose
@@ -186,7 +171,6 @@ export function CaseView({ item, others }: { item: CaseItem; others: CaseItem[] 
                 <Link key={c.id} href={`/cases/${c.id}`} className="group block">
                   <div className="aspect-[4/3] overflow-hidden rounded-[20px]">
                     <CaseCover
-                      id={c.id}
                       client={c.client}
                       shot={c.shot}
                       shotKind={c.shotKind}

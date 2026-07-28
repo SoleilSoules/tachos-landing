@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useUrlParam } from '@/lib/useUrlParam';
 import { HeroSunriseShader } from './HeroSunriseShader';
 import { HeroBeyond } from './HeroBeyond';
 import { HeroPhone } from './HeroPhone';
@@ -16,12 +16,8 @@ type Bg = 'reel' | 'beam' | 'smoke' | 'shader' | 'phone' | 'v1' | 'v2' | 'v3';
 const VALID: Bg[] = ['reel', 'smoke', 'beam', 'shader', 'phone', 'v1', 'v2', 'v3'];
 
 export function HeroBg() {
-  const [bg, setBg] = useState<Bg>('reel');
-
-  useEffect(() => {
-    const q = new URLSearchParams(window.location.search).get('bg') as Bg | null;
-    if (q && VALID.includes(q)) setBg(q);
-  }, []);
+  const q = useUrlParam('bg');
+  const bg: Bg = q && VALID.includes(q as Bg) ? (q as Bg) : 'reel';
 
   if (bg === 'shader') return <HeroSunriseShader />;
   if (bg === 'phone') return <HeroPhone />;

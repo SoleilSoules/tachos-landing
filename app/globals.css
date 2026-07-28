@@ -301,6 +301,62 @@ a {
   }
 }
 
+/* The white sheet rides up over the bottom of the hero reel. No JS on scroll —
+   earlier scroll-listener versions cost frames on Гоша's machine — so the lift
+   runs on a scroll-driven timeline the compositor owns. Browsers without
+   animation-timeline (older Safari) simply keep the static overlap below. */
+.sheet-over-hero {
+  position: relative;
+  z-index: 1;
+  margin-top: -40px;
+  border-top-left-radius: 32px;
+  border-top-right-radius: 32px;
+}
+@supports (animation-timeline: view()) {
+  .sheet-over-hero {
+    animation: sheet-over-hero linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 92%;
+  }
+}
+@keyframes sheet-over-hero {
+  from {
+    transform: translateY(58px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sheet-over-hero {
+    animation: none;
+    transform: none;
+  }
+}
+
+/* The letter is fully answered and only the contact is missing — the field
+   swells once in accent, then holds a quiet halo so the eye lands there. */
+@keyframes contact-nudge {
+  0% {
+    box-shadow: 0 0 0 0 rgb(var(--c-accent) / 0);
+  }
+  45% {
+    box-shadow: 0 0 0 7px rgb(var(--c-accent) / 0.16);
+  }
+  100% {
+    box-shadow: 0 0 0 4px rgb(var(--c-accent) / 0.1);
+  }
+}
+.contact-nudge {
+  animation: contact-nudge 0.62s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .contact-nudge {
+    animation: none;
+    box-shadow: 0 0 0 4px rgb(var(--c-accent) / 0.1);
+  }
+}
+
 /* hero device — slow vertical float (keeps the horizontal centring) */
 @keyframes float-y {
   0%,

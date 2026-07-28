@@ -3,6 +3,16 @@
 
 export type LetterType = 'site' | 'app' | 'shop' | 'game' | 'idk';
 
+const LETTER_TYPES: readonly string[] = ['site', 'app', 'shop', 'game', 'idk'];
+
+// Letter types arrive as raw strings from the DOM (`data-compose`), the URL
+// (?compose=) and localStorage drafts — none of which TypeScript can vouch for.
+// An unknown value used to reach buildLetter and crash it (bodies[type] is
+// undefined → not a function), taking the whole letter down.
+export function isLetterType(v: unknown): v is LetterType {
+  return typeof v === 'string' && LETTER_TYPES.includes(v);
+}
+
 export type ComposeState = {
   type: LetterType;
   name: string;
@@ -28,9 +38,6 @@ export const typeChips: { type: LetterType; label: string }[] = [
   { type: 'game', label: 'Игра' },
   { type: 'idk', label: 'Не знаю' },
 ];
-
-// Three common first names offered as quick-pick in the letter's name slot.
-export const nameOptions = ['Александр', 'Мария', 'Дмитрий'];
 
 // Heuristic from free text → chip highlight + default type on submit.
 export function guessType(raw: string): LetterType | null {

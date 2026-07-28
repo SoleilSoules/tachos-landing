@@ -4,7 +4,10 @@ import { CasesExplorer } from './CasesExplorer';
 
 export function Cases() {
   return (
-    <section id="cases" className="relative bg-white pb-[160px] pt-[72px]">
+    <section
+      id="cases"
+      className="sheet-over-hero bg-white pb-[160px] pt-[72px]"
+    >
       <CasesHeadingClient />
 
       <div className="mx-auto mt-[44px] max-w-page px-5 sm:px-8 lg:px-[80px]">

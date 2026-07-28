@@ -1,18 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useUrlParam } from '@/lib/useUrlParam';
 
 // Soft blurred brand glow behind the hero text — part of the original static look.
 // Only shown for the phone variant; the video/shader variants provide their own
 // light, and the blur muddied them.
 export function HeroGlow() {
-  const [show, setShow] = useState(false);
-
-  useEffect(() => {
-    setShow(new URLSearchParams(window.location.search).get('bg') === 'phone');
-  }, []);
-
-  if (!show) return null;
+  const bg = useUrlParam('bg');
+  if (bg !== 'phone') return null;
 
   return (
     <>

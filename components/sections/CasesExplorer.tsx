@@ -63,7 +63,7 @@ export function CasesExplorer({ cases }: { cases: CaseItem[] }) {
         >
           <span
             aria-hidden
-            className="pointer-events-none absolute bottom-0 top-0 z-0 rounded-pill bg-surface shadow-[0_2px_14px_rgba(0,0,0,0.10)] transition-[transform,width] duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+            className="pointer-events-none absolute bottom-0 top-0 z-0 rounded-pill bg-accent shadow-[0_4px_16px_rgba(240,81,56,0.35)] transition-[transform,width] duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
             style={{ width: pill.w, transform: `translateX(${pill.x}px)`, opacity: pill.w ? 1 : 0 }}
           />
           {caseTabs.map((tab) => {
@@ -79,11 +79,13 @@ export function CasesExplorer({ cases }: { cases: CaseItem[] }) {
                 onClick={() => setActive(tab.label)}
                 aria-pressed={on}
                 className={`relative z-10 flex h-[52px] shrink-0 items-center gap-[8px] rounded-pill px-[22px] text-[16px] font-medium tracking-[0.03em] transition-colors ${
-                  on ? 'text-fg' : 'text-fg/55 hover:text-fg'
+                  on ? 'text-white' : 'text-fg/55 hover:text-fg'
                 }`}
               >
                 {tab.label}
-                {tab.label !== ALL && <span className={on ? 'text-fg/40' : 'text-fg/30'}>{n}</span>}
+                {tab.label !== ALL && (
+                  <span className={on ? 'text-white/65' : 'text-fg/30'}>{n}</span>
+                )}
               </button>
             );
           })}

@@ -2,7 +2,6 @@
 
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import {
-  buildLetter,
   composeQuestions,
   typeChips,
   validateContact,
@@ -52,6 +51,31 @@ function Slot({
   options: { v: string; label: string }[];
   onPick: (v: string) => void;
 }) {
+  const popRef = useRef<HTMLSpanElement>(null);
+
+  // The options hang centred under their slot, so a slot near either edge pushes
+  // them past the letter's boundary. Work it out from the SLOT's geometry and the
+  // popup's own width — never from the popup's current position, which already
+  // carries the previous shift and would compound it on every recalculation.
+  useEffect(() => {
+    const el = popRef.current;
+    const anchor = el?.parentElement;
+    if (!showPopup || !el || !anchor) return;
+    const bounds = el.closest('[data-letter-bounds]')?.getBoundingClientRect();
+    if (!bounds) return;
+
+    const slot = anchor.getBoundingClientRect();
+    const w = el.offsetWidth; // layout width, unaffected by transform
+    const pad = 8;
+    const centred = slot.left + slot.width / 2 - w / 2;
+    const clamped = Math.max(
+      bounds.left + pad,
+      Math.min(centred, bounds.right - pad - w),
+    );
+    const shift = Math.round(clamped - centred);
+    el.style.transform = shift ? `translateX(calc(-50% + ${shift}px))` : '';
+  }, [showPopup, options]);
+
   return (
     <span className="relative inline-block align-baseline">
       <span
@@ -69,13 +93,19 @@ function Slot({
         // Opaque floating plate (its own bg + shadow) so the option pills read
         // as a deliberate popover ON TOP of the letter — never a see-through mush
         // overlapping the divider/text below.
-        <span className="absolute left-1/2 top-[calc(100%+8px)] z-40 flex max-w-[min(95vw,460px)] -translate-x-1/2 flex-nowrap gap-[4px] overflow-x-auto rounded-[14px] bg-ink p-[6px] leading-none shadow-[0_18px_44px_rgba(0,0,0,0.55)] ring-1 ring-white/10 [-ms-overflow-style:none] [animation:compose-pop-in_.22s_ease-out] [scrollbar-width:none] motion-reduce:[animation:none] sm:gap-[6px] sm:p-[8px] [&::-webkit-scrollbar]:hidden">
+        <span
+          ref={popRef}
+          // No plate behind the options: they float as separate pills and wrap
+          // instead of being clipped by a fixed-width scroller (the last one used
+          // to hide off the right edge).
+          className="absolute left-1/2 top-[calc(100%+10px)] z-40 flex w-max max-w-[min(92vw,540px)] -translate-x-1/2 flex-wrap gap-[7px] leading-none [animation:compose-pop-in_.22s_ease-out] motion-reduce:[animation:none] sm:gap-[8px]">
           {options.map((o) => (
             <button
               key={o.label}
               type="button"
               onClick={() => onPick(o.v)}
-              className="inline-flex h-[27px] shrink-0 items-center whitespace-nowrap rounded-[9px] border border-accent/30 bg-accent/15 px-[8px] text-[11.5px] font-semibold text-accent transition hover:bg-accent hover:text-inverted sm:h-[30px] sm:rounded-[10px] sm:px-[11px] sm:text-[13px]"
+              // Warm at rest, hot on hover — the spotlight adds the rest of the heat.
+              className="relative z-10 inline-flex h-[36px] shrink-0 items-center whitespace-nowrap rounded-[12px] border border-accent/35 bg-accent/[0.13] px-[14px] text-[13px] font-semibold text-accent shadow-[0_10px_26px_rgba(0,0,0,0.5)] transition duration-200 hover:border-accent hover:bg-accent hover:text-inverted sm:h-[40px] sm:rounded-[13px] sm:px-[17px] sm:text-[14px]"
             >
               {o.label}
             </button>
@@ -115,7 +145,17 @@ export function ComposeSent({ onClose }: { onClose?: () => void }) {
 // in the footer. `active` drives the step-by-step typing (modal: isOpen; footer:
 // in-view). The picked answers live in the shared `useCompose` state, so the two
 // instances stay in sync — choose a type in the footer and the modal shows it too.
-export function LetterBody({ active, autofocus = true }: { active: boolean; autofocus?: boolean }) {
+export function LetterBody({
+  active,
+  autofocus = true,
+  // 'lg' is the footer, where the letter replaces a section heading and has the
+  // full page width to breathe; 'md' is the modal.
+  size = 'md',
+}: {
+  active: boolean;
+  autofocus?: boolean;
+  size?: 'md' | 'lg';
+}) {
   const { state, sendStatus, setField, submitLetter, resetSend } = useCompose();
   const contactRef = useRef<HTMLInputElement>(null);
 
@@ -129,7 +169,6 @@ export function LetterBody({ active, autofocus = true }: { active: boolean; auto
   const doneRef = useRef<SlotKey[]>([]);
   doneRef.current = done;
 
-  const { subject, body } = buildLetter(state);
   const contactErrId = useId();
   const agreeErrId = useId();
 
@@ -232,6 +271,12 @@ export function LetterBody({ active, autofocus = true }: { active: boolean; auto
   const curSeg = segments[segRef.current];
   const awaiting = curSeg && 'slot' in curSeg && !done.includes(curSeg.slot) ? curSeg.slot : null;
 
+  // Every slot answered and the typing caught up → the contact is the only thing
+  // left, so the field lights up in accent until the user starts filling it.
+  const letterDone =
+    !typing && segments.every((s) => !('slot' in s) || done.includes(s.slot));
+  const nudgeContact = letterDone && !contact.trim() && !contactError;
+
   const pick = (key: SlotKey, v: string) => {
     setField(key, v);
     setDone((d) => (d.includes(key) ? d : [...d, key]));
@@ -295,37 +340,40 @@ export function LetterBody({ active, autofocus = true }: { active: boolean; auto
   const slotPh = (key: SlotKey) => (key === 'budget' ? 'по запросу' : '…');
 
   return (
-    <div className="relative flex flex-col gap-[24px]">
-      <div className="flex flex-wrap items-center gap-x-[20px] gap-y-[4px] text-[13px] text-inverted/45">
-        <span>
-          От: <b className="font-medium text-inverted/80">вы</b>
-        </span>
+    // data-letter-bounds marks the box the option popups must stay inside.
+    <div data-letter-bounds className="relative flex flex-col gap-[22px]">
+      {/* One quiet line instead of the old От/Кому/Тема row: who reads this and
+          where it goes. The address stays copyable for anyone who'd rather write
+          from their own mail client. */}
+      <div className="flex flex-wrap items-center gap-x-[8px] gap-y-[4px] text-[13px] text-inverted/40">
+        <span>Письмо в студию ·</span>
         <button
           type="button"
           onClick={copyMail}
           aria-label="Скопировать почту hello@tachos.ru"
-          className="group/mail inline-flex items-center gap-[6px] rounded-[6px] px-[2px] py-[1px] outline-none transition hover:text-inverted/70 focus-visible:ring-1 focus-visible:ring-white/40"
+          className="group/mail inline-flex items-center gap-[6px] rounded-[6px] outline-none transition hover:text-inverted/70 focus-visible:ring-1 focus-visible:ring-white/40"
         >
-          <span>
-            Кому:{' '}
-            <b className="font-medium text-inverted/80 underline decoration-dotted underline-offset-2">
-              hello@tachos.ru
-            </b>
-          </span>
+          <span className="underline decoration-dotted underline-offset-2">hello@tachos.ru</span>
           {mailCopied ? (
             <span className="text-[12px] text-accent">✓</span>
           ) : (
-            <CopyGlyph className="text-inverted/40 transition group-hover/mail:text-inverted/70" />
+            <CopyGlyph className="text-inverted/35 transition group-hover/mail:text-inverted/70" />
           )}
         </button>
-        <span>
-          Тема: <b className="font-medium text-inverted/80">{subject}</b>
-        </span>
       </div>
 
       {/* THE LETTER — types step by step, stopping at each empty slot */}
       {/* Mobile: slightly tighter line-height so the letter reads as a block, not airy lines */}
-      <div className="whitespace-pre-line text-[16px] leading-[1.7] text-inverted/90 sm:text-[17px] sm:leading-[1.85] lg:text-[20px] lg:leading-[2.2]">
+      {/* The letter IS the headline of this form — sized to carry the screen,
+          with the line-height kept generous enough for the option pills to drop
+          under a slot without crowding the next line. */}
+      <div
+        className={`whitespace-pre-line font-medium tracking-[-0.01em] text-inverted ${
+          size === 'lg'
+            ? 'text-[22px] leading-[1.6] sm:text-[28px] sm:leading-[1.7] lg:text-[36px] lg:leading-[1.7]'
+            : 'text-[19px] leading-[1.65] sm:text-[23px] sm:leading-[1.75] lg:text-[27px] lg:leading-[1.85]'
+        }`}
+      >
         {segments.map((s, i) => {
           if (i > segRef.current) return null;
           if ('text' in s) {
@@ -387,8 +435,14 @@ export function LetterBody({ active, autofocus = true }: { active: boolean; auto
               autoComplete="off"
               aria-invalid={contactError !== null}
               aria-describedby={contactError ? contactErrId : undefined}
-              className={`h-[54px] w-full rounded-[14px] border bg-black/30 px-[16px] text-[15px] text-inverted outline-none transition placeholder:text-inverted/40 focus:border-white/25 ${
-                contactError ? 'border-accent' : 'border-white/10'
+              // White field, like the hero prompt — the one bright surface in the
+              // letter, so the eye lands on the thing left to fill.
+              className={`h-[54px] w-full rounded-[14px] border bg-white px-[16px] text-[15px] text-black outline-none transition placeholder:text-black/40 ${
+                contactError
+                  ? 'border-accent'
+                  : nudgeContact
+                    ? 'contact-nudge border-accent/70'
+                    : 'border-transparent'
               }`}
             />
             {contactError && (
@@ -421,7 +475,9 @@ export function LetterBody({ active, autofocus = true }: { active: boolean; auto
           </button>
         </div>
 
-        <label className="mt-[16px] flex cursor-pointer items-start gap-[8px] text-[12px] leading-[1.4] text-inverted/55">
+        {/* One short line: the legal wording is in the tooltip-length title, the
+            visible promise is the part that matters to a visitor. */}
+        <label className="mt-[14px] flex cursor-pointer items-center gap-[8px] text-[12.5px] leading-[1.4] text-inverted/45">
           <input
             type="checkbox"
             checked={agreed}
@@ -431,21 +487,15 @@ export function LetterBody({ active, autofocus = true }: { active: boolean; auto
             }}
             aria-invalid={agreeError}
             aria-describedby={agreeError ? agreeErrId : undefined}
-            className="mt-[2px] accent-accent"
+            className="accent-accent"
           />
-          <span>
-            Даю согласие на обработку персональных данных. Один ответ по делу — без рассылок.
-          </span>
+          <span>Согласие на обработку персональных данных</span>
         </label>
         {agreeError && (
           <p id={agreeErrId} role="alert" className="mt-[6px] text-[12px] text-accent">
             Нужно согласие
           </p>
         )}
-        {/* quiet meta-offer in the corner — this very form is something we build */}
-        <p className="mt-[18px] text-[12px] leading-[1.45] text-inverted/40">
-          P.S. Нравится эта форма? Сделаем такую&nbsp;же на&nbsp;ваш сайт — упомяните в&nbsp;задаче.
-        </p>
       </div>
 
       {toast && (

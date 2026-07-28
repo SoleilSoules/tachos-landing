@@ -53,7 +53,7 @@ export function CursorCompanion() {
 
     let mx = innerWidth / 2,
       my = innerHeight * 0.42;
-    let pos = { x: mx, y: my - 40 };
+    const pos = { x: mx, y: my - 40 };
     let mode: 'appear' | 'companion' | 'footer-perch' = 'appear';
 
     const appearStart = performance.now() + 160;

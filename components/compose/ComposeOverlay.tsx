@@ -42,24 +42,18 @@ export function ComposeOverlay() {
           isOpen ? '' : 'pointer-events-none'
         }`}
       >
-        <div className="flex items-center gap-[10px] border-b border-white/10 bg-white/5 px-[20px] py-[14px]">
-          <span className="flex gap-[6px]" aria-hidden>
-            <i className="size-[10px] rounded-full bg-accent" />
-            <i className="size-[10px] rounded-full bg-white/20" />
-            <i className="size-[10px] rounded-full bg-white/20" />
-          </span>
-          <span className="text-[13px] text-inverted/55">Новое письмо</span>
-          <button
-            type="button"
-            onClick={close}
-            aria-label="Свернуть письмо"
-            className="ml-auto grid size-[30px] place-items-center rounded-full bg-white/10 text-inverted/80 transition hover:bg-white/20 hover:text-inverted"
-          >
-            —
-          </button>
-        </div>
+        {/* No window chrome: the mac traffic lights and the "Новое письмо" title
+            were set dressing around two real actions. Just a close button. */}
+        <button
+          type="button"
+          onClick={close}
+          aria-label="Закрыть письмо"
+          className="absolute right-[18px] top-[18px] z-10 grid size-[36px] place-items-center rounded-full bg-white/[0.07] text-[19px] leading-none text-inverted/70 transition hover:bg-white/15 hover:text-inverted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-bright"
+        >
+          ×
+        </button>
 
-        <div className="p-[34px_40px]">
+        <div className="p-[38px_28px_32px] sm:p-[44px_44px_38px]">
           {isSuccess ? <ComposeSent onClose={close} /> : <LetterBody active={isOpen} />}
         </div>
       </div>

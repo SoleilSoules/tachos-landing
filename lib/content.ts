@@ -53,13 +53,6 @@ export const clients: Client[] = [
   { name: 'Maginary', logo: '/logos/maginary-grunge.svg', height: 24 },
 ];
 
-// Band under the hero that hosts the letter-composer prompt (it used to live in
-// the hero itself; the video composition left no room for it there).
-export const promptBand = deepNbsp({
-  title: 'Расскажите о задаче',
-  body: 'Опишите ее своими словами\xa0— соберем из этого письмо, останется отправить',
-} as const);
-
 // Label above the hero logo grid (bottom-right, filter.im-style composition).
 export const trustLabel = 'Нам доверяют';
 
@@ -74,10 +67,6 @@ export const founder = deepNbsp({
 export const casesIntro = deepNbsp({
   titleBlack: 'Успешно запустили',
   titleAccent: { prefix: 'более ', count: 40, suffix: ' цифровых продуктов' },
-  body: [
-    'Считаем продукт цифрами: загрузки, точки сети, сроки до релиза',
-    'Свой штат и тех-лид в каждом проекте — без подряда',
-  ],
 } as const);
 
 export type CaseTab = { label: string; count?: number; icon?: 'star'; active?: boolean };
@@ -91,7 +80,7 @@ export const caseTabs: CaseTab[] = [
   { label: 'Геймдев' },
 ];
 
-export type CaseStory = {
+type CaseStory = {
   summary: string; // 1–2 sentences under the case-page title
   metrics: { value: string; label: string }[]; // 2–3 headline figures
   sections: { title: string; body: string }[]; // context / what we did / result
@@ -501,7 +490,7 @@ export const products: Product[] = deepNbsp<Product[]>([
 ]);
 
 // ─── Blog ──────────────────────────────────────────────────────────
-export type BlogBlock =
+type BlogBlock =
   | { type: 'p'; text: string }
   | { type: 'h'; text: string }
   | { type: 'quote'; text: string };
@@ -517,7 +506,8 @@ export type Post = {
   authorRole: string;
   excerpt: string; // lead line under the title on the post page
   body: BlogBlock[]; // placeholder prose until Vadim confirms
-  withImage?: boolean; // the wide right-hand card carries a cover
+  cover?: string; // full-bleed image at the top of the lead card
+  inset?: string; // product shot that sits inside a card instead of filling it
 };
 
 export const blogIntro = deepNbsp({
@@ -535,6 +525,8 @@ export const posts: Post[] = deepNbsp<Post[]>([
     read: '3 минуты',
     author: 'Вадим',
     authorRole: 'Тех лид',
+    // the game itself — the same shot the Добрый case card carries
+    cover: '/figma/dobry-cover.webp',
     excerpt: 'Промо-веб-игра для бренда №1 на рынке соков — от идеи до прода за четыре недели',
     body: [
       {
@@ -606,7 +598,7 @@ export const posts: Post[] = deepNbsp<Post[]>([
     read: '3 минуты',
     author: 'Вадим',
     authorRole: 'Тех лид',
-    withImage: true,
+    inset: '/figma/monte-gtr.png',
     excerpt: 'Собрали диджитал-устройство для дрифт-комьюнити — железо и софт в одной связке',
     body: [
       {
@@ -653,48 +645,16 @@ export const ctaBanner = deepNbsp({
 } as const);
 
 // ─── Services / price list ─────────────────────────────────────────
-// Prices and feature labels are placeholders until Vadim confirms the
-// real numbers (the concept screenshot is too small to read them).
 export const servicesIntro = deepNbsp({
   titleLead: 'Делаем сайты, приложения и сервисы',
   titleAccent: 'под ключ',
   body: 'Не знаете, как назвать задачу, — поможем сформулировать и подберем состав работ. Ниже — направления, с которыми работаем',
 } as const);
 
-export const serviceFeatures: { label: string }[] = deepNbsp<{ label: string }[]>([
-  { label: 'Фикс-прайс в договоре' },
-  { label: 'Свой штат, без подряда' },
-  { label: 'Сроки закреплены' },
-  { label: 'Поддержка после релиза' },
-  { label: 'NDA по запросу' },
-]);
-
-export type Service = { name: string; desc: string; price: string };
-
-export const services: Service[] = deepNbsp<Service[]>([
-  {
-    name: 'Web Design',
-    desc: 'Лендинги, корпоративные сайты, веб-сервисы под ключ',
-    price: 'от 400 000 ₽',
-  },
-  {
-    name: 'Mobile Development',
-    desc: 'iOS и Android — нативно и кроссплатформенно',
-    price: 'от 1 200 000 ₽',
-  },
-  {
-    name: 'Backend & Infrastructure',
-    desc: 'API, базы данных, очереди, self-hosted и облако',
-    price: 'от 800 000 ₽',
-  },
-  {
-    name: 'Discovery & Analytics',
-    desc: 'Исследование, прототип, метрики и аналитика продукта',
-    price: 'от 300 000 ₽',
-  },
-]);
-
-// ─── Thank-you letters (between Products and Blog) ─────────────────
+// ─── Thank-you letters ─────────────────────────────────────────────
+// PARKED, not rendered: Gosha asked to hide the section (task #16) but keep the
+// content — it returns once Vadim supplies the real letters. Delete only on his
+// word; until then knip will list these two as unused exports.
 export const lettersIntro = deepNbsp({
   title: 'Благодарственные письма',
   body: 'Официальные отзывы и рекомендательные письма от компаний, с которыми мы работали',

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { type ComposeState, COMPOSE_DRAFT_KEY } from './compose';
+import { type ComposeState, COMPOSE_DRAFT_KEY, isLetterType } from './compose';
 
 // Only the task description survives between sessions — never the contact field
 // or consent. Those are personal data (152-ФЗ); we don't persist them locally.
@@ -13,14 +13,16 @@ export function loadDraft(): DraftPayload | null {
     const raw = localStorage.getItem(COMPOSE_DRAFT_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<DraftPayload>;
-    if (typeof parsed.type !== 'string') return null;
+    // A stale or hand-edited draft must not smuggle an unknown type into the
+    // letter — buildLetter looks the type up in a table and would throw.
+    if (!isLetterType(parsed.type)) return null;
     return parsed as DraftPayload;
   } catch {
     return null;
   }
 }
 
-export function saveDraft(state: ComposeState): void {
+function saveDraft(state: ComposeState): void {
   if (typeof window === 'undefined') return;
   const payload: DraftPayload = {
     type: state.type,

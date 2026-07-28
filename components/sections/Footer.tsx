@@ -80,13 +80,14 @@ export function Footer() {
         <div className="relative grid grid-cols-1 gap-[40px] lg:grid-cols-[minmax(0,1fr)_460px]">
           {/* left — the smart letter, the very same composer as the modal (synced) */}
           <div>
-            <h2 className="max-w-[611px] text-[clamp(30px,8vw,52px)] font-semibold leading-[0.95] tracking-[-0.01em] lg:leading-[0.9]">
-              {footer.formTitle[0]}
-              <br />
-              {footer.formTitle[1]} {footer.formTitle[2]}
-            </h2>
-            <div className="mt-[36px] max-w-[660px]">
-              {isSuccess ? <ComposeSent /> : <LetterBody active={inView} autofocus={false} />}
+            {/* No heading here: the letter itself opens the block, sized up so it
+                carries the footer the way «Отправьте нам письмо» used to. */}
+            <div className="max-w-[720px]">
+              {isSuccess ? (
+                <ComposeSent />
+              ) : (
+                <LetterBody active={inView} autofocus={false} size="lg" />
+              )}
             </div>
             {/* manager sits right under the letter — Anna is who replies to it */}
             <div className="mt-[28px] flex items-center gap-[10px]">
@@ -144,7 +145,10 @@ export function Footer() {
         <div className="relative mt-[40px] border-t border-white/10 pt-[28px] lg:mt-[64px] lg:pt-[40px]">
           <div className="flex flex-wrap items-center gap-x-[28px] gap-y-[14px] text-[16px] font-medium tracking-[0.04em]">
             <span className="flex items-center gap-[12px] uppercase text-white/80">
-              <PixelSilhouette className="shrink-0 translate-y-[6px]" />
+              {/* The statue stands ON the caps line: baseline alignment leaves a
+                  canvas ~13px below the letters (its box is taller than the text
+                  line), so it's lifted by that much. */}
+              <PixelSilhouette className="shrink-0 self-end -translate-y-[13px]" />
               {footer.contacts.city}
             </span>
             <button

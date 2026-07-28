@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useEffect, useId, useRef, useState } from 'react';
 import { asset } from '@/lib/asset';
 import { founder } from '@/lib/content';
+import { useTouchDevice } from '@/lib/useMediaQuery';
 
 const widget = {
   badge: 'Экстренная связь с основателем',
@@ -11,13 +12,6 @@ const widget = {
   collapse: 'Свернуть',
 } as const;
 
-function PlayIcon() {
-  return (
-    <svg width="13" height="15" viewBox="0 0 13 15" fill="none" aria-hidden>
-      <path d="M1 1.5 12 7.5 1 13.5V1.5Z" fill="currentColor" />
-    </svg>
-  );
-}
 function CloseIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
@@ -62,6 +56,13 @@ function MagneticButton({ children, className }: { children: React.ReactNode; cl
 // the cases section also sits closer under the hero (#17).
 export function Founder() {
   const [expanded, setExpanded] = useState(false);
+  // The dot magnets to one of the four corners, and the panel opens INTO that
+  // corner — it takes the dot's own place (the dot hides while open), so it
+  // reads as the dot unfolding rather than a window appearing elsewhere.
+  const [corner, setCorner] = useState<{ h: 'left' | 'right'; v: 'top' | 'bottom' }>({
+    h: 'right',
+    v: 'bottom',
+  });
   const panelId = useId();
   const cardRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
@@ -84,10 +85,7 @@ export function Founder() {
   const [mounted, setMounted] = useState(false);
   // Hide the draggable widget on touch devices — drag fights page scroll and the
   // dot has nowhere good to sit on a phone (mirrors the mascot's touch guard).
-  const [touchDevice, setTouchDevice] = useState(false);
-  useEffect(() => {
-    setTouchDevice(window.matchMedia('(hover: none), (pointer: coarse)').matches);
-  }, []);
+  const touchDevice = useTouchDevice();
 
   useEffect(() => {
     if (!expanded) return;
@@ -262,7 +260,8 @@ export function Founder() {
   return (
     <>
       <style>{`
-        @keyframes fnd-rise { from { opacity: 0; transform: translate(-50%,-50%) scale(0.97); } to { opacity: 1; transform: translate(-50%,-50%) scale(1); } }
+        @keyframes fnd-slide-r { from { opacity: 0; transform: translateX(26px) scale(0.97); } to { opacity: 1; transform: none; } }
+        @keyframes fnd-slide-l { from { opacity: 0; transform: translateX(-26px) scale(0.97); } to { opacity: 1; transform: none; } }
         @keyframes fnd-ping { 0% { transform: scale(1); opacity: 0.55; } 70% { transform: scale(1.6); opacity: 0; } 100% { transform: scale(1.6); opacity: 0; } }
         .fnd-dot[data-dragging="1"] { cursor: grabbing; }
         .fnd-dot img { -webkit-user-drag: none; user-select: none; }
@@ -284,6 +283,10 @@ export function Founder() {
             stRef.current.suppressClick = false;
             return;
           }
+          setCorner({
+            h: toggleRef.current?.dataset.side === 'left' ? 'left' : 'right',
+            v: stRef.current.y + 26 < window.innerHeight / 2 ? 'top' : 'bottom',
+          });
           setExpanded(true);
         }}
         className={`fnd-dot group fixed left-0 top-0 z-[90] flex cursor-grab touch-none select-none items-center rounded-full outline-none transition-opacity duration-500 will-change-transform focus-visible:ring-2 focus-visible:ring-accent-bright focus-visible:ring-offset-2 focus-visible:ring-offset-bg active:cursor-grabbing ${mounted ? 'opacity-100' : 'opacity-0'}`}
@@ -305,35 +308,34 @@ export function Founder() {
         </span>
       </button>
 
-      {/* ─── Expanded: full founder card as a centred overlay ─── */}
+      {/* ─── Expanded: a slim panel that slides out of the dot's own edge ───
+          Not a full-screen modal: the page stays visible and un-dimmed behind
+          it, so the founder reads as a side widget you peek at, not a dialog
+          that seizes the screen. An invisible catcher closes it on outside click. */}
       {expanded && (
-        <div
-          className="fixed inset-0 z-[115] flex items-center justify-center bg-black/55 p-4 backdrop-blur-sm"
-          onClick={() => {
-            setExpanded(false);
-            toggleRef.current?.focus();
-          }}
-        >
+        <>
+          <div
+            className="fixed inset-0 z-[110]"
+            aria-hidden
+            onClick={() => {
+              setExpanded(false);
+              toggleRef.current?.focus();
+            }}
+          />
           <div
             ref={cardRef}
             id={panelId}
             role="region"
             aria-label={`${founder.person.name} — ${founder.person.role}`}
             tabIndex={-1}
-            onClick={(e) => e.stopPropagation()}
-            className="relative h-[414px] w-[1030px] max-w-full overflow-hidden rounded-founder bg-ink outline-none [animation:fnd-rise_0.42s_cubic-bezier(0.16,1,0.3,1)_both] motion-reduce:[animation:none]"
-            style={{ position: 'fixed', left: '50%', top: '50%' }}
+            className={`fixed z-[115] max-h-[calc(100vh-40px)] w-[390px] max-w-[calc(100vw-40px)] overflow-y-auto overscroll-contain rounded-[28px] border border-white/10 bg-ink shadow-[0_30px_90px_rgba(0,0,0,0.6)] outline-none motion-reduce:[animation:none] ${
+              corner.v === 'top' ? 'top-[20px]' : 'bottom-[20px]'
+            } ${
+              corner.h === 'left'
+                ? 'left-[20px] [animation:fnd-slide-l_0.42s_cubic-bezier(0.16,1,0.3,1)_both]'
+                : 'right-[20px] [animation:fnd-slide-r_0.42s_cubic-bezier(0.16,1,0.3,1)_both]'
+            }`}
           >
-            <Image
-              src={asset('/figma/founder-card-bg.png')}
-              alt=""
-              fill
-              sizes="1030px"
-              className="object-cover opacity-50"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/70" />
-            <div className="absolute inset-0 bg-[radial-gradient(60%_70%_at_72%_72%,rgba(240,81,56,0.28),transparent_70%)]" />
-
             <button
               type="button"
               aria-label={widget.collapse}
@@ -341,64 +343,57 @@ export function Founder() {
                 setExpanded(false);
                 toggleRef.current?.focus();
               }}
-              className="absolute right-[20px] top-[20px] z-10 grid size-[40px] place-items-center rounded-full bg-white/10 text-white backdrop-blur-sm transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-bright"
+              className="absolute right-[14px] top-[14px] z-20 grid size-[34px] place-items-center rounded-full bg-black/45 text-white backdrop-blur-sm transition hover:bg-black/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-bright"
             >
               <CloseIcon />
             </button>
 
-            <div className="absolute inset-y-0 right-0 w-[472px] overflow-hidden rounded-l-[28px]">
+            {/* Contact-card header: the photo owns the top of the panel and the
+                name sits on it, the way a phone shows a contact. */}
+            <div className="relative aspect-[5/4] w-full overflow-hidden">
               <Image
                 src={asset('/figma/founder-container.jpg')}
                 alt="Вадим — основатель студии"
                 fill
-                sizes="480px"
-                className="object-cover"
+                sizes="390px"
+                priority
+                className="object-cover object-[center_28%]"
               />
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 to-transparent" />
-              <div className="absolute bottom-[24px] left-[28px]">
-                <div className="text-[24px] font-semibold leading-tight text-white">
+              <div className="absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-ink via-ink/75 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-[22px]">
+                <div className="text-[23px] font-semibold leading-tight tracking-[-0.01em] text-inverted">
                   {founder.person.name}
                 </div>
-                <div className="text-[15px] text-white/60">{founder.person.role}</div>
+                <div className="mt-[2px] text-[14px] text-inverted/60">{founder.person.role}</div>
+                <div className="mt-[7px] flex items-center gap-[6px] text-[13px] text-[#3ad29f]">
+                  <span className="size-[6px] rounded-full bg-[#3ad29f]" />
+                  {widget.online}
+                </div>
               </div>
             </div>
 
-            <div className="absolute inset-y-[32px] left-[32px] flex w-[440px] flex-col justify-between">
-              <div>
-                <h2 className="text-[32px] font-semibold leading-[1.15] tracking-[-0.01em] text-inverted">
-                  {founder.heading[0]}
-                  <br />
-                  {founder.heading[1]}
-                  <br />
-                  {founder.heading[2]}
-                </h2>
-                <ul className="mt-[28px] flex flex-col gap-[16px] text-[19px] leading-[1.2] text-inverted/60">
-                  {founder.facts.map((fact) => (
-                    <li key={fact}>
-                      <span className="text-accent-bright">–</span> {fact}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            <div className="relative flex flex-col gap-[20px] p-[24px]">
+              <h2 className="text-[19px] font-semibold leading-[1.25] tracking-[-0.01em] text-inverted">
+                {founder.heading.join(' ')}
+              </h2>
 
-              <div className="flex items-center gap-[12px]">
-                <MagneticButton className="h-[56px] shrink-0 whitespace-nowrap rounded-[54px] bg-white px-[28px] text-[16px] font-medium text-black hover:brightness-95">
+              <ul className="flex flex-col gap-[11px] text-[14.5px] leading-[1.3] text-inverted/60">
+                {founder.facts.map((fact) => (
+                  <li key={fact} className="flex gap-[8px]">
+                    <span className="text-accent-bright">–</span>
+                    <span>{fact}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="border-t border-white/10 pt-[18px]">
+                <MagneticButton className="h-[50px] w-full rounded-[50px] bg-white text-[15px] font-medium text-black hover:brightness-95">
                   {founder.contactCta}
                 </MagneticButton>
-                <button
-                  type="button"
-                  className="flex h-[56px] items-center gap-[10px] whitespace-nowrap px-[8px] text-[16px] text-inverted transition hover:opacity-80"
-                >
-                  <span className="grid size-[36px] shrink-0 place-items-center rounded-full bg-white/15">
-                    <PlayIcon />
-                  </span>
-                  {founder.presentation.label}
-                  <span className="text-inverted/50">{founder.presentation.duration}</span>
-                </button>
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </>
   );

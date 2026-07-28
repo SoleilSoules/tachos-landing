@@ -54,7 +54,6 @@ export function CaseCard({ item }: { item: CaseItem }) {
       >
         {/* generated brand cover (real stills come from Vadim later) */}
         <CaseCover
-          id={item.id}
           client={item.client}
           shot={item.shot}
           shotKind={item.shotKind}

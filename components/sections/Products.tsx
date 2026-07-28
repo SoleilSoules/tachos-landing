@@ -4,8 +4,45 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { asset } from '@/lib/asset';
 import { useReveal } from '@/hooks/useReveal';
+import { useReducedMotion } from '@/lib/useMediaQuery';
+import { useUrlParam } from '@/lib/useUrlParam';
 import { WordsReveal } from '@/components/WordsReveal';
 import { products, productsIntro } from '@/lib/content';
+
+// The deck ships dark. `?products=light` renders the same section inverted so
+// the two can be compared on the live page — Гоша picks, then the loser goes.
+type Skin = {
+  section: string;
+  panel: string;
+  glow: string;
+  body: string;
+  cta: string;
+  pill: string;
+  mark: string;
+  tagline: string;
+};
+
+const DARK: Skin = {
+  section: 'bg-bg text-inverted',
+  panel: 'border-[#8d8d8d]/35 bg-white/[0.06] shadow-[0_30px_80px_rgba(0,0,0,0.45)]',
+  glow: 'bg-accent/25',
+  body: 'text-white/70',
+  cta: 'text-white',
+  pill: 'border-white/10 bg-white/[0.06] text-white',
+  mark: 'bg-white/10 text-white',
+  tagline: 'text-white/65',
+};
+
+const LIGHT: Skin = {
+  section: 'bg-white text-fg',
+  panel: 'border-black/[0.08] bg-black/[0.03] shadow-[0_30px_80px_rgba(0,0,0,0.13)]',
+  glow: 'bg-accent/20',
+  body: 'text-black/55',
+  cta: 'text-black',
+  pill: 'border-black/[0.09] bg-black/[0.04] text-black',
+  mark: 'bg-black/[0.07] text-black',
+  tagline: 'text-black/50',
+};
 
 // How long each product stays active before the carousel advances.
 const SLIDE_MS = 5000;
@@ -32,10 +69,12 @@ function ProductSwitcher({
   index,
   progress,
   onPick,
+  skin,
 }: {
   index: number;
   progress: number;
   onPick: (i: number) => void;
+  skin: Skin;
 }) {
   return (
     <div className="mt-[24px] flex flex-row items-stretch justify-center gap-[8px] lg:mt-[20px] lg:gap-[14px]">
@@ -50,9 +89,7 @@ function ProductSwitcher({
             onClick={() => onPick(i)}
             aria-current={isActive}
             className={`relative flex h-[56px] min-w-0 flex-1 items-center gap-[8px] overflow-hidden rounded-[14px] border px-[8px] text-left transition-colors duration-500 sm:h-[64px] sm:gap-[10px] sm:rounded-[16px] sm:px-[10px] lg:max-w-[300px] lg:gap-[12px] ${
-              isActive
-                ? 'border-accent/40 bg-accent text-white'
-                : 'border-white/10 bg-white/[0.06] text-white'
+              isActive ? 'border-accent/40 bg-accent text-white' : skin.pill
             }`}
           >
             {isActive && (
@@ -65,19 +102,27 @@ function ProductSwitcher({
             {/* lettermark placeholder (no blue 3rd-party glyph) — real product
                 logos from Vadim later (#23). */}
             <span
-              className={`relative grid size-[34px] shrink-0 place-items-center rounded-[10px] text-[16px] font-semibold text-white sm:size-[44px] sm:rounded-[12px] sm:text-[18px] ${
-                isActive ? 'bg-black/25' : 'bg-white/10'
+              className={`relative grid size-[34px] shrink-0 place-items-center rounded-[10px] text-[16px] font-semibold sm:size-[44px] sm:rounded-[12px] sm:text-[18px] ${
+                isActive ? 'bg-black/25 text-white' : skin.mark
               }`}
             >
               {p.name.charAt(0)}
             </span>
             <span className="relative min-w-0">
-              <span className="block truncate text-[14px] font-medium leading-[1.15] text-white sm:text-[16px]">
+              <span
+                className={`block truncate text-[14px] font-medium leading-[1.15] sm:text-[16px] ${
+                  isActive ? 'text-white' : ''
+                }`}
+              >
                 {p.name}
               </span>
               {/* Tagline truncates to almost nothing in a 1/3-width pill at 390px —
                   hide it on mobile so the name reads cleanly; back at sm+. */}
-              <span className="hidden truncate text-[14px] leading-[1.2] text-white/65 sm:block">
+              <span
+                className={`hidden truncate text-[14px] leading-[1.2] sm:block ${
+                  isActive ? 'text-white/65' : skin.tagline
+                }`}
+              >
                 {p.tagline}
               </span>
             </span>
@@ -98,6 +143,21 @@ export function Products() {
   const { index } = view;
   const [progress, setProgress] = useState(0);
   const ref = useReveal<HTMLDivElement>({ threshold: 0.15, rootMargin: '-40px 0px' });
+  const reduced = useReducedMotion();
+  const skin = useUrlParam('products') === 'light' ? LIGHT : DARK;
+
+  // Reset the timer bar the moment the active card changes. Done during render
+  // (React's "adjusting state when a prop changes") rather than in the rAF
+  // effect below — a setState there would leave the old fill on screen for a
+  // frame and cost an extra render pass.
+  const [timedIndex, setTimedIndex] = useState(index);
+  if (timedIndex !== index) {
+    setTimedIndex(index);
+    setProgress(0);
+  }
+
+  // Reduced motion gets no sweep at all: the bar reads as already full.
+  const shownProgress = reduced ? 100 : progress;
 
   // Switch products from the small switcher; ignore re-picking the active one.
   const pick = (next: number) =>
@@ -121,12 +181,7 @@ export function Products() {
 
   // Drive the active card's fill; advance to the next product on completion.
   useEffect(() => {
-    if (!inView) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setProgress(100);
-      return;
-    }
-    setProgress(0);
+    if (!inView || reduced) return;
     let raf = 0;
     let start = 0;
     const tick = (now: number) => {
@@ -141,12 +196,12 @@ export function Products() {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [index, count, inView]);
+  }, [index, count, inView, reduced]);
 
   return (
     <section
       id="products"
-      className="overflow-hidden bg-bg pb-[80px] pt-[64px] text-inverted lg:pb-[150px] lg:pt-[130px]"
+      className={`overflow-hidden pb-[80px] pt-[64px] lg:pb-[150px] lg:pt-[130px] ${skin.section}`}
     >
       <h2 className="mx-auto max-w-[1000px] px-6 text-center text-[clamp(30px,8vw,52px)] font-semibold leading-[1.05] tracking-[-0.01em] lg:leading-[1.0]">
         <WordsReveal as="span" stagger={48} className="block">
@@ -194,10 +249,12 @@ export function Products() {
                 <div
                   data-hint="Наш продукт"
                   data-hint-sub={p.name}
-                  className="relative h-full overflow-hidden rounded-[28px] border border-[#8d8d8d]/35 bg-white/[0.06] shadow-[0_30px_80px_rgba(0,0,0,0.45)] backdrop-blur-md [clip-path:inset(0_round_28px)] lg:rounded-[40px] lg:[clip-path:inset(0_round_40px)]"
+                  className={`relative h-full overflow-hidden rounded-[28px] border backdrop-blur-md [clip-path:inset(0_round_28px)] lg:rounded-[40px] lg:[clip-path:inset(0_round_40px)] ${skin.panel}`}
                 >
                   {/* warm glow behind the device */}
-                  <div className="pointer-events-none absolute -right-[40px] top-1/2 h-[560px] w-[600px] -translate-y-1/2 rounded-full bg-accent/25 blur-[150px]" />
+                  <div
+                    className={`pointer-events-none absolute -right-[40px] top-1/2 h-[560px] w-[600px] -translate-y-1/2 rounded-full blur-[150px] ${skin.glow}`}
+                  />
 
                   {/* Tablet mockup INSIDE the panel (Гоша) so the rounded card edge
                       clips it cleanly; pushed further right — the device bleeds past
@@ -224,7 +281,7 @@ export function Products() {
                         <h3 className="text-[28px] font-medium leading-[1.05] tracking-[-0.01em] lg:text-[42px] lg:leading-[1.0]">
                           {p.heading}
                         </h3>
-                        <p className="mt-[16px] max-w-[366px] text-[16px] leading-[1.3] text-white/70">
+                        <p className={`mt-[16px] max-w-[366px] text-[16px] leading-[1.3] ${skin.body}`}>
                           {p.body}
                         </p>
                       </div>
@@ -232,7 +289,7 @@ export function Products() {
                       <button
                         type="button"
                         data-compose
-                        className="hidden w-fit text-[14px] font-medium tracking-[0.04em] text-white underline-offset-4 transition hover:text-accent-bright hover:underline lg:block"
+                        className={`hidden w-fit text-[14px] font-medium tracking-[0.04em] underline-offset-4 transition hover:text-accent-bright hover:underline lg:block ${skin.cta}`}
                       >
                         {p.cta}
                       </button>
@@ -255,7 +312,7 @@ export function Products() {
           })}
         </div>
 
-        <ProductSwitcher index={index} progress={progress} onPick={pick} />
+        <ProductSwitcher index={index} progress={shownProgress} onPick={pick} skin={skin} />
       </div>
     </section>
   );

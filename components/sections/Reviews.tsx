@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties }
 import Image from 'next/image';
 import { asset } from '@/lib/asset';
 import { useReveal } from '@/hooks/useReveal';
+import { useReducedMotion } from '@/lib/useMediaQuery';
 import { WordsReveal } from '@/components/WordsReveal';
 import { reviews, type Review } from '@/lib/content';
 
@@ -178,6 +179,7 @@ function AudioCard({ r }: { r: Review }) {
   const total = useMemo(() => parseDuration(r.duration), [r.duration]);
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0); // 0..1
+  const reduced = useReducedMotion();
   const waveRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
   const lastTsRef = useRef<number | null>(null);
@@ -186,14 +188,6 @@ function AudioCard({ r }: { r: Review }) {
   // of an <audio> timeupdate) so the demo is interactive before audio exists.
   useEffect(() => {
     if (!playing) return;
-
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduced) {
-      // No animation loop under reduced-motion: jump to the end instead.
-      setProgress(1);
-      setPlaying(false);
-      return;
-    }
 
     const step = (ts: number) => {
       if (lastTsRef.current === null) lastTsRef.current = ts;
@@ -218,12 +212,18 @@ function AudioCard({ r }: { r: Review }) {
   }, [playing, total]);
 
   const toggle = useCallback(() => {
+    // Reduced motion never enters the rAF loop — pressing play fills the
+    // waveform at once, which is the end state the loop would reach anyway.
+    if (reduced) {
+      setProgress(1);
+      return;
+    }
     setPlaying((p) => {
       // Restart from the top if we're at the end and the user hits play again.
       if (!p && progress >= 1) setProgress(0);
       return !p;
     });
-  }, [progress]);
+  }, [progress, reduced]);
 
   // Seek: map the click x within the waveform track to 0..1.
   const seek = useCallback((clientX: number) => {

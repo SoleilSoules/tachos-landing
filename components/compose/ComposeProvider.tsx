@@ -1,7 +1,13 @@
 'use client';
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { type ComposeState, type LetterType, initialCompose, buildLetter } from '@/lib/compose';
+import {
+  type ComposeState,
+  type LetterType,
+  initialCompose,
+  buildLetter,
+  isLetterType,
+} from '@/lib/compose';
 import { loadDraft, clearDraft, useAutoSaveDraft } from '@/lib/useComposeDraft';
 import { ComposeOverlay } from './ComposeOverlay';
 import { FloatingCompose } from './FloatingCompose';
@@ -141,8 +147,10 @@ export function ComposeProvider({ children }: { children: React.ReactNode }) {
       const el = (e.target as HTMLElement).closest('[data-compose]');
       if (!el) return;
       e.preventDefault();
+      // A bare `data-compose` renders as the string "true", so only a real type
+      // may pass — anything else opens the letter on its default type.
       const t = el.getAttribute('data-compose');
-      open(t ? { type: t as LetterType } : {});
+      open(isLetterType(t) ? { type: t } : {});
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setIsOpen(false);
@@ -158,7 +166,7 @@ export function ComposeProvider({ children }: { children: React.ReactNode }) {
   // Deep link: ?compose[=type] opens the letter on load.
   useEffect(() => {
     const p = new URLSearchParams(window.location.search).get('compose');
-    if (p !== null) open(p ? { type: p as LetterType } : {});
+    if (p !== null) open(isLetterType(p) ? { type: p } : {});
   }, [open]);
 
   return (

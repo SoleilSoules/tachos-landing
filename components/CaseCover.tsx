@@ -90,7 +90,6 @@ function PhoneMock({ shot, client, big }: { shot: string; client: string; big: b
 }
 
 export function CaseCover({
-  id: _id,
   client,
   shot,
   shotKind,
@@ -99,7 +98,6 @@ export function CaseCover({
   variant = 'card',
   className = '',
 }: {
-  id: string;
   client: string;
   shot?: string;
   shotKind?: 'phone' | 'desktop' | 'cover';

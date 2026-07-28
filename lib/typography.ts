@@ -5,7 +5,7 @@
 
 const SHORT_WORD = /(^|[\s(«"„])([A-Za-zА-Яа-яЁё]{1,2})[ \t]+/g;
 
-export function nbsp(text: string): string {
+function nbsp(text: string): string {
   // Two passes catch back-to-back short words ("и в облаке").
   return text.replace(SHORT_WORD, '$1$2 ').replace(SHORT_WORD, '$1$2 ');
 }
