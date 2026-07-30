@@ -186,7 +186,8 @@ export const reviews = deepNbsp({
 // New clients have real screenshots pending — they show an EMPTY device mock
 // (shotKind without shot) until the shot is captured. Their story/metrics are
 // placeholders ("—") until Vadim confirms copy. Verified work: Складно/Хайс/Maginary.
-export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
+export const cases: CaseItem[
+  ] = deepNbsp<CaseItem[]>([
   {
     id: 'docmed',
     client: 'Docmed',
@@ -203,26 +204,6 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     hidden: true,
     story: {
       summary: 'Телемедицина и запись к врачу для клиники доказательной медицины',
-      metrics: [
-        { value: '—', label: 'уточняется' },
-        { value: '—', label: 'уточняется' },
-      ],
-      sections: [{ title: 'Контекст', body: 'Описание кейса уточняется' }],
-    },
-  },
-  {
-    id: 'monte',
-    client: 'Monte',
-    category: 'автотюнинг',
-    tabs: ['Для маркетплейсов'],
-    desc: { lead: 'Сайт и сервисы для', highlight: 'студии автотюнинга', tail: '' },
-    tags: ['Автотюнинг', 'Web'],
-    shot: '/figma/monte-cover.webp',
-    coverVideo: '/covers/monte-cover.mp4',
-    shotKind: 'cover',
-    coverDark: true,
-    story: {
-      summary: 'Сайт и сервисы для студии автотюнинга',
       metrics: [
         { value: '—', label: 'уточняется' },
         { value: '—', label: 'уточняется' },
@@ -267,6 +248,26 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
       ],
     },
     verified: true,
+  },
+  {
+    id: 'monte',
+    client: 'Monte',
+    category: 'автотюнинг',
+    tabs: ['Для маркетплейсов'],
+    desc: { lead: 'Сайт и сервисы для', highlight: 'студии автотюнинга', tail: '' },
+    tags: ['Автотюнинг', 'Web'],
+    shot: '/figma/monte-cover.webp',
+    coverVideo: '/covers/monte-cover.mp4',
+    shotKind: 'cover',
+    coverDark: true,
+    story: {
+      summary: 'Сайт и сервисы для студии автотюнинга',
+      metrics: [
+        { value: '—', label: 'уточняется' },
+        { value: '—', label: 'уточняется' },
+      ],
+      sections: [{ title: 'Контекст', body: 'Описание кейса уточняется' }],
+    },
   },
   {
     id: 'maginary',
