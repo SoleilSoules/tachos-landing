@@ -66,7 +66,9 @@ export function WordsReveal({
     // Split on whitespace EXCEPT U+00A0 (nbsp): deepNbsp() glues short prepositions
     // to the next word with nbsp, and we must keep that pair in one animated word
     // so it never wraps (otherwise "и сервисы" splits and the "и" hangs).
-    text.split(/([^\S ]+)/).forEach((tok) => {
+    // \u00A0 is written as an ESCAPE on purpose: as a literal char it is
+    // invisible and reads as a plain space in any editor/diff.
+    text.split(/([^\S\u00A0]+)/u).forEach((tok) => {
       if (tok.trim() === '') out.push(tok);
       else
         out.push(

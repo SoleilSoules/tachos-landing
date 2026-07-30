@@ -6,7 +6,6 @@ type UseRevealOptions = {
   stagger?: number; // ms between siblings
   threshold?: number;
   duration?: number; // ms
-  variant?: string; // extra class, e.g. 'reveal-fade'
   rootMargin?: string;
 };
 
@@ -17,7 +16,6 @@ export function useReveal<T extends HTMLElement = HTMLElement>({
   stagger = 95,
   threshold = 0.12,
   duration = 700,
-  variant,
   rootMargin = '-80px 0px',
 }: UseRevealOptions = {}) {
   const ref = useRef<T>(null);
@@ -39,7 +37,6 @@ export function useReveal<T extends HTMLElement = HTMLElement>({
         el.style.setProperty('--reveal-delay', `${reduced ? 0 : i * stagger}ms`);
         el.style.setProperty('--reveal-dur', `${duration}ms`);
         el.classList.add('reveal-visible');
-        if (variant) el.classList.add(variant);
       });
     };
 
@@ -65,7 +62,7 @@ export function useReveal<T extends HTMLElement = HTMLElement>({
       clearTimeout(fallback);
       observer.disconnect();
     };
-  }, [stagger, threshold, duration, variant, rootMargin]);
+  }, [stagger, threshold, duration, rootMargin]);
 
   return ref;
 }

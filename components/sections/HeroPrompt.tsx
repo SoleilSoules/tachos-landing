@@ -154,8 +154,7 @@ export function HeroPrompt({ chips = true }: { chips?: boolean } = {}) {
           The whole pill is clickable — it focuses the input. */}
       <div
         onClick={submit}
-        data-hint="Нажмите — соберем письмо"
-        data-hint-sub="или выберите чип ниже"
+        data-hint="hero"
         className="relative flex h-[72px] w-full max-w-[554px] cursor-pointer items-center gap-[12px] overflow-hidden rounded-[28px] bg-white pl-[20px] shadow-input sm:h-[88px] sm:pl-[22px]"
       >
         {/* hidden mirror — measures caret x using the same font as the input */}
@@ -192,6 +191,9 @@ export function HeroPrompt({ chips = true }: { chips?: boolean } = {}) {
             if (value.trim()) submit();
             else toggleVoice();
           }}
+          // the mascot's line follows the button's role: dictation when empty,
+          // "send it" once there's text
+          data-hint={value.trim() ? 'send' : 'voice'}
           aria-label={
             value.trim() ? 'Отправить — Enter' : listening ? 'Остановить запись' : 'Голосовой ввод'
           }

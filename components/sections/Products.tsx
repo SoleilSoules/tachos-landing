@@ -88,6 +88,8 @@ function ProductSwitcher({
             type="button"
             onClick={() => onPick(i)}
             aria-current={isActive}
+            data-hint="switcher"
+            data-hint-sub={p.name}
             className={`relative flex h-[56px] min-w-0 flex-1 items-center gap-[8px] overflow-hidden rounded-[14px] border px-[8px] text-left transition-colors duration-500 sm:h-[64px] sm:gap-[10px] sm:rounded-[16px] sm:px-[10px] lg:max-w-[300px] lg:gap-[12px] ${
               isActive ? 'border-accent/40 bg-accent text-white' : skin.pill
             }`}
@@ -247,8 +249,8 @@ export function Products() {
                     the glow + rounding tidy; the tablet lives OUTSIDE it (sibling)
                     so it can bleed past the top edge like Figma. */}
                 <div
-                  data-hint="Наш продукт"
-                  data-hint-sub={p.name}
+                  data-hint="product"
+                  data-hint-sub={p.id}
                   className={`relative h-full overflow-hidden rounded-[28px] border backdrop-blur-md [clip-path:inset(0_round_28px)] lg:rounded-[40px] lg:[clip-path:inset(0_round_40px)] ${skin.panel}`}
                 >
                   {/* warm glow behind the device */}

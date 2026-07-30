@@ -30,6 +30,7 @@ export default async function CasePage({ params }: { params: Promise<{ slug: str
   const item = cases.find((c) => c.id === slug);
   if (!item) notFound();
 
-  const others = cases.filter((c) => c.id !== item.id).slice(0, 3);
+  // hidden cases have placeholder pages («уточняется») — never surface them
+  const others = cases.filter((c) => !c.hidden && c.id !== item.id).slice(0, 3);
   return <CaseView item={item} others={others} />;
 }

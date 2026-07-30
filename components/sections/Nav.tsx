@@ -29,20 +29,29 @@ function NavLink({
   onHome,
   className,
   onClick,
+  hintSub,
   children,
 }: {
   href: string;
   onHome: boolean;
   className?: string;
   onClick?: () => void;
+  hintSub?: string;
   children: React.ReactNode;
 }) {
+  // data-hint feeds the mascot a per-section line (lib/nachos-lines NAV_LINES)
   return onHome ? (
-    <a href={href} className={className} onClick={onClick}>
+    <a href={href} className={className} onClick={onClick} data-hint="nav" data-hint-sub={hintSub}>
       {children}
     </a>
   ) : (
-    <Link href={`/${href}`} className={className} onClick={onClick}>
+    <Link
+      href={`/${href}`}
+      className={className}
+      onClick={onClick}
+      data-hint="nav"
+      data-hint-sub={hintSub}
+    >
       {children}
     </Link>
   );
@@ -109,6 +118,7 @@ export function Nav() {
             <a
               href="#"
               data-logo-mark
+              data-hint="logo"
               className="flex items-center"
               aria-label="tachos — на главную"
             >
@@ -118,6 +128,7 @@ export function Nav() {
             <Link
               href="/"
               data-logo-mark
+              data-hint="logo"
               className="flex items-center"
               aria-label="tachos — на главную"
             >
@@ -136,6 +147,7 @@ export function Nav() {
                 key={link.label}
                 href={link.href}
                 onHome={onHome}
+                hintSub={link.label}
                 className="text-[16px] font-medium tracking-[0.04em] text-inverted transition-colors hover:text-accent-bright"
               >
                 {link.label}
@@ -146,6 +158,7 @@ export function Nav() {
           <a
             href="#contacts"
             data-compose
+            data-hint="nav-cta"
             className="rounded-button bg-accent-bright px-[16px] py-[7px] text-[16px] text-inverted backdrop-blur-sm transition hover:brightness-110"
           >
             {nav.cta}

@@ -49,6 +49,7 @@ export function FloatingCompose() {
         tabIndex={visible ? 0 : -1}
         onClick={() => open()}
         aria-label="Собрать письмо в студию"
+        data-hint="floating"
         style={{
           opacity: visible ? 1 : 0,
           transform: `translateY(${visible ? 0 : 20}px)`,

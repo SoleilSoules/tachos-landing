@@ -44,8 +44,8 @@ export function CaseCard({ item }: { item: CaseItem }) {
   return (
     <article
       className="group flex flex-col gap-[14px]"
-      data-hint={`Кейс: ${item.client}`}
-      data-hint-sub={item.tags.join(' · ')}
+      data-hint="case"
+      data-hint-sub={item.client}
     >
       <Link
         href={`/cases/${item.id}`}

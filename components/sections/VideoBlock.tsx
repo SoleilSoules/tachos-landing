@@ -1,19 +1,51 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
 import { asset } from '@/lib/asset';
 
-// Office/team video on a white surface (no heading — just the clip). The Kinescope
-// embed was ripped out for good: even in background mode its player kept surfacing a
-// dark overlay/letterbox bar that read as a "shadow". A native <video> has NO player
-// chrome at all — autoplay + muted + loop + object-cover fills the 16:9 frame edge to
-// edge, so a shadow is physically impossible. TEMPORARY stand-in clip; swap the src
-// for Vadim's own studio footage when it lands.
+// Office/team video on a white surface (no heading — just the clip). A native
+// <video> has no player chrome, so no overlay/letterbox "shadow" is possible.
+//
+// The clip is ~12 MB and sits below the fold, so it must NOT download with the
+// page (autoPlay alone forces the fetch — together with the hero reel that was
+// ~17 MB of video on first load). preload="none" + a poster keep the frame
+// painted for free; playback starts/stops as the block enters/leaves the
+// viewport. Reduced-motion users keep the still poster.
 export function VideoBlock() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          // play() may reject (autoplay policy, fetch aborted) — poster stays
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.25 },
+    );
+    io.observe(video);
+    return () => io.disconnect();
+  }, []);
+
   return (
     <section id="studio" className="bg-white pb-12 pt-6 lg:pb-[120px] lg:pt-[48px]">
       <div className="mx-auto max-w-page px-5 sm:px-8 lg:px-[80px]">
-        <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-ink lg:rounded-card">
+        <div
+          data-hint="studio"
+          className="relative aspect-video w-full overflow-hidden rounded-2xl bg-ink lg:rounded-card"
+        >
           <video
+            ref={videoRef}
             src={asset('/figma/studio.mp4')}
-            autoPlay
+            poster={asset('/figma/studio-poster.jpg')}
+            preload="none"
             muted
             loop
             playsInline

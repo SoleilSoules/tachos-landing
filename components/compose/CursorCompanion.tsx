@@ -111,9 +111,12 @@ export function CursorCompanion() {
     if (!isTouch) addEventListener('mousemove', onMove, { passive: true });
 
     // ─── HINT: say something OF HIS OWN about the element under the cursor (never
-    // echo its label). data-hint = the element TYPE, data-hint-sub = its entity; the
-    // line pool lives in lib/nachos-lines. lastLine avoids an immediate repeat. ───
+    // echo its label). data-hint = the machine category key, data-hint-sub = its
+    // entity; the line pools live in lib/nachos-lines. lastLine avoids an immediate
+    // repeat, and `visits` counts hovers per entity so the second look at the same
+    // thing gets a «ты вернулся» line — he remembers what you showed interest in. ───
     let lastLine = '';
+    const visits = new Map<string, number>();
     const lineFor = (el: Element): string | null => {
       const dh = el.getAttribute('data-hint');
       let category: NachosCategory;
@@ -129,7 +132,10 @@ export function CursorCompanion() {
         else if (tag === 'button' || tag === 'a') category = 'generic';
         else return null;
       }
-      const line = nachosLine(category, name, lastLine);
+      const key = `${category}:${name}`;
+      const visit = (visits.get(key) ?? 0) + 1;
+      visits.set(key, visit);
+      const line = nachosLine(category, name, { avoid: lastLine, visit });
       lastLine = line;
       return line;
     };
@@ -274,7 +280,7 @@ export function CursorCompanion() {
         render(curScale);
         if (!openRef.current && !transcribing && now - lastTrick > 9000 && now - lastMove > 1400) {
           lastTrick = now;
-          say(nachosLine('generic', '', ''), 4200);
+          say(nachosLine('generic', '', { avoid: lastLine }), 4200);
           reactNod();
         }
         raf = requestAnimationFrame(loop);
@@ -347,6 +353,7 @@ export function CursorCompanion() {
       clearTimeout(typeTimer);
       removeEventListener('mousemove', onMove);
       removeEventListener('mouseover', onOver);
+      removeEventListener('scroll', onScrollTouch);
       removeEventListener('tachos:transcript', onTranscript as EventListener);
       perchObserver?.disconnect();
     };

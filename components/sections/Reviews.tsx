@@ -98,10 +98,26 @@ function Glow({ className = '' }: { className?: string }) {
   );
 }
 
-function Avatar({ src, size = 44 }: { src: string; size?: number }) {
+// Per-person photo from content.ts; a review without one gets an initial
+// monogram — never a shared stock face (the same face under different names
+// reads as fake reviews).
+function Avatar({ r, size = 44 }: { r: Review; size?: number }) {
   return (
-    <span className="shrink-0 overflow-hidden rounded-full" style={{ width: size, height: size }}>
-      <Image src={src} alt="" width={size} height={size} className="size-full object-cover" />
+    <span
+      className="grid shrink-0 place-items-center overflow-hidden rounded-full bg-white/10 text-[17px] font-semibold text-white/70"
+      style={{ width: size, height: size }}
+    >
+      {r.avatar ? (
+        <Image
+          src={asset(r.avatar)}
+          alt=""
+          width={size}
+          height={size}
+          className="size-full object-cover"
+        />
+      ) : (
+        r.author.trim().charAt(0)
+      )}
     </span>
   );
 }
@@ -109,7 +125,7 @@ function Avatar({ src, size = 44 }: { src: string; size?: number }) {
 function Author({ r, light = false }: { r: Review; light?: boolean }) {
   return (
     <div className="flex items-center gap-[10px]">
-      <Avatar src={asset('/figma/rev-avatar.png')} />
+      <Avatar r={r} />
       <div className="leading-tight">
         <div className={`text-[16px] tracking-[0.03em] ${light ? 'text-black' : 'text-white'}`}>
           {r.author}
@@ -256,7 +272,7 @@ function AudioCard({ r }: { r: Review }) {
     // top (author left / logo badge right), task title beneath, full-width
     // player pinned to the bottom.
     <div
-      data-hint="Отзыв клиента"
+      data-hint="review"
       data-hint-sub={r.author}
       // Mobile: 28px radius keeps the corner from dominating the narrow card; desktop 40px via sm:
       className={`reveal-hidden relative w-full overflow-hidden rounded-[28px] [clip-path:inset(0_round_28px)] sm:rounded-card sm:[clip-path:inset(0_round_40px)] ${CARD_BORDER} ${GLASS} ${CARD_PAD}`}
@@ -275,7 +291,10 @@ function AudioCard({ r }: { r: Review }) {
 
         {/* Player: tighter height/gaps/padding on mobile so the disc, waveform
             and timer fit the narrow card without crowding; desktop via sm:. */}
-        <div className="flex h-[64px] items-center gap-[10px] rounded-full bg-white/10 p-[8px] sm:h-[80px] sm:gap-[16px] sm:p-[10px]">
+        <div
+          data-hint="player"
+          className="flex h-[64px] items-center gap-[10px] rounded-full bg-white/10 p-[8px] sm:h-[80px] sm:gap-[16px] sm:p-[10px]"
+        >
           {/* play disc — self-center keeps it on the row's vertical centre (#3) */}
           <button
             type="button"
@@ -343,7 +362,7 @@ function TextCard({ r }: { r: Review }) {
   const light = r.tone === 'light';
   return (
     <div
-      data-hint="Отзыв клиента"
+      data-hint="review"
       data-hint-sub={r.author}
       // Mobile: smaller corner radius (28px) + lower min-height so short text
       // cards don't get tall empty bottoms on a narrow screen. Desktop via sm:.
@@ -377,14 +396,14 @@ function TextCard({ r }: { r: Review }) {
 function VideoCard({ r }: { r: Review }) {
   return (
     <div
-      data-hint="Видео-отзыв"
+      data-hint="review"
       data-hint-sub={r.author}
       // Mobile: shorter card + 28px radius so the video tile isn't a giant
       // block on a narrow screen; desktop keeps 510px / 40px via sm:.
       className={`reveal-hidden group relative h-full min-h-[420px] w-full overflow-hidden rounded-[28px] sm:min-h-[510px] sm:rounded-card ${CARD_PAD} text-white`}
     >
       <Image
-        src={asset('/figma/founder-isaac.png')}
+        src={asset(r.avatar ?? '/figma/founder-isaac.png')}
         alt=""
         fill
         sizes="400px"
@@ -422,7 +441,7 @@ function VideoCard({ r }: { r: Review }) {
 function PortraitCard({ r }: { r: Review }) {
   return (
     <div
-      data-hint="Видео-отзыв"
+      data-hint="review"
       data-hint-sub={r.author}
       // Mobile: shorter card + 28px radius + tighter gap. Desktop unchanged.
       className={`reveal-hidden group relative flex h-full min-h-[440px] w-full flex-col items-center justify-center gap-[20px] overflow-hidden rounded-[28px] [clip-path:inset(0_round_28px)] sm:min-h-[520px] sm:gap-[24px] sm:rounded-card sm:[clip-path:inset(0_round_40px)] ${CARD_BORDER} bg-white/[0.06] ${CARD_PAD} text-center backdrop-blur-md`}
@@ -431,12 +450,14 @@ function PortraitCard({ r }: { r: Review }) {
       {/* Portrait scaled down on mobile so it fits inside the narrow padded card
           without touching the edges; desktop keeps the 260px round photo. */}
       <div className="relative size-[200px] overflow-hidden rounded-full ring-2 ring-accent/70 sm:size-[260px]">
+        {/* his product's cover (avatar from content.ts) — no real photo of the
+            author yet, and a stranger's face under a real name is worse than none */}
         <Image
-          src={asset('/figma/founder-jennifer.png')}
+          src={asset(r.avatar ?? '/figma/maginary-cover.webp')}
           alt=""
           fill
           sizes="260px"
-          className="object-cover grayscale transition duration-500 group-hover:scale-[1.03]"
+          className="object-cover transition duration-500 group-hover:scale-[1.03]"
         />
         {/* play centred over the portrait (#37) — decorative until real video; not an
             announced control that no-ops. Restore to <button onClick> with real video. */}
@@ -448,14 +469,14 @@ function PortraitCard({ r }: { r: Review }) {
             <PlayIcon size={24} />
           </span>
         </div>
-        {/* mute on the portrait, bottom-right (Figma) */}
-        <button
-          type="button"
-          aria-label="Включить звук"
-          className="absolute bottom-[12px] right-[12px] grid size-[36px] place-items-center rounded-full bg-black/40 text-white ring-1 ring-white/25 backdrop-blur-md transition hover:bg-black/55"
+        {/* mute pinned bottom-right — decorative like the play disc until real
+            video exists (a focusable button that does nothing is an a11y trap) */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute bottom-[12px] right-[12px] grid size-[36px] place-items-center rounded-full bg-black/40 text-white ring-1 ring-white/25 backdrop-blur-md"
         >
           <MuteIcon size={16} />
-        </button>
+        </div>
         {/* video duration, centred on the bottom edge of the portrait */}
         {r.duration && (
           <span className="absolute bottom-[12px] left-1/2 -translate-x-1/2 rounded-full bg-black/55 px-[11px] py-[3px] text-[12px] tabular-nums text-white backdrop-blur-md">

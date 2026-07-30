@@ -274,8 +274,8 @@ export function Founder() {
         aria-expanded={expanded}
         aria-controls={panelId}
         data-side="right"
-        data-hint={widget.badge}
-        data-hint-sub={`${founder.person.name} · ${widget.online}`}
+        data-hint="founder"
+        data-hint-sub={founder.person.name}
         onDragStart={(e) => e.preventDefault()}
         onClick={() => {
           // a real drag set this flag in pointerup — swallow the synthetic click

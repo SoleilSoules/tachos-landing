@@ -149,9 +149,10 @@ export function BlogView({ post, others }: { post: Post; others: Post[] }) {
             })}
           </article>
 
-          {/* CTA */}
+          {/* CTA — no id="contacts": the footer owns that id (duplicate ids broke
+              FloatingCompose's footer detection); the ref alone drives MetaPanel */}
           <div className="mb-10 h-px w-full bg-white/10" />
-          <div ref={ctaRef} id="contacts">
+          <div ref={ctaRef}>
             <button
               type="button"
               data-compose

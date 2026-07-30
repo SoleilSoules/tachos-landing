@@ -90,7 +90,7 @@ export function Footer() {
               )}
             </div>
             {/* manager sits right under the letter — Anna is who replies to it */}
-            <div className="mt-[28px] flex items-center gap-[10px]">
+            <div data-hint="manager" className="mt-[28px] flex items-center gap-[10px]">
               <span className="size-[54px] shrink-0 overflow-hidden rounded-full">
                 <Image
                   src={asset('/figma/mgr-anna.png')}
@@ -144,7 +144,7 @@ export function Footer() {
         {/* mobile: tighter gap + lighter top padding above requisites; desktop unchanged */}
         <div className="relative mt-[40px] border-t border-white/10 pt-[28px] lg:mt-[64px] lg:pt-[40px]">
           <div className="flex flex-wrap items-center gap-x-[28px] gap-y-[14px] text-[16px] font-medium tracking-[0.04em]">
-            <span className="flex items-center gap-[12px] uppercase text-white/80">
+            <span data-hint="rodina" className="flex items-center gap-[12px] uppercase text-white/80">
               {/* The statue stands ON the caps line: baseline alignment leaves a
                   canvas ~13px below the letters (its box is taller than the text
                   line), so it's lifted by that much. */}
@@ -155,6 +155,7 @@ export function Footer() {
               type="button"
               onClick={() => copyContact(footer.contacts.email.value, setMailCopied)}
               aria-label="Скопировать почту"
+              data-hint="footer-mail"
               className="group/c flex items-center gap-[8px] text-white/70 transition hover:text-accent-bright sm:ml-auto"
             >
               <span className="underline decoration-dotted underline-offset-[5px]">
@@ -170,6 +171,7 @@ export function Footer() {
               type="button"
               onClick={() => copyContact(footer.contacts.phone.value, setPhoneCopied)}
               aria-label="Скопировать телефон"
+              data-hint="footer-phone"
               className="group/c flex items-center gap-[8px] text-white/70 transition hover:text-accent-bright"
             >
               <span>{footer.contacts.phone.value}</span>

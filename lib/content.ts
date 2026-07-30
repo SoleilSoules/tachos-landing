@@ -111,6 +111,10 @@ export type Review = {
   caption?: string; // e.g. "о своем кейсе"
   duration?: string;
   logo?: string;
+  // Per-person photo (or a product still when no real photo exists yet). One
+  // shared placeholder is NOT allowed: the same face under different names next
+  // to each other reads as fake reviews.
+  avatar?: string;
 };
 
 // Copy tied to real Tachos work (Хайс / Складно / Maginary). Names are placeholders.
@@ -127,6 +131,7 @@ export const reviews = deepNbsp({
       text: 'Анти-фрод SDK на iOS и Android довели до ума так, что я про эту проблему просто перестала думать',
       duration: '05:59',
       logo: '/logos/hais-mono.svg',
+      avatar: '/figma/founder-jennifer.png',
     },
     {
       id: 'r2',
@@ -136,6 +141,8 @@ export const reviews = deepNbsp({
       role: 'CTO, Складно',
       text: 'Подняли нам инфраструктуру под микросервисы и SSO на self-hosted. Сами мы возились бы с этим месяцами',
       logo: '/logos/skladno.svg',
+      // same face as his video card next to it — one Глеб, one person
+      avatar: '/figma/founder-isaac.png',
     },
     {
       id: 'r3',
@@ -145,6 +152,7 @@ export const reviews = deepNbsp({
       role: 'CTO, Складно',
       caption: 'о своем кейсе',
       logo: '/logos/skladno.svg',
+      avatar: '/figma/founder-isaac.png',
     },
     {
       id: 'r4',
@@ -154,6 +162,7 @@ export const reviews = deepNbsp({
       role: 'Продакт-директор, Хайс',
       text: 'Собрали мобильный банк для ИП с нуля: счет, бухгалтерия и валюта в одном приложении. Ровно как мы задумывали',
       logo: '/logos/hais-mono.svg',
+      avatar: '/figma/founder-jennifer.png',
     },
     {
       id: 'r5',
@@ -163,6 +172,9 @@ export const reviews = deepNbsp({
       role: 'Создатель Maginary',
       caption: 'о своем кейсе',
       duration: '01:48',
+      // no real photo of Семен yet — show his product's cover, never someone
+      // else's face under a real person's name
+      avatar: '/figma/maginary-cover.webp',
     },
   ] as Review[],
 });

@@ -145,9 +145,10 @@ export function CaseView({ item, others }: { item: CaseItem; others: CaseItem[] 
             </div>
           ))}
 
-          {/* CTA */}
+          {/* CTA — no id="contacts" here: the footer already owns that id, and a
+              duplicate made FloatingCompose hide mid-page instead of at the footer */}
           <div className="mb-12 h-px w-full max-w-[820px] bg-white/10" />
-          <div id="contacts" className="max-w-[820px]">
+          <div className="max-w-[820px]">
             <button
               type="button"
               data-compose

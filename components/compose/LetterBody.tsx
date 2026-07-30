@@ -314,8 +314,11 @@ export function LetterBody({
         ta.style.opacity = '0';
         document.body.appendChild(ta);
         ta.select();
-        document.execCommand('copy');
+        // execCommand signals failure via its return value, not an exception —
+        // without this check the toast claimed «скопирована» on a failed copy
+        const ok = document.execCommand('copy');
         ta.remove();
+        if (!ok) throw new Error('execCommand copy failed');
         flash(msg);
         return true;
       } catch {
@@ -423,8 +426,7 @@ export function LetterBody({
             <input
               ref={contactRef}
               data-autofocus={autofocus || undefined}
-              data-hint="Сюда придет ответ"
-              data-hint-sub="телефон, почта или @telegram"
+              data-hint="contact"
               type="text"
               value={contact}
               onChange={(e) => {

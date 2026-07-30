@@ -41,7 +41,13 @@ export function useCountUp<T extends HTMLElement = HTMLSpanElement>(
     );
     observer.observe(el);
 
-    const fallback = setTimeout(run, 1500);
+    // Failsafe mirrors useReveal: rescue only if the element is ACTUALLY on
+    // screen. A blind timer burned the count-up off-screen — by the time you
+    // scrolled to the cases heading the number was already sitting at 40.
+    const fallback = setTimeout(() => {
+      const r = el.getBoundingClientRect();
+      if (r.top < window.innerHeight * 0.9 && r.bottom > 0) run();
+    }, 1500);
 
     return () => {
       clearTimeout(fallback);

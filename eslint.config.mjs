@@ -13,6 +13,13 @@ const eslintConfig = defineConfig([
     'build/**',
     'next-env.d.ts',
   ]),
+  {
+    rules: {
+      // an underscore prefix is the project's way of saying "intentionally
+      // unused" (e.g. the sendMail demo stub's future-signature args)
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    },
+  },
 ]);
 
 export default eslintConfig;

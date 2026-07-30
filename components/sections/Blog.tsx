@@ -78,8 +78,8 @@ function LeadCard({ post }: { post: Post }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      data-hint="Статья студии"
-      data-hint-sub={post.tag}
+      data-hint="blog"
+      data-hint-sub={post.slug}
       className={`${CARD_BASE} rounded-[28px] bg-surface hover:bg-surface2 sm:rounded-[32px]`}
     >
       {post.cover && (
@@ -114,8 +114,8 @@ function MiniCard({ post, peach = false }: { post: Post; peach?: boolean }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      data-hint="Статья студии"
-      data-hint-sub={post.tag}
+      data-hint="blog"
+      data-hint-sub={post.slug}
       className={`${CARD_BASE} relative min-h-[240px] flex-1 justify-between gap-[20px] rounded-[24px] p-[24px] sm:rounded-[26px] sm:p-[26px] ${
         peach
           ? 'bg-gradient-to-br from-[#f7d8c5] to-[#f1bda3]'

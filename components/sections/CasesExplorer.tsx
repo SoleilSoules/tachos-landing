@@ -78,6 +78,8 @@ export function CasesExplorer({ cases }: { cases: CaseItem[] }) {
                 type="button"
                 onClick={() => setActive(tab.label)}
                 aria-pressed={on}
+                data-hint="tab"
+                data-hint-sub={tab.label}
                 className={`relative z-10 flex h-[52px] shrink-0 items-center gap-[8px] rounded-pill px-[22px] text-[16px] font-medium tracking-[0.03em] transition-colors ${
                   on ? 'text-white' : 'text-fg/55 hover:text-fg'
                 }`}
@@ -141,6 +143,7 @@ function CaseGrid({ cases }: { cases: CaseItem[] }) {
           <button
             type="button"
             onClick={() => setVisible((v) => v + STEP)}
+            data-hint="more-cases"
             className="w-full max-w-[820px] rounded-[24px] bg-[#141416] px-[64px] py-[26px] text-[17px] font-medium text-white transition hover:bg-black"
           >
             Показать еще
