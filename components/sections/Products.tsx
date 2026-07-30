@@ -287,14 +287,6 @@ export function Products() {
                           {p.body}
                         </p>
                       </div>
-                      {/* desktop: text CTA; mobile: product image at the bottom instead */}
-                      <button
-                        type="button"
-                        data-compose
-                        className={`hidden w-fit text-[14px] font-medium tracking-[0.04em] underline-offset-4 transition hover:text-accent-bright hover:underline lg:block ${skin.cta}`}
-                      >
-                        {p.cta}
-                      </button>
                       {mockup && (
                         <div className="relative mt-[20px] h-[168px] w-full overflow-hidden rounded-[16px] lg:hidden">
                           <Image

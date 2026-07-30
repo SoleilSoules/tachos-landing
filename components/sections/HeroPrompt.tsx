@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { hero } from '@/lib/content';
 import { guessType, type LetterType } from '@/lib/compose';
 import { useCompose } from '@/components/compose/ComposeProvider';
+import { keyBump } from '@/components/compose/LetterBody';
 
 const chipType: Record<string, LetterType> = {
   Сайт: 'site',
@@ -172,7 +173,10 @@ export function HeroPrompt({ chips = true }: { chips?: boolean } = {}) {
         <input
           ref={inputRef}
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => {
+            keyBump(e.currentTarget);
+            setValue(e.target.value);
+          }}
           onSelect={syncCaret}
           onKeyDown={(e) => {
             if (e.key === 'Enter') submit();

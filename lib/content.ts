@@ -61,7 +61,7 @@ export const founder = deepNbsp({
   facts: ['Тех лид во всех проектах — сам пишу код', 'На связи напрямую, без аккаунт-менеджеров'],
   contactCta: 'Написать Вадиму',
   presentation: { label: 'Презентация Вадима', duration: '0:34' },
-  person: { name: 'Вадим Вадимов', role: 'Основатель, тех-лид' },
+  person: { name: 'Вадим Витехновский', role: 'Основатель, тех-лид' },
 } as const);
 
 export const casesIntro = deepNbsp({
@@ -465,7 +465,6 @@ export type Product = {
   tagline: string; // one-liner under the name in the switcher
   heading: string; // shown on the device card when active
   body: string;
-  cta: string;
 };
 
 export const productsIntro = deepNbsp({
@@ -480,7 +479,6 @@ export const products: Product[] = deepNbsp<Product[]>([
     tagline: 'Система управления доками',
     heading: '«doki» — платформа управления документацией',
     body: 'Must-have для систематизации и устранения хаоса в документах',
-    cta: 'Попробовать doki бесплатно',
   },
   {
     id: 'hub',
@@ -488,7 +486,6 @@ export const products: Product[] = deepNbsp<Product[]>([
     tagline: 'Самописный склад',
     heading: '«MonteHub» — система складского учета',
     body: 'Закрывает приемку, остатки и логистику в одном окне — без таблиц',
-    cta: 'Узнать про MonteHub',
   },
   {
     id: 'standby',
@@ -496,7 +493,6 @@ export const products: Product[] = deepNbsp<Product[]>([
     tagline: 'Доска фокуса',
     heading: '«Standby» — доска, которая держит фокус',
     body: 'Задачи, таймеры и прогресс на одной доске, обновляются в реальном времени',
-    cta: 'Узнать про Standby',
   },
 ]);
 

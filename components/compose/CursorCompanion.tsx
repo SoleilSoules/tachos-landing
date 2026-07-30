@@ -110,13 +110,12 @@ export function CursorCompanion() {
     };
     if (!isTouch) addEventListener('mousemove', onMove, { passive: true });
 
-    // ─── HINT: say something OF HIS OWN about the element under the cursor (never
-    // echo its label). data-hint = the machine category key, data-hint-sub = its
-    // entity; the line pools live in lib/nachos-lines. lastLine avoids an immediate
-    // repeat, and `visits` counts hovers per entity so the second look at the same
-    // thing gets a «ты вернулся» line — he remembers what you showed interest in. ───
+    // ─── HINT: describe the element under the cursor. data-hint = the machine
+    // category key, data-hint-sub = the entity; the facts live in
+    // lib/nachos-lines. nachosLine returns null when there is nothing specific to
+    // say about this element — and then he STAYS QUIET. Гоша caught the old build
+    // riffing generic lines over unknown elements, which read as random. ───
     let lastLine = '';
-    const visits = new Map<string, number>();
     const lineFor = (el: Element): string | null => {
       const dh = el.getAttribute('data-hint');
       let category: NachosCategory;
@@ -125,18 +124,14 @@ export function CursorCompanion() {
         ({ category, name } = categorize(dh, el.getAttribute('data-hint-sub')));
       } else {
         const tag = el.tagName.toLowerCase();
-        // bare controls without a hint: the compose textarea reads as the hero prompt,
-        // a stray input as a contact field, anything else clickable stays generic.
+        // bare controls without a hint: the compose textarea reads as the hero
+        // prompt, a stray input as a contact field. Anything else — silence.
         if (tag === 'textarea') category = 'hero';
         else if (tag === 'input') category = 'contact';
-        else if (tag === 'button' || tag === 'a') category = 'generic';
         else return null;
       }
-      const key = `${category}:${name}`;
-      const visit = (visits.get(key) ?? 0) + 1;
-      visits.set(key, visit);
-      const line = nachosLine(category, name, { avoid: lastLine, visit });
-      lastLine = line;
+      const line = nachosLine(category, name, lastLine);
+      if (line) lastLine = line;
       return line;
     };
     // Small body reaction when he speaks — bobs once so a new line feels like HE chose
@@ -278,11 +273,6 @@ export function CursorCompanion() {
         curScale = lerp(curScale, (footerVisible ? 6 : 1.5) * MINI, 0.05);
         faceAng = lerp(faceAng, Math.PI / 2, 0.05);
         render(curScale);
-        if (!openRef.current && !transcribing && now - lastTrick > 9000 && now - lastMove > 1400) {
-          lastTrick = now;
-          say(nachosLine('generic', '', { avoid: lastLine }), 4200);
-          reactNod();
-        }
         raf = requestAnimationFrame(loop);
         return;
       }

@@ -5,13 +5,14 @@ import { useEffect, useRef, useState } from 'react';
 import { asset } from '@/lib/asset';
 import { CaseVideoMockup } from '@/components/CaseVideoMockup';
 
-// Full-bleed animated cover (the reel rendered in Remotion). It plays ONLY while
-// the pointer is on the card (per Гоша) — the grid is still until you point at
-// one, so four looping clips never compete for attention or decode budget.
+// Full-bleed animated cover (the reel rendered in Remotion). It plays on its own
+// as soon as the card is on screen (per Гоша) and pauses the moment it leaves, so
+// nothing decodes off-screen and no interaction is required to see the work.
 //
-// The still sits UNDER the video and the video fades in over it. That's not
-// decoration: `poster` only shows until a video first loads, so after one hover
-// the card would be left on the clip's own first frame — which here is black.
+// The still sits UNDER the video and the video fades in only once playback has
+// actually started. That's not decoration: `preload="none"` means the first
+// frames arrive a beat late, and these reels open on black — without the still
+// underneath the card would flash black before the clip appears.
 function CoverVideo({ src, poster, client }: { src: string; poster?: string; client: string }) {
   const video = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
@@ -19,31 +20,24 @@ function CoverVideo({ src, poster, client }: { src: string; poster?: string; cli
   useEffect(() => {
     const v = video.current;
     if (!v) return;
-    // No hover on touch, and reduced-motion asks for no movement — both keep
-    // the still and never fetch the clip at all.
-    if (window.matchMedia('(hover: none), (pointer: coarse)').matches) return;
+    // Reduced-motion asks for no movement — keep the still, never fetch the clip.
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    // Listen on the whole card (the <a>), not the <video>: the tag/logo/arrow
-    // overlay sits on top of it, so pointer events over those would otherwise
-    // read as leaving the video.
-    const host = v.closest('a') ?? v.parentElement;
-    if (!host) return;
 
-    const enter = () => {
-      setPlaying(true);
-      void v.play().catch(() => {});
-    };
-    const leave = () => {
-      setPlaying(false);
-      v.pause();
-      v.currentTime = 0; // next hover replays the story from the top
-    };
-    host.addEventListener('pointerenter', enter);
-    host.addEventListener('pointerleave', leave);
-    return () => {
-      host.removeEventListener('pointerenter', enter);
-      host.removeEventListener('pointerleave', leave);
-    };
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          // play() may reject (autoplay policy, aborted fetch) — the still stays
+          v.play()
+            .then(() => setPlaying(true))
+            .catch(() => {});
+        } else {
+          v.pause();
+        }
+      },
+      { threshold: 0.25 },
+    );
+    io.observe(v);
+    return () => io.disconnect();
   }, []);
 
   return (
@@ -63,11 +57,11 @@ function CoverVideo({ src, poster, client }: { src: string; poster?: string; cli
         muted
         loop
         playsInline
-        // nothing is fetched until the first hover — four covers off the initial
-        // page weight, and metadata alone is enough to start quickly
-        preload="metadata"
+        // nothing is fetched until the card scrolls into view — the reels stay
+        // off the initial page weight
+        preload="none"
         aria-hidden
-        className="absolute inset-0 h-full w-full object-cover transition-opacity duration-300"
+        className="absolute inset-0 h-full w-full object-cover transition-opacity duration-500"
         style={{ opacity: playing ? 1 : 0 }}
       />
     </>
