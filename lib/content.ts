@@ -242,7 +242,6 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     },
     tags: ['Финтех', 'iOS + Android'],
     shot: '/figma/hais-cover.webp',
-    coverVideo: '/covers/hais-cover.mp4',
     shotKind: 'cover',
     coverDark: true,
     story: {
@@ -317,7 +316,6 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     },
     tags: ['Сервис хранения', 'Mobile + бэкенд'],
     shot: '/figma/skladno-cover.webp',
-    coverVideo: '/covers/skladno-cover.mp4',
     shotKind: 'cover',
     coverDark: true,
     story: {
