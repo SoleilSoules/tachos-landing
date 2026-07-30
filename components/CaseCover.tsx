@@ -1,45 +1,76 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { asset } from '@/lib/asset';
 import { CaseVideoMockup } from '@/components/CaseVideoMockup';
 
-// Full-bleed animated cover (the storyboard reel rendered in Remotion). Muted
-// autoplay loop; decoding pauses while the card is offscreen (same policy as
-// CaseVideoMockup). Reduced-motion users get the poster still instead.
+// Full-bleed animated cover (the reel rendered in Remotion). It plays ONLY while
+// the pointer is on the card (per Гоша) — the grid is still until you point at
+// one, so four looping clips never compete for attention or decode budget.
+//
+// The still sits UNDER the video and the video fades in over it. That's not
+// decoration: `poster` only shows until a video first loads, so after one hover
+// the card would be left on the clip's own first frame — which here is black.
 function CoverVideo({ src, poster, client }: { src: string; poster?: string; client: string }) {
   const video = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
     const v = video.current;
     if (!v) return;
+    // No hover on touch, and reduced-motion asks for no movement — both keep
+    // the still and never fetch the clip at all.
+    if (window.matchMedia('(hover: none), (pointer: coarse)').matches) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (!e) return;
-        if (e.isIntersecting) void v.play().catch(() => {});
-        else v.pause();
-      },
-      { threshold: 0.2 },
-    );
-    io.observe(v);
-    return () => io.disconnect();
+    // Listen on the whole card (the <a>), not the <video>: the tag/logo/arrow
+    // overlay sits on top of it, so pointer events over those would otherwise
+    // read as leaving the video.
+    const host = v.closest('a') ?? v.parentElement;
+    if (!host) return;
+
+    const enter = () => {
+      setPlaying(true);
+      void v.play().catch(() => {});
+    };
+    const leave = () => {
+      setPlaying(false);
+      v.pause();
+      v.currentTime = 0; // next hover replays the story from the top
+    };
+    host.addEventListener('pointerenter', enter);
+    host.addEventListener('pointerleave', leave);
+    return () => {
+      host.removeEventListener('pointerenter', enter);
+      host.removeEventListener('pointerleave', leave);
+    };
   }, []);
 
   return (
-    <video
-      ref={video}
-      src={asset(src)}
-      poster={poster ? asset(poster) : undefined}
-      muted
-      loop
-      playsInline
-      autoPlay
-      preload="metadata"
-      aria-label={client}
-      className="absolute inset-0 h-full w-full object-cover"
-    />
+    <>
+      {poster && (
+        <Image
+          src={asset(poster)}
+          alt={client}
+          fill
+          sizes="(max-width:1024px) 100vw, 640px"
+          className="object-cover"
+        />
+      )}
+      <video
+        ref={video}
+        src={asset(src)}
+        muted
+        loop
+        playsInline
+        // nothing is fetched until the first hover — four covers off the initial
+        // page weight, and metadata alone is enough to start quickly
+        preload="metadata"
+        aria-hidden
+        className="absolute inset-0 h-full w-full object-cover transition-opacity duration-300"
+        style={{ opacity: playing ? 1 : 0 }}
+      />
+    </>
   );
 }
 
