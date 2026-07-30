@@ -57,6 +57,8 @@ export function CaseCard({ item }: { item: CaseItem }) {
           client={item.client}
           shot={item.shot}
           shotKind={item.shotKind}
+          mockupVideo={item.mockupVideo}
+          coverVideo={item.coverVideo}
           variant="card"
           className="transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:scale-[1.02]"
         />
