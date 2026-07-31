@@ -416,33 +416,6 @@ export function LetterBody({
         })}
       </div>
 
-      {/* The letter writes itself from the picks, but it must be possible to just
-          SAY it (Гоша) — this line is part of the letter, in the letter's own
-          type, and its text rides the same `freeText` the hero prompt fills.
-          ALWAYS present: gating it on `!typing` meant it only appeared once every
-          chip had been answered, so anyone who just wanted to write had nowhere
-          to write. */}
-      <div className="-mt-[6px]">
-          <textarea
-            value={state.freeText}
-            onChange={(e) => {
-              keyBump(e.currentTarget);
-              setField('freeText', e.target.value);
-              const el = e.currentTarget;
-              el.style.height = 'auto';
-              el.style.height = `${el.scrollHeight}px`;
-            }}
-            rows={1}
-            placeholder="Добавьте пару слов от себя…"
-            aria-label="Написать своими словами"
-            className={`block w-full resize-none border-b border-white/15 bg-transparent pb-[6px] font-medium tracking-[-0.01em] text-inverted outline-none transition-colors placeholder:text-inverted/25 focus:border-accent/70 ${
-              size === 'lg'
-                ? 'text-[22px] leading-[1.6] sm:text-[28px] sm:leading-[1.7] lg:text-[36px] lg:leading-[1.7]'
-                : 'text-[19px] leading-[1.65] sm:text-[23px] sm:leading-[1.75] lg:text-[27px] lg:leading-[1.85]'
-            }`}
-        />
-      </div>
-
       {/* Mobile: trim the gap above the reply block — 48px reads as a dead zone on small screens */}
       <div className="mt-[28px] border-t border-white/10 pt-[18px] sm:mt-[48px] sm:pt-[22px]">
         <div className="mb-[12px] text-[14px] font-medium text-inverted/90">Куда вам ответить</div>

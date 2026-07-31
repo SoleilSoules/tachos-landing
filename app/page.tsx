@@ -20,7 +20,7 @@ export default function Home() {
           (filter.im composition); the flex-1 spacer is what pushes the text down.
           Height is capped by the reel's own 16:9 frame so no black band shows under
           it, and it stays below the viewport so a sliver of Cases peeks out. */}
-      <section className="relative flex min-h-[86vh] flex-col overflow-hidden bg-bg text-inverted lg:min-h-[min(88vh,56.25vw)]">
+      <section className="relative flex min-h-[92vh] flex-col overflow-hidden bg-bg text-inverted lg:min-h-[min(94vh,60vw)]">
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute inset-0 bg-ink" />
           {/* soft blurred brand glow behind the text — phone variant only */}

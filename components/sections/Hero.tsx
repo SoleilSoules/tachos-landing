@@ -14,7 +14,7 @@ import { HeroPrompt } from './HeroPrompt';
 // and finally the client logos spanning the full width. Video gets the space above.
 export function Hero() {
   return (
-    <div className="relative z-10 flex w-full flex-col px-5 pb-[50px] sm:px-8 lg:px-[80px] lg:pb-[66px]">
+    <div className="relative z-10 flex w-full flex-col px-5 pb-[50px] sm:px-8 lg:px-[80px] lg:pb-[92px]">
       {/* cap tuned so the second line («сильных продуктов и брендов») still fits on
           ONE line at 1440 — a third line eats the video's space */}
       <h1 className="max-w-[1080px] select-none text-[clamp(30px,5.2vw,66px)] font-medium leading-[0.96] tracking-[-0.025em] text-inverted [animation:fade-up_0.55s_ease-out_both] motion-reduce:[animation:none]">
