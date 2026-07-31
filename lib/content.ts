@@ -186,8 +186,7 @@ export const reviews = deepNbsp({
 // New clients have real screenshots pending — they show an EMPTY device mock
 // (shotKind without shot) until the shot is captured. Their story/metrics are
 // placeholders ("—") until Vadim confirms copy. Verified work: Складно/Хайс/Maginary.
-export const cases: CaseItem[
-  ] = deepNbsp<CaseItem[]>([
+export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
   {
     id: 'docmed',
     client: 'Docmed',
@@ -345,43 +344,6 @@ export const cases: CaseItem[
     verified: true,
   },
   {
-    id: 'anomalia',
-    client: 'Anomalia',
-    category: 'цифровой продукт',
-    desc: { lead: '', highlight: 'Anomalia', tail: '— цифровой продукт' },
-    tags: ['Цифровой продукт', 'Разработка'],
-    shot: '/figma/shots/anomalia.png',
-    shotKind: 'desktop',
-    hidden: true,
-    story: {
-      summary: 'Anomalia — цифровой продукт',
-      metrics: [
-        { value: '—', label: 'уточняется' },
-        { value: '—', label: 'уточняется' },
-      ],
-      sections: [{ title: 'Контекст', body: 'Описание кейса уточняется' }],
-    },
-  },
-  {
-    id: 'imast',
-    client: 'Imast',
-    category: 'благотворительность',
-    tabs: ['eCommerce'],
-    desc: { lead: 'Платформа', highlight: 'благотворительных донатов', tail: '' },
-    tags: ['Благотворительность', 'Mobile'],
-    shot: '/figma/shots/imast.png',
-    shotKind: 'desktop',
-    hidden: true,
-    story: {
-      summary: 'Платформа благотворительных донатов',
-      metrics: [
-        { value: '—', label: 'уточняется' },
-        { value: '—', label: 'уточняется' },
-      ],
-      sections: [{ title: 'Контекст', body: 'Описание кейса уточняется' }],
-    },
-  },
-  {
     id: 'alfastrah',
     client: 'АльфаСтрахование',
     category: 'страхование',
@@ -437,21 +399,114 @@ export const cases: CaseItem[
     },
   },
   {
+    id: 'anomalia',
+    client: 'Anomalia',
+    category: 'соцсеть сообщества',
+    desc: {
+      lead: 'Социальное приложение бизнес-сообщества:',
+      highlight: 'деловые связи, чаты и обучение',
+      tail: 'в одном месте',
+    },
+    tags: ['Соцсеть', 'iOS + Android'],
+    shot: '/figma/anomalia-cover.webp',
+    shotKind: 'cover',
+    coverDark: true,
+    coverVideo: '/covers/anomalia-cover.mp4',
+    story: {
+      summary:
+        'Социальное приложение для участников бизнес-экосистемы: поиск деловых связей, чаты и обучающие материалы',
+      metrics: [
+        { value: '25 000+', label: 'пользователей' },
+        { value: 'iOS + Android', label: 'нативные приложения' },
+        { value: 'лента и профили', label: 'ядро продукта' },
+      ],
+      sections: [
+        {
+          title: 'Контекст',
+          body: 'Большому бизнес-сообществу нужно было собственное место встречи: лента с материалами наставника, обсуждения и понятные профили участников, по которым видно, кто чем может быть полезен',
+        },
+        {
+          title: 'Что сделали',
+          body: 'Собрали нативные приложения под iOS и Android: вход по номеру, лента с аудио-постами и опросами, комментарии, профили с навыками и статусами внутри сообщества',
+        },
+        {
+          title: 'Результат',
+          body: 'Приложением пользуются больше 25 000 участников сообщества',
+        },
+      ],
+    },
+  },
+  {
+    id: 'imast',
+    client: 'IMAST',
+    category: 'благотворительность',
+    tabs: ['eCommerce'],
+    desc: {
+      lead: 'Сервис микродонатов —',
+      highlight: 'помощь людям через фонды Армении',
+      tail: '',
+    },
+    tags: ['Благотворительность', 'iOS + Android'],
+    shot: '/figma/imast-cover.webp',
+    shotKind: 'cover',
+    story: {
+      summary: 'Сервис микродонатов: помощь людям через благотворительные фонды Армении',
+      metrics: [
+        { value: '10 000+', label: 'платящих пользователей в месяц' },
+        { value: 'iOS + Android', label: 'нативные приложения' },
+        { value: 'микродонаты', label: 'модель сервиса' },
+      ],
+      sections: [
+        {
+          title: 'Контекст',
+          body: 'Фондам нужен был канал, где помочь можно небольшой суммой и за пару касаний — с проверенными проектами и понятным прогрессом сбора',
+        },
+        {
+          title: 'Что сделали',
+          body: 'Собрали приложения под iOS и Android: каталог проверенных проектов по категориям, карточка сбора с целью и прогрессом, оплата в пару шагов',
+        },
+        {
+          title: 'Результат',
+          body: 'Сервисом пользуются больше 10 000 платящих пользователей в месяц',
+        },
+      ],
+    },
+  },
+  {
     id: 'alma',
     client: 'Alma',
-    category: 'мобильное приложение',
-    desc: { lead: '', highlight: 'Alma', tail: '— мобильное приложение' },
-    tags: ['Мобильное приложение', 'iOS + Android'],
-    shot: '/figma/shots/alma.png',
-    shotKind: 'phone',
-    hidden: true,
+    category: 'управление недвижимостью',
+    desc: {
+      lead: 'SaaS для управляющих компаний:',
+      highlight: 'автоматизация управления недвижимостью',
+      tail: '',
+    },
+    tags: ['PropTech', 'Web + mobile'],
+    shot: '/figma/alma-cover.webp',
+    shotKind: 'cover',
+    coverDark: true,
     story: {
-      summary: 'Alma — мобильное приложение',
+      summary:
+        'SaaS для управляющих компаний: автоматизация управления недвижимостью, локализован для Кипра, Греции и стран MEA',
       metrics: [
-        { value: '—', label: 'уточняется' },
-        { value: '—', label: 'уточняется' },
+        { value: '1 млн+ м²', label: 'под управлением' },
+        { value: 'Web + iOS + Android', label: 'платформы' },
+        { value: 'Кипр, Греция, MEA', label: 'локализации' },
       ],
-      sections: [{ title: 'Контекст', body: 'Описание кейса уточняется' }],
+      sections: [
+        {
+          title: 'Контекст',
+          body: 'Управляющие компании вели дома в таблицах и переписках: платежи, заявки и общение с жильцами жили в разных местах',
+        },
+        {
+          title: 'Что сделали',
+          body: 'Собрали платформу и приложения жильца: платежи и история начислений, заявки и задачи, мессенджер, аналитика по объектам',
+        },
+        {
+          title: 'Результат',
+          body: 'Под управлением платформы больше миллиона квадратных метров; продукт локализован для Кипра, Греции и стран MEA',
+        },
+      ],
     },
   },
 ]);

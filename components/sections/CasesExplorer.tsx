@@ -11,7 +11,9 @@ import { CaseCard } from './CaseCard';
 // counts are derived from the data here, not hardcoded.
 
 const INITIAL = 4; // first batch shown
-const STEP = 2; // "Показать еще" increment
+// One click now reveals the whole second batch (Добрый / Anomalia / IMAST / Alma)
+// instead of dribbling them out two at a time.
+const STEP = 4; // "Показать еще" increment
 const ALL = 'Все';
 
 export function CasesExplorer({ cases }: { cases: CaseItem[] }) {
