@@ -27,13 +27,13 @@ export function Hero() {
 
       {/* left: sub-head + prompt (the CTA lives inside the hero itself, not in a
           separate band) · right: the client logos */}
-      <div className="mt-[18px] flex flex-col gap-[26px] [animation:fade-up_0.55s_ease-out_0.12s_both] motion-reduce:[animation:none] lg:mt-[20px] lg:flex-row lg:items-start lg:justify-between lg:gap-[24px]">
+      <div className="mt-[18px] flex flex-col gap-[26px] [animation:fade-up_0.55s_ease-out_0.12s_both] motion-reduce:[animation:none] lg:mt-[36px] lg:flex-row lg:items-start lg:justify-between lg:gap-[24px]">
         <div className="w-full lg:max-w-[554px]">
           <p className="mb-[34px] max-w-[520px] select-none text-[13.5px] leading-[1.45] text-inverted/85 [text-shadow:0_1px_16px_rgba(0,0,0,0.55)] sm:text-[17px]">
             {hero.subhead.rest}
           </p>
-          {/* chips hidden per Гоша — flip to <HeroPrompt /> to bring them back */}
-          <HeroPrompt chips={false} />
+          {/* the «Мне нужен: …» chips are back under the field (Гоша) */}
+          <HeroPrompt />
         </div>
 
         <div className="w-full lg:w-[660px] lg:shrink-0 lg:pt-[108px]">

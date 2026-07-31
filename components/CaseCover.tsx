@@ -148,13 +148,16 @@ export function CaseCover({
         kind === 'phone' ? (
           <PhoneMock shot={shot} client={client} big={big} />
         ) : kind === 'cover' ? (
-          // full-bleed cover photo (e.g. Monte) — fills the whole card, per Figma
+          // Full-bleed cover photo. A still card gets its life from a slow push
+          // toward the centre ON HOVER (Гоша) — six seconds, so it reads as a
+          // camera creeping in, not a hover effect. The reels autoplay instead and
+          // don't need it. motion-safe keeps it off under reduced-motion.
           <Image
             src={asset(shot)}
             alt={client}
             fill
             sizes="(max-width:1024px) 100vw, 640px"
-            className="object-cover"
+            className="object-cover transition-transform duration-[6000ms] ease-out motion-safe:group-hover:scale-[1.12]"
           />
         ) : (
           // wide screenshot as a real frontal device (no tilt): titanium body, inner

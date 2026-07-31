@@ -201,9 +201,9 @@ export function HeroPrompt({ chips = true }: { chips?: boolean } = {}) {
           aria-label={
             value.trim() ? 'Отправить — Enter' : listening ? 'Остановить запись' : 'Голосовой ввод'
           }
-          // 45° gradient with a lit top-left edge — the flat fill read as a
-          // sticker, the diagonal gives the button a sheen.
-          className={`relative grid h-[72px] w-[80px] shrink-0 place-items-center overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#ff7a55_0%,#f4573b_38%,#e0472c_72%,#c93d24_100%)] text-white shadow-[-14px_0_28px_rgba(0,0,0,0.06),inset_1px_1px_0_rgba(255,255,255,0.28)] transition hover:brightness-110 sm:h-[88px] sm:w-[107px] ${
+          // Flat accent fill (Гоша): the gradient and the lit inner edge gave it a
+          // moulded, sticker-like look — one solid colour sits better on the field.
+          className={`relative grid h-[72px] w-[80px] shrink-0 place-items-center overflow-hidden rounded-[28px] bg-accent text-white transition hover:brightness-110 sm:h-[88px] sm:w-[107px] ${
             listening ? 'animate-pulse' : ''
           }`}
         >
