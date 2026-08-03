@@ -51,6 +51,18 @@ export function CasesExplorer({ cases }: { cases: CaseItem[] }) {
     return () => window.removeEventListener('resize', measure);
   }, [measure]);
 
+  // Phone: the five filters can't fit a 390px row, so the track scrolls — bring the
+  // chosen one into view, otherwise tapping the last tab leaves it half off-screen.
+  useEffect(() => {
+    const track = trackRef.current;
+    const el = btnRefs.current[active];
+    if (!track || !el || track.scrollWidth <= track.clientWidth) return;
+    track.scrollTo({
+      left: el.offsetLeft - (track.clientWidth - el.offsetWidth) / 2,
+      behavior: 'smooth',
+    });
+  }, [active]);
+
   const filtered = active === ALL ? cases : cases.filter((c) => c.tabs?.includes(active));
 
   return (
@@ -61,7 +73,7 @@ export function CasesExplorer({ cases }: { cases: CaseItem[] }) {
       <div className="flex justify-center px-5 sm:px-0">
         <div
           ref={trackRef}
-          className="nums relative flex max-w-full flex-nowrap items-center overflow-x-auto rounded-pill bg-surface2 [scrollbar-width:none] sm:overflow-visible [&::-webkit-scrollbar]:hidden"
+          className="nums relative flex max-w-full flex-nowrap items-center overflow-x-auto rounded-pill bg-surface2 [mask-image:linear-gradient(to_right,transparent,#000_18px,#000_calc(100%-18px),transparent)] [scrollbar-width:none] sm:[mask-image:none] lg:overflow-visible [&::-webkit-scrollbar]:hidden"
         >
           <span
             aria-hidden
@@ -82,7 +94,7 @@ export function CasesExplorer({ cases }: { cases: CaseItem[] }) {
                 aria-pressed={on}
                 data-hint="tab"
                 data-hint-sub={tab.label}
-                className={`relative z-10 flex h-[52px] shrink-0 items-center gap-[8px] rounded-pill px-[22px] text-[16px] font-medium tracking-[0.03em] transition-colors ${
+                className={`relative z-10 flex h-[44px] shrink-0 items-center gap-[5px] rounded-pill px-[13px] text-[13.5px] font-medium tracking-[0.02em] transition-colors sm:h-[48px] sm:gap-[6px] sm:px-[15px] sm:text-[14.5px] lg:h-[52px] lg:gap-[8px] lg:px-[22px] lg:text-[16px] lg:tracking-[0.03em] ${
                   on ? 'text-white' : 'text-fg/55 hover:text-fg'
                 }`}
               >

@@ -250,6 +250,14 @@ export function CursorCompanion() {
         prevOpen = false;
       }
 
+      // The letter opens on top of everything, but the mascot draws above it — and
+      // perched he's ~6x his normal size, so he covered the whole form. Leaving the
+      // perch the moment the letter opens keeps him small and out of the way.
+      if (mode === 'footer-perch' && openRef.current) {
+        mode = 'companion';
+        if (root.current) root.current.style.opacity = '1';
+      }
+
       // mode switch on footer visibility (don't perch while the modal is open)
       if (mode !== 'appear' && !openRef.current) {
         if (footerVisible && mode !== 'footer-perch') {
@@ -357,7 +365,10 @@ export function CursorCompanion() {
         className="companion pointer-events-none fixed left-0 top-0 z-[120]"
         // start off-screen + scaled to nothing so the 640px svg never flashes at
         // full size before useEffect's first render positions & scales it.
-        style={{ transition: 'opacity 0.5s ease', transform: 'translate3d(-9999px,-9999px,0) scale(0)' }}
+        style={{
+          transition: 'opacity 0.5s ease',
+          transform: 'translate3d(-9999px,-9999px,0) scale(0)',
+        }}
       >
         <svg width="640" height="640" viewBox="0 0 26 26">
           <g ref={rot}>
@@ -368,12 +379,28 @@ export function CursorCompanion() {
             <g ref={eyeL} className="eye">
               <circle cx="10.2" cy="10" r="2.1" fill="#fff" />
               <circle ref={pupilL} cx="10.9" cy="10" r="1" fill="#0E0E10" />
-              <rect className="lid" x="7.6" y="7.4" width="5.2" height="5.2" rx="2.6" fill="#F84800" />
+              <rect
+                className="lid"
+                x="7.6"
+                y="7.4"
+                width="5.2"
+                height="5.2"
+                rx="2.6"
+                fill="#F84800"
+              />
             </g>
             <g ref={eyeR} className="eye">
               <circle cx="10.8" cy="15.6" r="2.1" fill="#fff" />
               <circle ref={pupilR} cx="11.5" cy="15.6" r="1" fill="#0E0E10" />
-              <rect className="lid" x="8.2" y="13" width="5.2" height="5.2" rx="2.6" fill="#F84800" />
+              <rect
+                className="lid"
+                x="8.2"
+                y="13"
+                width="5.2"
+                height="5.2"
+                rx="2.6"
+                fill="#F84800"
+              />
             </g>
           </g>
         </svg>

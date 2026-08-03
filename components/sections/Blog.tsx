@@ -30,7 +30,15 @@ function ArrowSquare({ small = false, onPeach = false }: { small?: boolean; onPe
 
 // Tag as a solid white pill, date/read as a muted one — the pair reads as a
 // single meta line above the title.
-function Pills({ post, peach, withRead = true }: { post: Post; peach?: boolean; withRead?: boolean }) {
+function Pills({
+  post,
+  peach,
+  withRead = true,
+}: {
+  post: Post;
+  peach?: boolean;
+  withRead?: boolean;
+}) {
   return (
     <div className="flex flex-wrap items-center gap-[8px] text-[14px]">
       <span className="rounded-full bg-white px-[14px] py-[6px] font-medium text-black shadow-[0_4px_14px_rgba(0,0,0,0.06)]">
@@ -117,9 +125,7 @@ function MiniCard({ post, peach = false }: { post: Post; peach?: boolean }) {
       data-hint="blog"
       data-hint-sub={post.slug}
       className={`${CARD_BASE} relative min-h-[240px] flex-1 justify-between gap-[20px] rounded-[24px] p-[24px] sm:rounded-[26px] sm:p-[26px] ${
-        peach
-          ? 'bg-gradient-to-br from-[#f7d8c5] to-[#f1bda3]'
-          : 'bg-surface hover:bg-surface2'
+        peach ? 'bg-gradient-to-br from-[#f7d8c5] to-[#f1bda3]' : 'bg-surface hover:bg-surface2'
       }`}
     >
       <div className="relative z-10 flex flex-col gap-[14px]">

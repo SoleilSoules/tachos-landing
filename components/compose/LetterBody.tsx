@@ -8,6 +8,7 @@ import {
   type LetterType,
   type ContactError,
 } from '@/lib/compose';
+import { footer } from '@/lib/content';
 import { useCompose } from './ComposeProvider';
 
 const typeWord: Record<LetterType, string> = {
@@ -76,10 +77,7 @@ function Slot({
     const w = el.offsetWidth; // layout width, unaffected by transform
     const pad = 8;
     const centred = slot.left + slot.width / 2 - w / 2;
-    const clamped = Math.max(
-      bounds.left + pad,
-      Math.min(centred, bounds.right - pad - w),
-    );
+    const clamped = Math.max(bounds.left + pad, Math.min(centred, bounds.right - pad - w));
     const shift = Math.round(clamped - centred);
     el.style.transform = shift ? `translateX(calc(-50% + ${shift}px))` : '';
   }, [showPopup, options]);
@@ -106,7 +104,8 @@ function Slot({
           // No plate behind the options: they float as separate pills and wrap
           // instead of being clipped by a fixed-width scroller (the last one used
           // to hide off the right edge).
-          className="absolute left-1/2 top-[calc(100%+10px)] z-40 flex w-max max-w-[min(92vw,540px)] -translate-x-1/2 flex-wrap gap-[7px] leading-none [animation:compose-pop-in_.22s_ease-out] motion-reduce:[animation:none] sm:gap-[8px]">
+          className="absolute left-1/2 top-[calc(100%+10px)] z-40 flex w-max max-w-[min(92vw,540px)] -translate-x-1/2 flex-wrap gap-[7px] leading-none [animation:compose-pop-in_.22s_ease-out] motion-reduce:[animation:none] sm:gap-[8px]"
+        >
           {options.map((o) => (
             <button
               key={o.label}
@@ -173,6 +172,7 @@ export function LetterBody({
   const [agreeError, setAgreeError] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [mailCopied, setMailCopied] = useState(false);
+  const [phoneCopied, setPhoneCopied] = useState(false);
   const [done, setDone] = useState<SlotKey[]>([]);
   const doneRef = useRef<SlotKey[]>([]);
   doneRef.current = done;
@@ -281,8 +281,7 @@ export function LetterBody({
 
   // Every slot answered and the typing caught up → the contact is the only thing
   // left, so the field lights up in accent until the user starts filling it.
-  const letterDone =
-    !typing && segments.every((s) => !('slot' in s) || done.includes(s.slot));
+  const letterDone = !typing && segments.every((s) => !('slot' in s) || done.includes(s.slot));
   const nudgeContact = letterDone && !contact.trim() && !contactError;
 
   const pick = (key: SlotKey, v: string) => {
@@ -336,10 +335,16 @@ export function LetterBody({
     }
   };
   const copyMail = async () => {
-    const ok = await copy('hello@tachos.ru', 'Почта скопирована');
+    const ok = await copy(footer.contacts.email.value, 'Почта скопирована');
     if (!ok) return;
     setMailCopied(true);
     setTimeout(() => setMailCopied(false), 1400);
+  };
+  const copyPhone = async () => {
+    const ok = await copy(footer.contacts.phone.value, 'Телефон скопирован');
+    if (!ok) return;
+    setPhoneCopied(true);
+    setTimeout(() => setPhoneCopied(false), 1400);
   };
 
   const slotValue = (key: SlotKey): string =>
@@ -353,22 +358,35 @@ export function LetterBody({
   return (
     // data-letter-bounds marks the box the option popups must stay inside.
     <div data-letter-bounds className="relative flex flex-col gap-[22px]">
-      {/* One quiet line instead of the old От/Кому/Тема row: who reads this and
-          where it goes. The address stays copyable for anyone who'd rather write
-          from their own mail client. */}
-      <div className="flex flex-wrap items-center gap-x-[8px] gap-y-[4px] text-[13px] text-inverted/40">
-        <span>Письмо в студию ·</span>
+      {/* The studio's own contacts head the letter (Гоша) — same pair as the
+          footer, for anyone who'd rather write or call directly. */}
+      <div className="flex flex-wrap items-center gap-x-[22px] gap-y-[6px] text-[13px] text-inverted/45">
         <button
           type="button"
           onClick={copyMail}
-          aria-label="Скопировать почту hello@tachos.ru"
-          className="group/mail inline-flex items-center gap-[6px] rounded-[6px] outline-none transition hover:text-inverted/70 focus-visible:ring-1 focus-visible:ring-white/40"
+          aria-label={`Скопировать почту ${footer.contacts.email.value}`}
+          className="group/mail inline-flex items-center gap-[6px] rounded-[6px] outline-none transition hover:text-inverted/80 focus-visible:ring-1 focus-visible:ring-white/40"
         >
-          <span className="underline decoration-dotted underline-offset-2">hello@tachos.ru</span>
+          <span className="underline decoration-dotted underline-offset-[4px]">
+            {footer.contacts.email.value}
+          </span>
           {mailCopied ? (
             <span className="text-[12px] text-accent">✓</span>
           ) : (
             <CopyGlyph className="text-inverted/35 transition group-hover/mail:text-inverted/70" />
+          )}
+        </button>
+        <button
+          type="button"
+          onClick={copyPhone}
+          aria-label={`Скопировать телефон ${footer.contacts.phone.value}`}
+          className="group/tel inline-flex items-center gap-[6px] rounded-[6px] outline-none transition hover:text-inverted/80 focus-visible:ring-1 focus-visible:ring-white/40"
+        >
+          <span className="nums">{footer.contacts.phone.value}</span>
+          {phoneCopied ? (
+            <span className="text-[12px] text-accent">✓</span>
+          ) : (
+            <CopyGlyph className="text-inverted/35 transition group-hover/tel:text-inverted/70" />
           )}
         </button>
       </div>

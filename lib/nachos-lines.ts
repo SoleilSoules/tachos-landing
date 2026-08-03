@@ -1,3 +1,4 @@
+import { nbspText } from './typography';
 // Tachos Nachos (the mascot) explains the thing under the cursor. One rule, set
 // by Гоша after he caught him riffing into the void: every line must ADD
 // information about that exact element — a fact you can't read off the card. No
@@ -18,7 +19,6 @@ export type NachosCategory =
   | 'role'
   | 'blog'
   | 'hero'
-  | 'voice'
   | 'send'
   | 'contact'
   | 'founder'
@@ -50,7 +50,6 @@ const KNOWN = new Set<NachosCategory>([
   'role',
   'blog',
   'hero',
-  'voice',
   'send',
   'contact',
   'founder',
@@ -94,7 +93,7 @@ const CASE_FACTS: Record<string, string[]> = {
   ],
   Maginary: [
     'Книга-игра: читатель принимает решения и меняет ход сюжета',
-    '750 000 загрузок в App Store',
+    '3 млн+ установок и Game of the Day в App Store',
     'Нативное iOS-приложение с анимированными сценами и ветвлением',
   ],
   Monte: [
@@ -167,8 +166,7 @@ const LINES: Record<
     'Опишите задачу своими словами — из ответов соберется письмо',
     'Формулировать по ТЗ не нужно, достаточно пары фраз',
   ],
-  voice: ['Голосовой ввод: продиктуйте задачу вместо набора'],
-  send: ['Откроет письмо с вашим текстом. Enter работает так же'],
+  send: ['Откроет письмо — текст из поля перенесется. Enter работает так же'],
   contact: ['Сюда придет ответ: телефон, почта или телеграм'],
   founder: ['{name} — основатель и тех-лид, отвечает напрямую, без менеджеров'],
   'nav-cta': ['Открывает письмо в студию, ответ в течение рабочего дня'],
@@ -210,5 +208,8 @@ export function nachosLine(category: NachosCategory, name: string, avoid?: strin
   if (!source || source.length === 0) return null;
   const filled = source.map((l) => fill(l, name));
   const fresh = filled.length > 1 && avoid ? filled.filter((l) => l !== avoid) : filled;
-  return fresh[Math.floor(Math.random() * fresh.length)] ?? filled[0] ?? null;
+  const line = fresh[Math.floor(Math.random() * fresh.length)] ?? filled[0] ?? null;
+  // same typographic glue as the page copy — the bubble is narrow, so a hanging
+  // preposition shows up there faster than anywhere else
+  return line == null ? null : nbspText(line);
 }

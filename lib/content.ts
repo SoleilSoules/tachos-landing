@@ -13,8 +13,9 @@ export const nav: { links: NavLink[]; cta: string } = {
   links: [
     { label: 'Кейсы', href: '#cases' },
     { label: 'Отзывы', href: '#reviews' },
+    // «Медиа» = раздел блога: новости, кейсы и жизнь студии (якоря #media нет)
+    { label: 'Медиа', href: '#blog' },
     { label: 'Контакты', href: '#contacts' },
-    { label: 'Медиа', href: '#media' },
   ],
   cta: 'Связаться',
 };
@@ -28,7 +29,7 @@ export const hero = deepNbsp({
   // verifiable figure (rendered in accent colour), `tail` is the plain noun.
   // Numbers come from real cases (Складно / Хайс / Maginary).
   facts: [
-    { accent: '750 000', tail: 'загрузок' },
+    { accent: '3 млн+', tail: 'установок' },
     { accent: '95+', tail: 'точек сети' },
     { accent: 'банк для ИП', tail: 'с нуля' },
     { accent: '2+ года', tail: 'с командами' },
@@ -66,7 +67,7 @@ export const founder = deepNbsp({
 
 export const casesIntro = deepNbsp({
   titleBlack: 'Успешно запустили',
-  titleAccent: { prefix: 'более ', count: 40, suffix: ' цифровых продуктов' },
+  titleAccent: { prefix: 'более ', count: 40, suffix: ' цифровых продуктов' },
 } as const);
 
 export type CaseTab = { label: string; count?: number; icon?: 'star'; active?: boolean };
@@ -90,7 +91,9 @@ export type CaseItem = {
   id: string;
   client: string;
   category: string;
-  desc: { lead: string; highlight: string; tail: string };
+  // `highlight` = accent underlay on the card. Only for a real figure or a
+  // strong fact (Гоша) — plain description sentences carry no highlight.
+  desc: { lead: string; highlight?: string; tail: string };
   tags: [string, string];
   shot?: string; // real product screenshot, shown in a device mockup on the cover
   shotKind?: 'phone' | 'desktop' | 'cover'; // device frame for `shot`, or 'cover' = full-bleed photo
@@ -99,7 +102,9 @@ export type CaseItem = {
   mockupVideo?: string; // clip shown inside an animated turning iPhone mockup on the cover
   coverVideo?: string; // full-bleed animated cover (storyboard reel) — overrides `shot`
   story: CaseStory; // case-page content (placeholder prose until Vadim confirms)
-  verified?: boolean; // confirmed Tachos work (Складно / Хайс / Maginary)
+  // Internal marker of work we can vouch for; not rendered anywhere — the case
+  // page links to the live product instead of showing a self-issued badge.
+  verified?: boolean;
   hidden?: boolean; // temporarily hidden from the homepage grid
 };
 
@@ -174,6 +179,7 @@ export const reviews = deepNbsp({
       role: 'Создатель Maginary',
       caption: 'о своем кейсе',
       duration: '01:48',
+      logo: '/logos/maginary-grunge.svg',
       // no real photo of Семен yet — show his product's cover, never someone
       // else's face under a real person's name
       avatar: '/figma/maginary-cover.webp',
@@ -183,42 +189,19 @@ export const reviews = deepNbsp({
 
 // ── Order set by Гоша: the first visible four are the animated-cover cases
 //   (Monte / Хайс / Maginary / Складно), Добрый moved down to Maginary's old slot.
-// New clients have real screenshots pending — they show an EMPTY device mock
-// (shotKind without shot) until the shot is captured. Their story/metrics are
-// placeholders ("—") until Vadim confirms copy. Verified work: Складно/Хайс/Maginary.
+//   Docmed and АльфаСтрахование were added last (from vadim.tachos.team) so the
+//   agreed top of the grid stays put — they surface under «Показать ещё».
+// Copy and figures for every case come from Vadim's own site, not from guesses.
 export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
-  {
-    id: 'docmed',
-    client: 'Docmed',
-    category: 'медтех',
-    tabs: ['Для маркетплейсов'],
-    desc: {
-      lead: 'Телемедицина и запись к врачу для',
-      highlight: 'клиники доказательной медицины',
-      tail: '',
-    },
-    tags: ['Медтех', 'Web + mobile'],
-    shot: '/figma/shots/docmed.png',
-    shotKind: 'desktop',
-    hidden: true,
-    story: {
-      summary: 'Телемедицина и запись к врачу для клиники доказательной медицины',
-      metrics: [
-        { value: '—', label: 'уточняется' },
-        { value: '—', label: 'уточняется' },
-      ],
-      sections: [{ title: 'Контекст', body: 'Описание кейса уточняется' }],
-    },
-  },
   {
     id: 'hais',
     client: 'Хайс',
     category: 'финтех',
     tabs: ['Для банков'],
     desc: {
-      lead: 'Мобильный банк для ИП с нуля —',
-      highlight: 'счет, бухгалтерия и валюта',
-      tail: 'в одном приложении',
+      lead: 'Мобильный банк для ИП с нуля — счет, бухгалтерия и валюта,',
+      highlight: '50 000+ клиентов',
+      tail: '',
     },
     tags: ['Финтех', 'iOS + Android'],
     shot: '/figma/hais-cover.webp',
@@ -227,9 +210,9 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     story: {
       summary: 'Мобильный банк для ИП с нуля — счет, бухгалтерия и валюта в одном приложении',
       metrics: [
-        { value: 'с нуля', label: 'банк под ключ' },
+        { value: '50 000+', label: 'клиентов банка' },
+        { value: '6 месяцев', label: 'от старта до MVP' },
         { value: 'iOS + Android', label: 'нативные приложения' },
-        { value: 'анти-фрод', label: 'доработка SDK' },
       ],
       sections: [
         {
@@ -238,11 +221,11 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
         },
         {
           title: 'Что сделали',
-          body: 'Спроектировали и собрали нативные приложения под iOS и Android, доработали SDK для анти-фрод сервиса банковских организаций, подготовили инфраструктуру под нагрузку',
+          body: 'Собрали банк с нуля и выпустили MVP для ИП за 6 месяцев, дальше развивали продукт: нативные приложения под iOS и Android, доработка SDK для анти-фрод сервиса, инфраструктура под нагрузку. В 2025 запустили CryptoHub — обмен фиатного рубля на криптовалюту внутри приложения',
         },
         {
           title: 'Результат',
-          body: 'Запустили мобильный банк для ИП — счет, бухгалтерия и валюта в едином интерфейсе, с защитой от мошенничества на уровне SDK',
+          body: 'Банком пользуются больше 50 000 клиентов: счет, бухгалтерия, валюта и обмен на криптовалюту в одном интерфейсе, с защитой от мошенничества на уровне SDK',
         },
       ],
     },
@@ -253,19 +236,34 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     client: 'Monte',
     category: 'автотюнинг',
     tabs: ['Для маркетплейсов'],
-    desc: { lead: 'Сайт и сервисы для', highlight: 'студии автотюнинга', tail: '' },
+    desc: { lead: 'Сайт и сервисы для студии автотюнинга', tail: '' },
     tags: ['Автотюнинг', 'Web'],
     shot: '/figma/monte-cover.webp',
     coverVideo: '/covers/monte-cover.mp4',
     shotKind: 'cover',
     coverDark: true,
     story: {
-      summary: 'Сайт и сервисы для студии автотюнинга',
+      summary:
+        'Собственный продукт: устройство, меняющее характеристики автомобиля, и приложение, которое управляет им по Bluetooth',
       metrics: [
-        { value: '—', label: 'уточняется' },
-        { value: '—', label: 'уточняется' },
+        { value: 'США и Европа', label: 'своя сеть продаж' },
+        { value: 'Web + iOS + Android', label: 'платформы' },
+        { value: 'Bluetooth', label: 'связь с устройством' },
       ],
-      sections: [{ title: 'Контекст', body: 'Описание кейса уточняется' }],
+      sections: [
+        {
+          title: 'Контекст',
+          body: 'Своя разработка студии: коробка, которая меняет мощность и отклик мотора. Владельцу нужен способ переключать режимы с телефона, а самому продукту — витрина и продажи за рубежом',
+        },
+        {
+          title: 'Что сделали',
+          body: 'Сделали цифровую часть продукта: приложения под iOS и Android, которые связываются с устройством по Bluetooth и переключают режимы, плюс сайт и сервисы вокруг продаж',
+        },
+        {
+          title: 'Результат',
+          body: 'Устройство производится в США и продается через eBay и Amazon: под продукт построена собственная сеть продаж в США и Европе',
+        },
+      ],
     },
   },
   {
@@ -274,9 +272,9 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     category: 'приложение-книга',
     tabs: ['Геймдев'],
     desc: {
-      lead: 'Анимированная книга-игра, где читатель становится героем',
-      highlight: '750 000 загрузок',
-      tail: 'в App Store',
+      lead: 'Анимированная книга-игра, где читатель становится героем —',
+      highlight: '3 млн+ установок',
+      tail: 'и Game of the Day в App Store',
     },
     tags: ['Приложение-книга', 'iOS'],
     shot: '/figma/maginary-cover.webp',
@@ -286,9 +284,9 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     story: {
       summary: 'Анимированная книга-игра, где читатель становится героем истории',
       metrics: [
-        { value: '750 000', label: 'загрузок в App Store' },
-        { value: 'iOS', label: 'нативное приложение' },
-        { value: 'книга-игра', label: 'формат продукта' },
+        { value: '3 млн+', label: 'установок в App Store' },
+        { value: '40 000', label: 'отзывов' },
+        { value: 'Game of the Day', label: 'в App Store' },
       ],
       sections: [
         {
@@ -299,7 +297,10 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
           title: 'Что сделали',
           body: 'Собрали нативное iOS-приложение с анимированными сценами, ветвлением сюжета и плавными переходами между главами',
         },
-        { title: 'Результат', body: 'Приложение набрало 750 000 загрузок в App Store' },
+        {
+          title: 'Результат',
+          body: 'Книга-игра набрала больше 3 млн установок и 40 000 отзывов, App Store поставил ее в Game of the Day',
+        },
       ],
     },
     verified: true,
@@ -337,29 +338,11 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
         },
         {
           title: 'Результат',
-          body: 'Сеть выросла до 95+ точек и 8 000 пользователей. Доступ по Bluetooth убрал необходимость держать сотрудников на точках',
+          body: 'Сеть выросла до 95+ точек и 8 000 пользователей и стала самой быстрорастущей сетью хранения в России. Доступ по Bluetooth убрал необходимость держать сотрудников на точках',
         },
       ],
     },
     verified: true,
-  },
-  {
-    id: 'alfastrah',
-    client: 'АльфаСтрахование',
-    category: 'страхование',
-    tabs: ['Для банков'],
-    desc: { lead: 'Цифровые сервисы для', highlight: 'страховой компании', tail: '' },
-    tags: ['Страхование', 'Web'],
-    shotKind: 'desktop',
-    hidden: true,
-    story: {
-      summary: 'Цифровые сервисы для страховой компании',
-      metrics: [
-        { value: '—', label: 'уточняется' },
-        { value: '—', label: 'уточняется' },
-      ],
-      sections: [{ title: 'Контекст', body: 'Описание кейса уточняется' }],
-    },
   },
   {
     id: 'dobry',
@@ -403,9 +386,8 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     client: 'Anomalia',
     category: 'соцсеть сообщества',
     desc: {
-      lead: 'Социальное приложение бизнес-сообщества:',
-      highlight: 'деловые связи, чаты и обучение',
-      tail: 'в одном месте',
+      lead: 'Социальное приложение бизнес-сообщества: деловые связи, чаты и обучение в одном месте',
+      tail: '',
     },
     tags: ['Соцсеть', 'iOS + Android'],
     shot: '/figma/anomalia-cover.webp',
@@ -442,13 +424,14 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     category: 'благотворительность',
     tabs: ['eCommerce'],
     desc: {
-      lead: 'Сервис микродонатов —',
-      highlight: 'помощь людям через фонды Армении',
+      lead: 'Сервис микродонатов — помощь людям через фонды Армении',
       tail: '',
     },
     tags: ['Благотворительность', 'iOS + Android'],
     shot: '/figma/imast-cover.webp',
     shotKind: 'cover',
+    // цветная обложка: темный текст в чипах тонул в градиенте — берем светлый вариант
+    coverDark: true,
     story: {
       summary: 'Сервис микродонатов: помощь людям через благотворительные фонды Армении',
       metrics: [
@@ -477,8 +460,7 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     client: 'Alma',
     category: 'управление недвижимостью',
     desc: {
-      lead: 'SaaS для управляющих компаний:',
-      highlight: 'автоматизация управления недвижимостью',
+      lead: 'SaaS для управляющих компаний: автоматизация управления недвижимостью',
       tail: '',
     },
     tags: ['PropTech', 'Web + mobile'],
@@ -505,6 +487,78 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
         {
           title: 'Результат',
           body: 'Под управлением платформы больше миллиона квадратных метров; продукт локализован для Кипра, Греции и стран MEA',
+        },
+      ],
+    },
+  },
+  {
+    id: 'docmed',
+    client: 'Docmed и Docdeti',
+    category: 'медтех',
+    desc: {
+      lead: 'Личный кабинет пациента — запись, результаты и телемедицина в приложении клиники',
+      tail: '',
+    },
+    tags: ['Медтех', 'iOS + Android'],
+    shot: '/figma/docmed-cover.webp',
+    shotKind: 'cover',
+    story: {
+      summary:
+        'Клиники доказательной медицины: личный кабинет пациента — запись к врачу, результаты обследований, телемедицина',
+      metrics: [
+        { value: 'iOS + Android', label: 'нативные приложения' },
+        { value: 'две клиники', label: 'взрослая и детская' },
+        { value: 'телемедицина', label: 'прием онлайн' },
+      ],
+      sections: [
+        {
+          title: 'Контекст',
+          body: 'Docmed и Docdeti работают по принципам доказательной медицины: взрослая и детская клиники с общей картотекой пациентов. Запись, результаты и связь с врачом были разнесены по разным каналам',
+        },
+        {
+          title: 'Что сделали',
+          body: 'Собрали приложения под iOS и Android: запись к врачу с выбором специалиста, результаты обследований в личном кабинете, онлайн-консультация без визита в клинику',
+        },
+        {
+          title: 'Результат',
+          body: 'Пациент ведет лечение в одном приложении: записывается, забирает результаты и выходит на связь с врачом онлайн',
+        },
+      ],
+    },
+  },
+  {
+    id: 'alfastrah',
+    client: 'АльфаСтрахование',
+    category: 'страхование',
+    tabs: ['Для банков'],
+    desc: {
+      lead: 'Приложение для клиентов страховой —',
+      highlight: '800 000+ пользователей в месяц',
+      tail: '',
+    },
+    tags: ['Страхование', 'Android + PWA'],
+    shot: '/figma/alfastrah-cover.webp',
+    shotKind: 'cover',
+    story: {
+      summary:
+        'Приложение для клиентов страховой компании: управление полисами, заявление убытков, поддержка и программа лояльности',
+      metrics: [
+        { value: '800 000+', label: 'пользователей в месяц' },
+        { value: 'Android + PWA', label: 'платформы' },
+        { value: 'Backend Driven UI', label: 'релизы без обновления' },
+      ],
+      sections: [
+        {
+          title: 'Контекст',
+          body: 'У клиентов страховой полисы, убытки и обращения в поддержку жили в разных каналах — приложению нужна была продуктовая команда и темп выпуска функций',
+        },
+        {
+          title: 'Что сделали',
+          body: 'Построили продуктовую команду мобильного приложения и внедрили Backend Driven UI: интерфейс нативных приложений собирается на сервере, поэтому новые функции выходят без релиза в сторах',
+        },
+        {
+          title: 'Результат',
+          body: 'Приложением пользуются больше 800 000 человек в месяц: полисы, заявление убытков, поддержка и программа лояльности в одном интерфейсе',
         },
       ],
     },

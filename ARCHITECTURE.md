@@ -30,16 +30,16 @@ submission is Vadim's TODO (see `FEEDBACK_FOR_VADIM.md`).
 
 ## Layout
 
-| path | what |
-|---|---|
-| `app/page.tsx` | homepage — composes the sections |
-| `app/cases/[slug]`, `app/blog/[slug]` | SSG sub-pages (`generateStaticParams`, `dynamicParams = false`) |
-| `app/globals.css` | design tokens (CSS vars) + keyframes |
-| `components/sections/` | homepage sections (Hero, CasesExplorer, Reviews, Products, Blog, Footer…) |
-| `components/` | shared UI + `compose/` (letter widget + cursor mascot) |
-| `lib/content.ts` | all page copy & data (cases, reviews, products, hero) |
-| `lib/` | `asset.ts` (basePath for images), `compose.ts`, `typography.ts` |
-| `public/figma/` | images, device mockups, cover photos |
+| path                                  | what                                                                      |
+| ------------------------------------- | ------------------------------------------------------------------------- |
+| `app/page.tsx`                        | homepage — composes the sections                                          |
+| `app/cases/[slug]`, `app/blog/[slug]` | SSG sub-pages (`generateStaticParams`, `dynamicParams = false`)           |
+| `app/globals.css`                     | design tokens (CSS vars) + keyframes                                      |
+| `components/sections/`                | homepage sections (Hero, CasesExplorer, Reviews, Products, Blog, Footer…) |
+| `components/`                         | shared UI + `compose/` (letter widget + cursor mascot)                    |
+| `lib/content.ts`                      | all page copy & data (cases, reviews, products, hero)                     |
+| `lib/`                                | `asset.ts` (basePath for images), `compose.ts`, `typography.ts`           |
+| `public/figma/`                       | images, device mockups, cover photos                                      |
 
 ## Data flow
 

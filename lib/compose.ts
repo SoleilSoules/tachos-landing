@@ -1,3 +1,4 @@
+import { nbspText } from './typography';
 // Letter composer model (ported from the v2 prototype). The form builds one
 // email for the whole session; the user only picks chips, the text writes itself.
 
@@ -79,7 +80,9 @@ export function buildLetter(s: ComposeState): { subject: string; body: string } 
   let body = bodies[s.type](s) + (s.budget ? `\n\nОриентир по бюджету: ${s.budget}.` : '');
   // Personalise the greeting with the name slot when the visitor filled it.
   if (s.name) body = body.replace('Здравствуйте!', `Здравствуйте! Меня зовут ${s.name}.`);
-  return { subject: subjects[s.type], body };
+  // the letter is typed into a narrow sheet — glue short prepositions like the rest
+  // of the site's copy, so nothing hangs at a line end while it types out
+  return { subject: subjects[s.type], body: nbspText(body) };
 }
 
 // Lenient contact check — the goal is to reject obvious typos, not real contacts.

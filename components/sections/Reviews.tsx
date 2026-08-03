@@ -39,28 +39,6 @@ function PauseIcon({ size = 20 }: { size?: number }) {
   );
 }
 
-// Muted-speaker glyph — sits on the video cards (Глеб, Дарья) as in the Figma:
-// the clip autoplays silently, this toggles sound.
-function MuteIcon({ size = 18 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <path d="M11 5 6 9H3v6h3l5 4V5Z" fill="currentColor" stroke="none" />
-      <line x1="22" y1="9" x2="16" y2="15" />
-      <line x1="16" y1="9" x2="22" y2="15" />
-    </svg>
-  );
-}
-
 // Handwritten "tachos" wordmark (from tachos-svg/tachos-14.svg). Inlined so it
 // can inherit colour via currentColor — the source fill #111111 is replaced with
 // `fill="currentColor"`, and callers set the colour through className (e.g.
@@ -139,10 +117,18 @@ function Author({ r, light = false }: { r: Review; light?: boolean }) {
 // The frosted round badge that carries the CLIENT's logo (mono, forced to a solid
 // tone so it reads on any card). Falls back to the Tachos mark when a review has
 // no logo. `light` flips it for the peach card: dark disc + black logo.
-function LogoBadge({ r, light = false, className = '' }: { r: Review; light?: boolean; className?: string }) {
+function LogoBadge({
+  r,
+  light = false,
+  className = '',
+}: {
+  r: Review;
+  light?: boolean;
+  className?: string;
+}) {
   return (
     <span
-      className={`grid size-[46px] shrink-0 place-items-center overflow-hidden rounded-full backdrop-blur-md ${
+      className={`grid size-[54px] shrink-0 place-items-center overflow-hidden rounded-full backdrop-blur-md ${
         light ? 'bg-black/[0.06]' : 'bg-white/10 ring-1 ring-white/15'
       } ${className}`}
     >
@@ -150,9 +136,9 @@ function LogoBadge({ r, light = false, className = '' }: { r: Review; light?: bo
         <Image
           src={asset(r.logo)}
           alt=""
-          width={32}
-          height={22}
-          className={`max-h-[22px] w-auto max-w-[30px] object-contain brightness-0 ${light ? '' : 'invert'}`}
+          width={58}
+          height={26}
+          className={`max-h-[23px] w-auto max-w-[40px] object-contain brightness-0 ${light ? '' : 'invert'}`}
         />
       ) : (
         <TachosMark className={`w-[27px] ${light ? 'text-black/40' : 'text-inverted/70'}`} />
@@ -413,11 +399,15 @@ function VideoCard({ r }: { r: Review }) {
       <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-transparent to-accent/95" />
       {/* name + caption at the TOP (Figma), role + mute pinned to the BOTTOM */}
       <div className="relative flex h-full flex-col justify-between">
-        <p className="text-[22px] font-medium leading-[1.2] sm:text-[26px] sm:leading-[1.15]">
-          {r.author}
-          <br />
-          <span className="text-white/70">{r.caption}</span>
-        </p>
+        {/* logo badge next to the name — every review carries its client's mark (Гоша) */}
+        <div className="flex items-start justify-between gap-[16px]">
+          <p className="text-[22px] font-medium leading-[1.2] sm:text-[26px] sm:leading-[1.15]">
+            {r.author}
+            <br />
+            <span className="text-white/70">{r.caption}</span>
+          </p>
+          <LogoBadge r={r} />
+        </div>
         <div className="flex items-end justify-between gap-[12px]">
           <div className="max-w-[72%] text-[15px] leading-[1.3] text-white/90">{r.role}</div>
           {/* decorative until real video exists — not a focusable/announced control
@@ -447,6 +437,8 @@ function PortraitCard({ r }: { r: Review }) {
       className={`reveal-hidden group relative flex h-full min-h-[440px] w-full flex-col items-center justify-center gap-[20px] overflow-hidden rounded-[28px] [clip-path:inset(0_round_28px)] sm:min-h-[520px] sm:gap-[24px] sm:rounded-card sm:[clip-path:inset(0_round_40px)] ${CARD_BORDER} bg-white/[0.06] ${CARD_PAD} text-center backdrop-blur-md`}
     >
       <Glow className="left-1/2 top-[40px] h-[260px] w-[260px] -translate-x-1/2 bg-accent/20" />
+      {/* logo badge in the corner — the portrait card had none (Гоша) */}
+      <LogoBadge r={r} className="absolute right-[24px] top-[24px] z-10" />
       {/* Portrait scaled down on mobile so it fits inside the narrow padded card
           without touching the edges; desktop keeps the 260px round photo. */}
       <div className="relative size-[200px] overflow-hidden rounded-full ring-2 ring-accent/70 sm:size-[260px]">
@@ -468,14 +460,6 @@ function PortraitCard({ r }: { r: Review }) {
           <span className="translate-x-[2px]">
             <PlayIcon size={24} />
           </span>
-        </div>
-        {/* mute pinned bottom-right — decorative like the play disc until real
-            video exists (a focusable button that does nothing is an a11y trap) */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute bottom-[12px] right-[12px] grid size-[36px] place-items-center rounded-full bg-black/40 text-white ring-1 ring-white/25 backdrop-blur-md"
-        >
-          <MuteIcon size={16} />
         </div>
         {/* video duration, centred on the bottom edge of the portrait */}
         {r.duration && (

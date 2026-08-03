@@ -5,6 +5,7 @@ import { hero } from '@/lib/content';
 import { guessType, type LetterType } from '@/lib/compose';
 import { useCompose } from '@/components/compose/ComposeProvider';
 import { keyBump } from '@/components/compose/LetterBody';
+import { AiIcon } from '@/components/AiIcon';
 
 const chipType: Record<string, LetterType> = {
   Сайт: 'site',
@@ -12,15 +13,6 @@ const chipType: Record<string, LetterType> = {
   Магазин: 'shop',
   Игра: 'game',
 };
-
-function WaveIcon() {
-  // mingcute voice-fill — five bars, tallest in the centre (40×40)
-  return (
-    <svg width="40" height="40" viewBox="0 0 41 41" fill="currentColor" aria-hidden>
-      <path d="M20.3035 4.23083C20.9345 4.23087 21.5429 4.46593 22.01 4.89019C22.4772 5.31445 22.7695 5.89749 22.8301 6.5256L22.8419 6.7693V33.8462C22.8416 34.4981 22.5905 35.1249 22.1406 35.5967C21.6908 36.0685 21.0766 36.3492 20.4255 36.3805C19.7743 36.4118 19.1361 36.1914 18.643 35.765C18.1499 35.3386 17.8398 34.7388 17.7769 34.0899L17.765 33.8462V6.7693C17.765 6.09605 18.0325 5.45039 18.5085 4.97433C18.9846 4.49828 19.6302 4.23083 20.3035 4.23083ZM13.5343 9.30776C14.2075 9.30776 14.8532 9.5752 15.3292 10.0513C15.8053 10.5273 16.0727 11.173 16.0727 11.8462V28.7693C16.0727 29.4425 15.8053 30.0882 15.3292 30.5642C14.8532 31.0403 14.2075 31.3077 13.5343 31.3077C12.861 31.3077 12.2153 31.0403 11.7393 30.5642C11.2632 30.0882 10.9958 29.4425 10.9958 28.7693V11.8462C10.9958 11.173 11.2632 10.5273 11.7393 10.0513C12.2153 9.5752 12.861 9.30776 13.5343 9.30776ZM27.0727 9.30776C27.746 9.30776 28.3916 9.5752 28.8677 10.0513C29.3437 10.5273 29.6112 11.173 29.6112 11.8462V28.7693C29.6112 29.4425 29.3437 30.0882 28.8677 30.5642C28.3916 31.0403 27.746 31.3077 27.0727 31.3077C26.3995 31.3077 25.7538 31.0403 25.2777 30.5642C24.8017 30.0882 24.5342 29.4425 24.5342 28.7693V11.8462C24.5342 11.173 24.8017 10.5273 25.2777 10.0513C25.7538 9.5752 26.3995 9.30776 27.0727 9.30776ZM6.76502 14.3847C7.43826 14.3847 8.08393 14.6521 8.55999 15.1282C9.03604 15.6042 9.30348 16.2499 9.30348 16.9231V23.6924C9.30348 24.3656 9.03604 25.0113 8.55999 25.4873C8.08393 25.9634 7.43826 26.2308 6.76502 26.2308C6.09178 26.2308 5.44611 25.9634 4.97006 25.4873C4.49401 25.0113 4.22656 24.3656 4.22656 23.6924V16.9231C4.22656 16.2499 4.49401 15.6042 4.97006 15.1282C5.44611 14.6521 6.09178 14.3847 6.76502 14.3847ZM33.8419 14.3847C34.473 14.3847 35.0814 14.6198 35.5485 15.044C36.0156 15.4683 36.308 16.0513 36.3686 16.6794L36.3804 16.9231V23.6924C36.3801 24.3443 36.129 24.9711 35.6791 25.4429C35.2292 25.9147 34.6151 26.1953 33.9639 26.2266C33.3128 26.258 32.6745 26.0376 32.1814 25.6111C31.6884 25.1847 31.3782 24.5849 31.3153 23.9361L31.3035 23.6924V16.9231C31.3035 16.2499 31.5709 15.6042 32.047 15.1282C32.523 14.6521 33.1687 14.3847 33.8419 14.3847Z" />
-    </svg>
-  );
-}
 
 function EnterIcon() {
   // return/enter glyph — replaces the voice icon once the field has text,
@@ -43,19 +35,6 @@ function EnterIcon() {
   );
 }
 
-// Minimal shape of the Web Speech API we use (no DOM lib types for it in TS).
-type SpeechResultLike = { results: ArrayLike<ArrayLike<{ transcript: string }>> };
-type SpeechRecognitionLike = {
-  lang: string;
-  interimResults: boolean;
-  continuous: boolean;
-  onresult: (e: SpeechResultLike) => void;
-  onend: () => void;
-  onerror: () => void;
-  start: () => void;
-  stop: () => void;
-};
-
 // `chips` toggles the «Мне нужен: …» row under the field — hidden in the hero for
 // now (Гоша), the component keeps working without it.
 export function HeroPrompt({ chips = true }: { chips?: boolean } = {}) {
@@ -75,42 +54,6 @@ export function HeroPrompt({ chips = true }: { chips?: boolean } = {}) {
   }, []);
 
   const submit = () => open({ type: guessType(value) ?? 'idk', freeText: value.trim() });
-
-  // Voice input (#27, draft): dictate into the field via Web Speech API; if the
-  // browser has no SpeechRecognition, fall back to just opening the letter.
-  const recRef = useRef<SpeechRecognitionLike | null>(null);
-  const [listening, setListening] = useState(false);
-  const toggleVoice = () => {
-    if (listening) {
-      recRef.current?.stop();
-      return;
-    }
-    const w = window as unknown as {
-      SpeechRecognition?: new () => SpeechRecognitionLike;
-      webkitSpeechRecognition?: new () => SpeechRecognitionLike;
-    };
-    const SR = w.SpeechRecognition ?? w.webkitSpeechRecognition;
-    if (!SR) {
-      submit();
-      return;
-    }
-    const rec = new SR();
-    rec.lang = 'ru-RU';
-    rec.interimResults = true;
-    rec.continuous = false;
-    rec.onresult = (e) => {
-      setValue(
-        Array.from(e.results)
-          .map((r) => r[0]?.transcript ?? '')
-          .join(''),
-      );
-    };
-    rec.onend = () => setListening(false);
-    rec.onerror = () => setListening(false);
-    rec.start();
-    recRef.current = rec;
-    setListening(true);
-  };
 
   const inputRef = useRef<HTMLInputElement>(null);
   const mirrorRef = useRef<HTMLSpanElement>(null);
@@ -185,57 +128,54 @@ export function HeroPrompt({ chips = true }: { chips?: boolean } = {}) {
           aria-label="Опишите задачу"
           className="min-w-0 flex-1 bg-transparent text-[18px] text-black caret-transparent outline-none placeholder:text-black/40"
         />
-        {/* Empty field → voice affordance; once there's text the button flips to
-            an Enter glyph. Full accent in every state — it's the one warm mark on
-            the white field and reads as a button before you hover it. */}
+        {/* The button always opens the letter (voice dictation was dropped —
+            Гоша). It flips to an Enter glyph once there's text; accent is reserved
+            for that state and hover, so at rest the field reads calm. */}
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            if (value.trim()) submit();
-            else toggleVoice();
+            submit();
           }}
-          // the mascot's line follows the button's role: dictation when empty,
-          // "send it" once there's text
-          data-hint={value.trim() ? 'send' : 'voice'}
-          aria-label={
-            value.trim() ? 'Отправить — Enter' : listening ? 'Остановить запись' : 'Голосовой ввод'
-          }
-          // Flat accent fill (Гоша): the gradient and the lit inner edge gave it a
+          data-hint="send"
+          aria-label="Открыть письмо — Enter"
+          // Flat fills only (Гоша): the gradient and the lit inner edge gave it a
           // moulded, sticker-like look — one solid colour sits better on the field.
-          className={`relative grid h-[72px] w-[80px] shrink-0 place-items-center overflow-hidden rounded-[28px] bg-accent text-white transition hover:brightness-110 sm:h-[88px] sm:w-[107px] ${
-            listening ? 'animate-pulse' : ''
+          className={`relative grid h-[72px] w-[98px] shrink-0 place-items-center overflow-hidden rounded-[28px] transition sm:h-[88px] sm:w-[107px] ${
+            value.trim()
+              ? 'bg-accent text-white hover:brightness-110'
+              : 'bg-surface2 text-black hover:bg-accent hover:text-white'
           }`}
         >
           {/* above the sweep layer */}
-          <span className="relative z-10">{value.trim() ? <EnterIcon /> : <WaveIcon />}</span>
+          <span className="relative z-10">{value.trim() ? <EnterIcon /> : <AiIcon />}</span>
         </button>
       </div>
 
       {/* chips sit under the field, flush left with it (hero is left-aligned now) */}
       {chips && (
-      <div className="nums mt-[16px] flex w-full flex-wrap items-center justify-start gap-[8px] sm:gap-[10px]">
-        <span className="px-[2px] text-[13px] text-inverted/60 sm:text-[15px]">
-          {hero.needLabel}
-        </span>
-        {hero.chips.map((chip) => {
-          const active = hint != null && chipType[chip] === hint;
-          return (
-            <button
-              key={chip}
-              type="button"
-              onClick={() => open({ type: chipType[chip] ?? 'idk', freeText: value.trim() })}
-              className={`${chip === 'Приложение' ? 'hidden sm:inline-flex' : 'inline-flex'} h-[31px] items-center rounded-chip px-[12px] text-[13px] font-semibold leading-none transition sm:px-[16px] sm:text-[15px] ${
-                active
-                  ? 'bg-accent text-inverted'
-                  : 'bg-surface2 text-black hover:bg-accent hover:text-inverted'
-              }`}
-            >
-              {chip}
-            </button>
-          );
-        })}
-      </div>
+        <div className="nums mt-[16px] flex w-full flex-wrap items-center justify-start gap-[8px] sm:gap-[10px]">
+          <span className="px-[2px] text-[13px] text-inverted/60 sm:text-[15px]">
+            {hero.needLabel}
+          </span>
+          {hero.chips.map((chip) => {
+            const active = hint != null && chipType[chip] === hint;
+            return (
+              <button
+                key={chip}
+                type="button"
+                onClick={() => open({ type: chipType[chip] ?? 'idk', freeText: value.trim() })}
+                className={`${chip === 'Приложение' ? 'hidden sm:inline-flex' : 'inline-flex'} h-[31px] items-center rounded-chip px-[12px] text-[13px] font-semibold leading-none transition sm:px-[16px] sm:text-[15px] ${
+                  active
+                    ? 'bg-accent text-inverted'
+                    : 'bg-surface2 text-black hover:bg-accent hover:text-inverted'
+                }`}
+              >
+                {chip}
+              </button>
+            );
+          })}
+        </div>
       )}
     </>
   );

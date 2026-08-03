@@ -50,7 +50,7 @@ export function CaseCard({ item }: { item: CaseItem }) {
       <Link
         href={`/cases/${item.id}`}
         aria-label={`Кейс: ${item.client}`}
-        className="relative block aspect-[4/3] overflow-hidden rounded-[32px] shadow-none transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:-translate-y-[6px] motion-safe:group-hover:scale-[1.012] group-hover:shadow-[0_28px_64px_-16px_rgba(0,0,0,0.45)] sm:aspect-auto sm:h-[420px] sm:rounded-[44px]"
+        className="relative block aspect-[4/3] overflow-hidden rounded-[32px] shadow-none transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:shadow-[0_28px_64px_-16px_rgba(0,0,0,0.45)] motion-safe:group-hover:-translate-y-[6px] motion-safe:group-hover:scale-[1.012] sm:aspect-auto sm:h-[420px] sm:rounded-[44px]"
       >
         {/* generated brand cover (real stills come from Vadim later) */}
         <CaseCover
@@ -117,12 +117,19 @@ export function CaseCard({ item }: { item: CaseItem }) {
       <div className="pl-[6px] pr-[10px]">
         <p className="mb-[8px] text-[17px] font-medium text-black/40">{item.client}</p>
         <p className="text-[22px] font-medium leading-[1.22] text-black sm:text-[26px]">
-          {item.desc.lead && <>{item.desc.lead} </>}
+          {item.desc.lead}
           {/* #31: accent underlay gets real padding + tag radius, cloned across
-              line wraps so each line keeps rounded corners. .nums for figures. */}
-          <span className="nums rounded-tag bg-accent box-decoration-clone px-[8px] py-[2px] text-white">
-            {item.desc.highlight}
-          </span>
+              line wraps so each line keeps rounded corners. .nums for figures.
+              Only rendered when the case actually has a figure to highlight —
+              otherwise the whole sentence is plain (Гоша). */}
+          {item.desc.highlight && (
+            <>
+              {item.desc.lead && ' '}
+              <span className="nums rounded-tag bg-accent box-decoration-clone px-[8px] py-[2px] text-white">
+                {item.desc.highlight}
+              </span>
+            </>
+          )}
           {item.desc.tail && <> {item.desc.tail}</>}
         </p>
       </div>

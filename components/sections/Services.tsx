@@ -23,7 +23,10 @@ export function Services() {
   const ref = useReveal<HTMLDivElement>({ threshold: 0.08 });
 
   return (
-    <section id="services" className="bg-white pb-[40px] pt-[48px] sm:pb-[48px] sm:pt-[64px] lg:pb-[56px] lg:pt-[96px]">
+    <section
+      id="services"
+      className="bg-white pb-[40px] pt-[48px] sm:pb-[48px] sm:pt-[64px] lg:pb-[56px] lg:pt-[96px]"
+    >
       <div ref={ref} className="mx-auto max-w-page px-5 sm:px-8 lg:px-[80px]">
         {/* Keep: "под ключ" framing, but WITHOUT concrete prices (issue #41) */}
         <WordsReveal
@@ -46,7 +49,7 @@ export function Services() {
 
         {/* Role cards (issue #41): one section heading only (the "под ключ" offer);
             no T&M label. Compact, less-rounded cards, no grades. */}
-        <div className="mt-[32px] grid grid-cols-2 gap-[10px] sm:mt-[44px] sm:gap-[14px] sm:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-[32px] grid grid-cols-2 gap-[10px] sm:mt-[44px] sm:grid-cols-3 sm:gap-[14px] lg:grid-cols-4">
           {tmRoles.map((role, i) => (
             <div
               key={role}

@@ -15,8 +15,7 @@ function LogoImg() {
       width={90}
       height={22}
       priority
-      className="block"
-      style={{ height: 22, width: 'auto' }}
+      className="block h-[22px] w-auto sm:h-[26px] lg:h-[22px]"
     />
   );
 }
@@ -170,7 +169,7 @@ export function Nav() {
           <a
             href="#contacts"
             data-compose
-            className="rounded-button bg-accent-bright px-[14px] py-[7px] text-[14px] font-medium text-inverted"
+            className="rounded-button bg-accent-bright px-[14px] py-[7px] text-[14px] font-medium text-inverted sm:px-[18px] sm:py-[9px] sm:text-[16px]"
           >
             {nav.cta}
           </a>
@@ -179,20 +178,20 @@ export function Nav() {
             onClick={() => setMenuOpen(true)}
             aria-label="Открыть меню"
             aria-expanded={menuOpen}
-            className="grid size-[40px] place-items-center text-inverted"
+            className="grid size-[40px] place-items-center text-inverted sm:size-[46px]"
           >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            aria-hidden
-          >
-            <path d="M3 6h18M3 12h18M3 18h18" />
-          </svg>
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              aria-hidden
+            >
+              <path d="M3 6h18M3 12h18M3 18h18" />
+            </svg>
           </button>
         </div>
       </div>

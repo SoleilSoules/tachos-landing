@@ -214,7 +214,10 @@ export function Products() {
         </WordsReveal>
       </h2>
 
-      <div ref={ref} className="mx-auto mt-[68px] max-w-[1080px] px-5 sm:mt-[80px] sm:px-6 lg:mt-[120px]">
+      <div
+        ref={ref}
+        className="mx-auto mt-[68px] max-w-[1080px] px-5 sm:mt-[80px] sm:px-6 lg:mt-[120px]"
+      >
         {/* Deck stage: every product is a full panel stacked here; the active one
             sits flat on top, the rest fan out behind it. Height is fixed so the
             absolutely-positioned cards reserve layout. */}
@@ -262,7 +265,7 @@ export function Products() {
                       clips it cleanly; pushed further right — the device bleeds past
                       the right/top edge and is cut by the card, the hand stays off. */}
                   {isActive && mockup && (
-                    <div className="pointer-events-none absolute -top-[20px] right-[-240px] hidden h-[620px] w-[1080px] rotate-[-6deg] overflow-hidden lg:block">
+                    <div className="pointer-events-none absolute bottom-[-16px] right-[-70px] h-[215px] w-[400px] rotate-[-6deg] overflow-hidden sm:-top-[10px] sm:bottom-auto sm:right-[-150px] sm:h-[350px] sm:w-[760px] lg:-top-[20px] lg:right-[-240px] lg:h-[620px] lg:w-[1080px]">
                       <Image
                         src={asset(mockup.src)}
                         alt={mockup.alt}
@@ -278,26 +281,17 @@ export function Products() {
                       text of the cards behind it shows through/around the top one
                       (the bug Vadim flagged: "balibali" bleeding through "doki"). */}
                   {isActive && (
-                    <div className="relative flex h-full max-w-full flex-col justify-between p-[28px] lg:max-w-[440px] lg:p-[40px]">
+                    <div className="relative flex h-full max-w-full flex-col justify-between p-[28px] sm:max-w-[420px] lg:max-w-[440px] lg:p-[40px]">
                       <div>
                         <h3 className="text-[28px] font-medium leading-[1.05] tracking-[-0.01em] lg:text-[42px] lg:leading-[1.0]">
                           {p.heading}
                         </h3>
-                        <p className={`mt-[16px] max-w-[366px] text-[16px] leading-[1.3] ${skin.body}`}>
+                        <p
+                          className={`mt-[16px] max-w-[366px] text-[16px] leading-[1.3] ${skin.body}`}
+                        >
                           {p.body}
                         </p>
                       </div>
-                      {mockup && (
-                        <div className="relative mt-[20px] h-[168px] w-full overflow-hidden rounded-[16px] lg:hidden">
-                          <Image
-                            src={asset(mockup.src)}
-                            alt={mockup.alt}
-                            fill
-                            sizes="100vw"
-                            className="object-cover object-top"
-                          />
-                        </div>
-                      )}
                     </div>
                   )}
                 </div>

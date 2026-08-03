@@ -13,7 +13,7 @@ export function CasesHeadingClient() {
 
   return (
     <div ref={revealRef} className="mx-auto max-w-[861px] px-6 text-center">
-      <h2 className="text-[52px] font-semibold leading-[0.9] tracking-[-0.01em]">
+      <h2 className="text-[clamp(29px,6.4vw,52px)] font-semibold leading-[0.95] tracking-[-0.01em] lg:leading-[0.9]">
         <WordsReveal as="span" stagger={52} className="block text-[#010101]">
           {casesIntro.titleBlack}
         </WordsReveal>

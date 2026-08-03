@@ -17,13 +17,13 @@ No backend or database — it's a fully static site.
 
 ## Scripts
 
-| script | what |
-|---|---|
-| `npm run dev` | dev server (Turbopack) → :3000 |
-| `npm run build` | static export to `out/` (run before every push) |
-| `npm run typecheck` | `tsc --noEmit` |
-| `npm run lint` | ESLint |
-| `npm run format` | Prettier |
+| script              | what                                            |
+| ------------------- | ----------------------------------------------- |
+| `npm run dev`       | dev server (Turbopack) → :3000                  |
+| `npm run build`     | static export to `out/` (run before every push) |
+| `npm run typecheck` | `tsc --noEmit`                                  |
+| `npm run lint`      | ESLint                                          |
+| `npm run format`    | Prettier                                        |
 
 ## Project layout
 

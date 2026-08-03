@@ -54,6 +54,62 @@ function MagneticButton({ children, className }: { children: React.ReactNode; cl
 // section before). Collapsed = an avatar dot with a hover label; clicking opens
 // the full card as a centred overlay. Being fixed, it adds no flow height — so
 // the cases section also sits closer under the hero (#17).
+// The card's content (photo header + facts + CTA). Shared by the desktop widget
+// and the phone sheet, so the two can't drift apart.
+function FounderCardContent() {
+  return (
+    <>
+      {/* Contact-card header: the photo owns the top of the panel and the
+          name sits on it, the way a phone shows a contact. */}
+      <div className="relative aspect-[4/3] w-full overflow-hidden">
+        <Image
+          src={asset('/figma/founder-container.jpg')}
+          alt="Вадим — основатель студии"
+          fill
+          sizes="390px"
+          priority
+          className="object-cover object-[66%_34%]"
+        />
+        <div className="absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-ink via-ink/75 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-[12px] p-[20px]">
+          <div>
+            <div className="text-[22px] font-semibold leading-[1.15] tracking-[-0.01em] text-inverted">
+              {founder.person.name}
+            </div>
+            <div className="mt-[3px] text-[13.5px] text-inverted/55">{founder.person.role}</div>
+          </div>
+          {/* status as a quiet glass pill — a bare green line fought the name */}
+          <span className="flex shrink-0 items-center gap-[6px] rounded-full bg-white/10 px-[10px] py-[5px] text-[12.5px] text-[#4ade9f] ring-1 ring-white/10 backdrop-blur-sm">
+            <span className="size-[6px] rounded-full bg-[#4ade9f]" />
+            {widget.online}
+          </span>
+        </div>
+      </div>
+
+      <div className="relative flex flex-col gap-[16px] p-[20px]">
+        <p className="text-[15.5px] leading-[1.35] text-inverted/70">
+          {founder.heading.join(' ')}
+        </p>
+
+        <ul className="flex flex-col gap-[9px] text-[14.5px] leading-[1.3] text-inverted/85">
+          {founder.facts.map((fact) => (
+            <li key={fact} className="flex items-start gap-[10px]">
+              <span className="mt-[7px] size-[5px] shrink-0 rounded-full bg-accent-bright" />
+              <span>{fact}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div className="border-t border-white/10 pt-[16px]">
+          <MagneticButton className="h-[50px] w-full rounded-[50px] bg-white text-[15px] font-medium text-black hover:brightness-95">
+            {founder.contactCta}
+          </MagneticButton>
+        </div>
+      </div>
+    </>
+  );
+}
+
 export function Founder() {
   const [expanded, setExpanded] = useState(false);
   // The dot magnets to one of the four corners, and the panel opens INTO that
@@ -254,8 +310,61 @@ export function Founder() {
     };
   }, []);
 
-  // No draggable founder widget on touch — keep the phone clean.
-  if (touchDevice) return null;
+  // Phone: the widget used to be dropped entirely, because dragging it fought the
+  // page scroll. Dragging is what didn't fit, not the founder — so touch gets a
+  // fixed dot above the compose pill and the same card as a bottom sheet.
+  if (touchDevice) {
+    return (
+      <>
+        <button
+          type="button"
+          aria-expanded={expanded}
+          aria-controls={panelId}
+          onClick={() => setExpanded(true)}
+          aria-label={`${founder.person.name} — ${founder.person.role}`}
+          className="fixed bottom-[96px] right-[14px] z-[90] grid size-[52px] place-items-center rounded-full"
+          style={{ visibility: expanded ? 'hidden' : 'visible' }}
+        >
+          <span className="relative size-[52px] overflow-hidden rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.4)] ring-2 ring-accent-bright/70">
+            <Image
+              src={asset('/figma/founder-container.jpg')}
+              alt=""
+              fill
+              sizes="52px"
+              className="object-cover"
+            />
+          </span>
+          <span className="absolute -bottom-[1px] -right-[1px] size-[14px] rounded-full border-2 border-ink bg-[#3ad29f]" />
+        </button>
+
+        {expanded && (
+          <>
+            <div
+              className="fixed inset-0 z-[110] bg-black/50"
+              aria-hidden
+              onClick={() => setExpanded(false)}
+            />
+            <div
+              id={panelId}
+              role="region"
+              aria-label={`${founder.person.name} — ${founder.person.role}`}
+              className="fixed inset-x-[12px] bottom-[12px] z-[115] max-h-[86vh] overflow-y-auto overscroll-contain rounded-[26px] border border-white/10 bg-ink shadow-[0_30px_90px_rgba(0,0,0,0.6)]"
+            >
+              <button
+                type="button"
+                aria-label={widget.collapse}
+                onClick={() => setExpanded(false)}
+                className="absolute right-[14px] top-[14px] z-20 grid size-[34px] place-items-center rounded-full bg-black/45 text-white backdrop-blur-sm"
+              >
+                <CloseIcon />
+              </button>
+              <FounderCardContent />
+            </div>
+          </>
+        )}
+      </>
+    );
+  }
 
   return (
     <>
@@ -348,50 +457,7 @@ export function Founder() {
               <CloseIcon />
             </button>
 
-            {/* Contact-card header: the photo owns the top of the panel and the
-                name sits on it, the way a phone shows a contact. */}
-            <div className="relative aspect-[5/4] w-full overflow-hidden">
-              <Image
-                src={asset('/figma/founder-container.jpg')}
-                alt="Вадим — основатель студии"
-                fill
-                sizes="390px"
-                priority
-                className="object-cover object-[center_28%]"
-              />
-              <div className="absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-ink via-ink/75 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-[22px]">
-                <div className="text-[23px] font-semibold leading-tight tracking-[-0.01em] text-inverted">
-                  {founder.person.name}
-                </div>
-                <div className="mt-[2px] text-[14px] text-inverted/60">{founder.person.role}</div>
-                <div className="mt-[7px] flex items-center gap-[6px] text-[13px] text-[#3ad29f]">
-                  <span className="size-[6px] rounded-full bg-[#3ad29f]" />
-                  {widget.online}
-                </div>
-              </div>
-            </div>
-
-            <div className="relative flex flex-col gap-[20px] p-[24px]">
-              <h2 className="text-[19px] font-semibold leading-[1.25] tracking-[-0.01em] text-inverted">
-                {founder.heading.join(' ')}
-              </h2>
-
-              <ul className="flex flex-col gap-[11px] text-[14.5px] leading-[1.3] text-inverted/60">
-                {founder.facts.map((fact) => (
-                  <li key={fact} className="flex gap-[8px]">
-                    <span className="text-accent-bright">–</span>
-                    <span>{fact}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="border-t border-white/10 pt-[18px]">
-                <MagneticButton className="h-[50px] w-full rounded-[50px] bg-white text-[15px] font-medium text-black hover:brightness-95">
-                  {founder.contactCta}
-                </MagneticButton>
-              </div>
-            </div>
+            <FounderCardContent />
           </div>
         </>
       )}

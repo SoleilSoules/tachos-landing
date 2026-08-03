@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { CaseCover } from '@/components/CaseCover';
 import { caseCopy } from '@/lib/case-copy';
 import { Nav } from '@/components/sections/Nav';
@@ -39,9 +40,26 @@ function NotesPanel({ item }: { item: CaseItem }) {
     { k: 'Направление', v: caseCopy[item.id]?.notes.direction ?? item.category },
     { k: 'Что делали', v: caseCopy[item.id]?.notes.did ?? item.tags.join(' · ') },
   ];
+  const links = caseCopy[item.id]?.notes.links ?? [];
+
+  // The notes sit in the same right gutter the footer mascot lands in, so they
+  // step aside once the footer arrives — otherwise both occupy that corner.
+  const [atFooter, setAtFooter] = useState(false);
+  useEffect(() => {
+    const perch = document.querySelector('[data-mascot-perch]') ?? document.querySelector('#contacts');
+    if (!perch || !('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(([e]) => setAtFooter(!!e?.isIntersecting), {
+      threshold: 0.05,
+    });
+    io.observe(perch);
+    return () => io.disconnect();
+  }, []);
+
   return (
     <div
-      className="fixed top-0 z-10 hidden h-screen w-[240px] flex-col pb-10 pt-28 opacity-100 transition-opacity duration-500 lg:flex"
+      className={`fixed top-0 z-10 hidden h-screen w-[240px] flex-col pb-10 pt-28 transition-opacity duration-500 lg:flex ${
+        atFooter ? 'pointer-events-none opacity-0' : 'opacity-100'
+      }`}
       style={{ right: 'max(48px, calc((100vw - 1440px) / 2 + 60px))' }}
     >
       <p className="mb-5 text-[13px] font-semibold uppercase tracking-[0.06em] text-inverted/80">
@@ -54,8 +72,27 @@ function NotesPanel({ item }: { item: CaseItem }) {
             <p className="text-[15px] leading-[1.4] text-inverted/70">{r.v}</p>
           </div>
         ))}
-        {item.verified && (
-          <p className="text-[14px] font-medium text-accent">✦ Подтвержденный кейс</p>
+        {/* Live links beat a self-issued badge (Гоша): the reader can open the
+            product instead of taking our word that the case is ours. */}
+        {links.length > 0 && (
+          <div>
+            <p className="text-[12px] uppercase tracking-[0.04em] text-inverted/30">
+              {links.length === 1 ? 'Ссылка на проект' : 'Ссылки на проект'}
+            </p>
+            <div className="mt-1 flex flex-col items-start gap-1">
+              {links.map((l) => (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[15px] leading-[1.4] text-accent transition hover:text-accent-bright"
+                >
+                  {l.label} ↗
+                </a>
+              ))}
+            </div>
+          </div>
         )}
       </div>
     </div>

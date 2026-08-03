@@ -144,11 +144,14 @@ export function Footer() {
         {/* mobile: tighter gap + lighter top padding above requisites; desktop unchanged */}
         <div className="relative mt-[40px] border-t border-white/10 pt-[28px] lg:mt-[64px] lg:pt-[40px]">
           <div className="flex flex-wrap items-center gap-x-[28px] gap-y-[14px] text-[16px] font-medium tracking-[0.04em]">
-            <span data-hint="rodina" className="flex items-center gap-[12px] uppercase text-white/80">
+            <span
+              data-hint="rodina"
+              className="flex items-center gap-[12px] uppercase text-white/80"
+            >
               {/* The statue stands ON the caps line: baseline alignment leaves a
                   canvas ~13px below the letters (its box is taller than the text
                   line), so it's lifted by that much. */}
-              <PixelSilhouette className="shrink-0 self-end -translate-y-[13px]" />
+              <PixelSilhouette className="shrink-0 -translate-y-[13px] self-end" />
               {footer.contacts.city}
             </span>
             <button
@@ -184,8 +187,9 @@ export function Footer() {
           </div>
         </div>
 
-        {/* one-line legal — Vadim to expand for РКН / 152-ФЗ if needed */}
-        <div className="mt-[28px] text-[12px] tracking-[0.02em] text-white/25">
+        {/* one-line legal — Vadim to expand for РКН / 152-ФЗ if needed.
+            Sits close under the city row (Гоша), so it reads as its footnote. */}
+        <div className="mt-[14px] text-[13.5px] tracking-[0.02em] text-white/30">
           ООО «Тачос» · ИНН 3460009833 · 400131, г. Волгоград, наб. 62-й Армии, д. 6
         </div>
       </div>
