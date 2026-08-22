@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { cases } from '@/lib/content';
+import { caseCopy } from '@/lib/case-copy';
 import { CaseView } from '@/components/sections/CaseView';
 
 // Only known cases are valid — anything else 404s (no runtime params on a static
@@ -21,7 +22,7 @@ export async function generateMetadata({
   if (!item) return {};
   return {
     title: `${item.client} — кейс Tachos`,
-    description: item.story.summary,
+    description: caseCopy[slug]?.summary ?? item.desc.lead,
   };
 }
 

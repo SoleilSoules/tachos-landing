@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import {
   composeQuestions,
@@ -21,7 +23,7 @@ const typeWord: Record<LetterType, string> = {
 };
 
 type SlotKey = 'type' | 'have' | 'when' | 'budget';
-type Segment = { text: string } | { slot: SlotKey };
+type Segment = { text: string } | { slot: SlotKey; punct?: string };
 
 // Re-trigger the key-bump animation: remove, force a reflow, add again.
 export const keyBump = (el: HTMLElement | null) => {
@@ -51,15 +53,27 @@ function CopyGlyph({ className = '' }: { className?: string }) {
 function Slot({
   value,
   ph,
+  punct,
   showPopup,
   options,
   onPick,
+  onOverflow,
+  onEdit,
 }: {
   value?: string;
   ph: string;
+  // Punctuation that follows the answer in the sentence. It lives inside the
+  // slot's own box: as a separate text node it could wrap onto the next line
+  // alone, since an inline-block offers a break opportunity right after itself.
+  punct?: string;
   showPopup: boolean;
   options: { v: string; label: string }[];
   onPick: (v: string) => void;
+  // How far the open popup hangs below the letter text, so the caller can
+  // reserve that much room instead of letting it cover the reply block.
+  onOverflow: (px: number) => void;
+  // Re-open this slot's options so an answer already given can be changed.
+  onEdit: () => void;
 }) {
   const popRef = useRef<HTMLSpanElement>(null);
 
@@ -81,31 +95,48 @@ function Slot({
     const clamped = Math.max(bounds.left + pad, Math.min(centred, bounds.right - pad - w));
     const shift = Math.round(clamped - centred);
     el.style.transform = shift ? `translateX(calc(-50% + ${shift}px))` : '';
-  }, [showPopup, options]);
+
+    // A slot on the last line drops its options straight onto the reply block, so
+    // report the overhang and let the letter grow by exactly that much.
+    const text = el.closest('[data-letter-text]')?.getBoundingClientRect();
+    const pop = el.getBoundingClientRect();
+    if (text) onOverflow(Math.max(0, Math.round(pop.bottom - text.bottom + pad)));
+  }, [showPopup, options, onOverflow]);
 
   return (
     <span className="relative inline-block align-baseline">
-      <span
-        className={
-          value
-            ? 'font-medium text-accent underline decoration-accent/40 underline-offset-[6px]'
-            : showPopup
+      {value ? (
+        <button
+          type="button"
+          data-slot-edit
+          onClick={onEdit}
+          title="Изменить ответ"
+          className="font-medium text-accent underline decoration-accent/40 underline-offset-[6px] transition hover:decoration-accent"
+        >
+          {value}
+        </button>
+      ) : (
+        <span
+          className={
+            showPopup
               ? 'rounded-[4px] bg-accent/15 px-[4px] text-accent/90 underline decoration-accent/50 decoration-dotted underline-offset-[6px]'
               : 'text-inverted/35 underline decoration-inverted/25 decoration-dotted underline-offset-[6px]'
-        }
-      >
-        {value || ph}
-      </span>
+          }
+        >
+          {ph}
+        </span>
+      )}
+      {value && punct}
       {showPopup && (
-        // Opaque floating plate (its own bg + shadow) so the option pills read
-        // as a deliberate popover ON TOP of the letter — never a see-through mush
-        // overlapping the divider/text below.
+        // The pills wrap instead of living in a fixed-width scroller (the last one
+        // used to hide off the right edge), and once a question carries five of
+        // them they take two rows — so they need an opaque plate underneath.
+        // Without it the rows showed through onto the divider and the «Куда
+        // прислать ответ» label below.
         <span
           ref={popRef}
-          // No plate behind the options: they float as separate pills and wrap
-          // instead of being clipped by a fixed-width scroller (the last one used
-          // to hide off the right edge).
-          className="absolute left-1/2 top-[calc(100%+10px)] z-40 flex w-max max-w-[min(92vw,540px)] -translate-x-1/2 flex-wrap gap-[7px] leading-none [animation:compose-pop-in_.22s_ease-out] motion-reduce:[animation:none] sm:gap-[8px]"
+          data-slot-popup
+          className="absolute left-1/2 top-[calc(100%+10px)] z-40 flex w-max max-w-[min(92vw,540px)] -translate-x-1/2 flex-wrap gap-[7px] rounded-[18px] border border-white/10 bg-ink/95 p-[10px] leading-none shadow-[0_24px_60px_rgba(0,0,0,0.6)] backdrop-blur-xl [animation:fade-in_.18s_ease-out] motion-reduce:[animation:none] sm:gap-[8px]"
         >
           {options.map((o) => (
             <button
@@ -164,7 +195,8 @@ export function LetterBody({
   autofocus?: boolean;
   size?: 'md' | 'lg';
 }) {
-  const { state, sendStatus, setField, submitLetter, resetSend } = useCompose();
+  const { state, sendStatus, setField, submitLetter, resetSend, resetLetter, resetToken } =
+    useCompose();
   const contactRef = useRef<HTMLInputElement>(null);
 
   const [contact, setContact] = useState('');
@@ -174,6 +206,10 @@ export function LetterBody({
   const [toast, setToast] = useState<string | null>(null);
   const [mailCopied, setMailCopied] = useState(false);
   const [phoneCopied, setPhoneCopied] = useState(false);
+  // Height the open option popup needs below the letter text (see Slot).
+  const [reserve, setReserve] = useState(0);
+  // A slot the visitor re-opened to change an answer already given.
+  const [editing, setEditing] = useState<SlotKey | null>(null);
   const [done, setDone] = useState<SlotKey[]>([]);
   const doneRef = useRef<SlotKey[]>([]);
   doneRef.current = done;
@@ -187,14 +223,14 @@ export function LetterBody({
   const segments = useMemo<Segment[]>(
     () => [
       { text: 'Здравствуйте! Нам нужно сделать ' },
-      { slot: 'type' },
-      { text: state.freeText ? `. Своими словами: «${state.freeText}». Сейчас ` : '. Сейчас ' },
-      { slot: 'have' },
-      { text: '. Сроки — ' },
-      { slot: 'when' },
-      { text: '.\n\nОриентир по бюджету — ' },
-      { slot: 'budget' },
-      { text: '.\n\nРасскажите, как вы работаете и что нужно от нас для оценки.' },
+      { slot: 'type', punct: '.' },
+      { text: state.freeText ? ` Своими словами: «${state.freeText}». Сейчас ` : ' Сейчас ' },
+      { slot: 'have', punct: '.' },
+      { text: ' Сроки — ' },
+      { slot: 'when', punct: '.' },
+      { text: '\n\nОриентир по бюджету — ' },
+      { slot: 'budget', punct: '.' },
+      { text: '\n\nРасскажите, как вы работаете и что нужно от нас для оценки.' },
     ],
     [state.freeText],
   );
@@ -222,8 +258,17 @@ export function LetterBody({
     if (justActivated) {
       segRef.current = 0;
       charRef.current = 0;
-      // a pre-picked type (hero chip) counts as the first slot already answered.
-      if (state.type !== 'unset') setDone((d) => (d.includes('type') ? d : ['type']));
+      // Answers already in state count as given: a type pre-picked by a hero chip,
+      // and everything restored from the saved draft. Without this the letter
+      // stops on a slot that already shows its answer and asks for it again.
+      const answered: SlotKey[] = [];
+      if (state.type !== 'unset') answered.push('type');
+      for (const key of ['have', 'when', 'budget'] as const) {
+        if (state[key]) answered.push(key);
+      }
+      setDone((d) =>
+        d.length === answered.length && answered.every((k) => d.includes(k)) ? d : answered,
+      );
       rerender();
     }
     if (reducedMotion()) {
@@ -279,6 +324,8 @@ export function LetterBody({
   const typing = segRef.current < segments.length;
   const curSeg = segments[segRef.current];
   const awaiting = curSeg && 'slot' in curSeg && !done.includes(curSeg.slot) ? curSeg.slot : null;
+  // Either the slot the letter stopped on, or one re-opened for a change.
+  const openSlot = editing ?? awaiting;
 
   // Every slot answered and the typing caught up → the contact is the only thing
   // left, so the field lights up in accent until the user starts filling it.
@@ -288,7 +335,38 @@ export function LetterBody({
   const pick = (key: SlotKey, v: string) => {
     setField(key, v);
     setDone((d) => (d.includes(key) ? d : [...d, key]));
+    setEditing(null);
   };
+
+  // Clicking anywhere outside an re-opened popup closes it without a change.
+  useEffect(() => {
+    if (!editing) return;
+    const onDown = (e: MouseEvent) => {
+      const el = e.target as HTMLElement;
+      if (!el.closest('[data-slot-popup]') && !el.closest('[data-slot-edit]')) setEditing(null);
+    };
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, [editing]);
+
+  // Start over: the shared state is already blank by now, so this instance only
+  // has to forget its own typing progress and the contact it was holding.
+  const resetSeen = useRef(resetToken);
+  useEffect(() => {
+    if (resetSeen.current === resetToken) return;
+    resetSeen.current = resetToken;
+    segRef.current = 0;
+    charRef.current = 0;
+    setDone([]);
+    setEditing(null);
+    setContact('');
+    setContactError(null);
+    setAgreeError(false);
+  }, [resetToken]);
+
+  const filled =
+    state.type !== 'unset' ||
+    Boolean(state.have || state.when || state.budget || state.freeText || contact.trim());
 
   const flash = (msg: string) => {
     setToast(msg);
@@ -398,10 +476,11 @@ export function LetterBody({
           with the line-height kept generous enough for the option pills to drop
           under a slot without crowding the next line. */}
       <div
+        data-letter-text
         className={`whitespace-pre-line font-medium tracking-[-0.01em] text-inverted ${
           size === 'lg'
             ? 'text-[22px] leading-[1.6] sm:text-[28px] sm:leading-[1.7] lg:text-[36px] lg:leading-[1.7]'
-            : 'text-[19px] leading-[1.65] sm:text-[23px] sm:leading-[1.75] lg:text-[27px] lg:leading-[1.85]'
+            : 'text-[19px] leading-[1.45] sm:text-[22px] sm:leading-[1.5] lg:text-[25px] lg:leading-[1.55]'
         }`}
       >
         {segments.map((s, i) => {
@@ -427,107 +506,144 @@ export function LetterBody({
               key={i}
               value={slotValue(key)}
               ph={slotPh(key)}
-              showPopup={awaiting === key && i === segRef.current}
+              punct={s.punct}
+              showPopup={editing === key || (awaiting === key && i === segRef.current)}
               options={slotOptions(key)}
               onPick={(v) => pick(key, v)}
+              onOverflow={setReserve}
+              onEdit={() => setEditing(key)}
             />
           );
         })}
       </div>
 
+      {/* Room for the open option popup: it is absolutely positioned, so without
+          this the reply block would sit under it. */}
+      <div
+        aria-hidden
+        className="transition-[height] duration-200 ease-out motion-reduce:transition-none"
+        style={{ height: openSlot ? reserve : 0 }}
+      />
+
       {/* Mobile: trim the gap above the reply block — 48px reads as a dead zone on small screens */}
-      <div className="mt-[28px] border-t border-white/10 pt-[18px] sm:mt-[48px] sm:pt-[22px]">
-        <div className="mb-[12px] text-[14px] font-medium text-inverted/90">
-          Куда прислать ответ
-        </div>
-
-        {isError && (
-          <div
-            role="alert"
-            className="mb-[12px] rounded-[10px] border border-accent/30 bg-accent/10 px-[14px] py-[10px] text-[13px] text-accent"
-          >
-            Не удалось отправить — попробуйте еще раз или скопируйте письмо.
+      <div className="mt-[28px] sm:mt-[48px]">
+        {/* Sits above the rule: it belongs to the letter, not to the reply block. */}
+        {filled && (
+          <div className="mb-[12px] flex justify-end">
+            <button
+              type="button"
+              onClick={resetLetter}
+              className="text-[13px] text-inverted/40 underline decoration-inverted/20 underline-offset-[4px] transition hover:text-accent-bright"
+            >
+              Сбросить форму
+            </button>
           </div>
         )}
+        <div className="border-t border-white/10 pt-[18px] sm:pt-[22px]">
+          <div className="mb-[12px] text-[14px] font-medium text-inverted/90">
+            Куда прислать ответ
+          </div>
 
-        <div className="flex flex-col gap-[10px] sm:flex-row">
-          <div className="flex-1">
+          {isError && (
+            <div
+              role="alert"
+              className="mb-[12px] rounded-[10px] border border-accent/30 bg-accent/10 px-[14px] py-[10px] text-[13px] text-accent"
+            >
+              Не удалось отправить — попробуйте еще раз или скопируйте письмо.
+            </div>
+          )}
+
+          <div className="flex flex-col gap-[10px] sm:flex-row">
+            <div className="flex-1">
+              <input
+                ref={contactRef}
+                data-autofocus={autofocus || undefined}
+                data-hint="contact"
+                type="text"
+                value={contact}
+                onChange={(e) => {
+                  keyBump(e.currentTarget);
+                  setContact(e.target.value);
+                  setContactError(null);
+                }}
+                placeholder="Телефон, почта или Telegram"
+                autoComplete="off"
+                aria-invalid={contactError !== null}
+                aria-describedby={contactError ? contactErrId : undefined}
+                // White field, like the hero prompt — the one bright surface in the
+                // letter, so the eye lands on the thing left to fill.
+                className={`h-[54px] w-full rounded-[14px] border bg-white px-[16px] text-[15px] text-black outline-none transition placeholder:text-black/40 ${
+                  contactError
+                    ? 'border-accent'
+                    : nudgeContact
+                      ? 'contact-nudge border-accent/70'
+                      : 'border-transparent'
+                }`}
+              />
+              {contactError && (
+                <p id={contactErrId} role="alert" className="mt-[6px] text-[12px] text-accent">
+                  {contactError === 'empty'
+                    ? 'Оставьте контакт — ответим туда'
+                    : 'Не похоже на телефон, почту или @telegram'}
+                </p>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={send}
+              disabled={isSending}
+              className="flex h-[54px] items-center justify-center gap-[8px] whitespace-nowrap rounded-[14px] bg-accent px-[28px] text-[15px] font-medium text-inverted shadow-[0_10px_30px_rgba(240,81,56,0.35)] transition hover:brightness-110 disabled:opacity-60 sm:w-[200px]"
+            >
+              {isSending ? (
+                <>
+                  <span
+                    aria-hidden
+                    className="size-[14px] animate-spin rounded-full border-2 border-inverted/30 border-t-inverted"
+                  />
+                  Отправляем…
+                </>
+              ) : isError ? (
+                'Повторить'
+              ) : (
+                'Обсудить задачу'
+              )}
+            </button>
+          </div>
+
+          {/* Deliberately not a <label>: tapping the sentence must not flip the box,
+            so the only hit target is the box itself. The sentence links out to the
+            policy — same tab, it is an in-site page (the draft is restored on
+            the way back). */}
+          <div className="mt-[14px] flex items-start gap-[9px] text-[12.5px] leading-[1.4] text-inverted/45">
             <input
-              ref={contactRef}
-              data-autofocus={autofocus || undefined}
-              data-hint="contact"
-              type="text"
-              value={contact}
+              type="checkbox"
+              checked={agreed}
               onChange={(e) => {
-                keyBump(e.currentTarget);
-                setContact(e.target.value);
-                setContactError(null);
+                setAgreed(e.target.checked);
+                setAgreeError(false);
               }}
-              placeholder="Телефон, почта или Telegram"
-              autoComplete="off"
-              aria-invalid={contactError !== null}
-              aria-describedby={contactError ? contactErrId : undefined}
-              // White field, like the hero prompt — the one bright surface in the
-              // letter, so the eye lands on the thing left to fill.
-              className={`h-[54px] w-full rounded-[14px] border bg-white px-[16px] text-[15px] text-black outline-none transition placeholder:text-black/40 ${
-                contactError
-                  ? 'border-accent'
-                  : nudgeContact
-                    ? 'contact-nudge border-accent/70'
-                    : 'border-transparent'
-              }`}
+              aria-invalid={agreeError}
+              aria-describedby={agreeError ? agreeErrId : undefined}
+              aria-label="Согласие на обработку персональных данных"
+              className="mt-[1px] size-[15px] shrink-0 cursor-pointer accent-accent"
             />
-            {contactError && (
-              <p id={contactErrId} role="alert" className="mt-[6px] text-[12px] text-accent">
-                {contactError === 'empty'
-                  ? 'Оставьте контакт — ответим туда'
-                  : 'Не похоже на телефон, почту или @telegram'}
-              </p>
-            )}
+            <span>
+              Согласен на{' '}
+              <Link
+                href="/privacy"
+                className="text-accent underline decoration-accent/40 underline-offset-[3px] transition hover:brightness-110"
+              >
+                обработку персональных данных
+              </Link>
+              . Ответим по делу, без рассылок
+            </span>
           </div>
-          <button
-            type="button"
-            onClick={send}
-            disabled={isSending}
-            className="flex h-[54px] items-center justify-center gap-[8px] rounded-[14px] bg-accent px-[40px] text-[16px] font-medium text-inverted shadow-[0_10px_30px_rgba(240,81,56,0.35)] transition hover:brightness-110 disabled:opacity-60 sm:w-[200px]"
-          >
-            {isSending ? (
-              <>
-                <span
-                  aria-hidden
-                  className="size-[14px] animate-spin rounded-full border-2 border-inverted/30 border-t-inverted"
-                />
-                Отправляем…
-              </>
-            ) : isError ? (
-              'Повторить'
-            ) : (
-              'Обсудить задачу'
-            )}
-          </button>
+          {agreeError && (
+            <p id={agreeErrId} role="alert" className="mt-[6px] text-[12px] text-accent">
+              Нужно согласие
+            </p>
+          )}
         </div>
-
-        {/* One short line: the legal wording is in the tooltip-length title, the
-            visible promise is the part that matters to a visitor. */}
-        <label className="mt-[14px] flex cursor-pointer items-center gap-[8px] text-[12.5px] leading-[1.4] text-inverted/45">
-          <input
-            type="checkbox"
-            checked={agreed}
-            onChange={(e) => {
-              setAgreed(e.target.checked);
-              setAgreeError(false);
-            }}
-            aria-invalid={agreeError}
-            aria-describedby={agreeError ? agreeErrId : undefined}
-            className="accent-accent"
-          />
-          <span>Согласен на обработку персональных данных. Ответим по делу, без рассылок</span>
-        </label>
-        {agreeError && (
-          <p id={agreeErrId} role="alert" className="mt-[6px] text-[12px] text-accent">
-            Нужно согласие
-          </p>
-        )}
       </div>
 
       {toast && (

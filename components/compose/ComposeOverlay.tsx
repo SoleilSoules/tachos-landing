@@ -38,7 +38,9 @@ export function ComposeOverlay() {
             ? 'transform .44s cubic-bezier(.2,.9,.25,1.12), opacity .26s ease-out'
             : 'transform .5s cubic-bezier(.6,0,.85,.35), opacity .46s ease-in .06s',
         }}
-        className={`fixed left-1/2 top-1/2 z-[113] flex max-h-[90vh] w-[min(900px,calc(100vw-32px))] flex-col overflow-auto rounded-[28px] bg-ink text-inverted shadow-[0_50px_140px_rgba(0,0,0,0.55)] ${
+        // The sheet opens near its final size: the letter types itself line by
+        // line, and without a floor the box grew under the reader's eyes.
+        className={`fixed left-1/2 top-1/2 z-[113] flex max-h-[90vh] min-h-[min(460px,80vh)] w-[min(900px,calc(100vw-32px))] flex-col overflow-auto rounded-[28px] bg-ink text-inverted shadow-[0_50px_140px_rgba(0,0,0,0.55)] sm:min-h-[min(600px,82vh)] ${
           isOpen ? '' : 'pointer-events-none'
         }`}
       >

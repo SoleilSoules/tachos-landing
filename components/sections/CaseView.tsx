@@ -141,11 +141,11 @@ export function CaseView({ item, others }: { item: CaseItem; others: CaseItem[] 
               {item.client}
             </h1>
             <p className="mb-10 max-w-[620px] text-[clamp(17px,1.4vw,21px)] leading-[1.45] text-inverted/55">
-              {caseCopy[item.id]?.summary ?? item.story.summary}
+              {caseCopy[item.id]?.summary ?? item.desc.lead}
             </p>
 
             <div className="flex flex-wrap gap-x-12 gap-y-7">
-              {(caseCopy[item.id]?.metrics ?? item.story.metrics).map((m) => (
+              {(caseCopy[item.id]?.metrics ?? []).map((m) => (
                 <div key={m.label}>
                   <p className="nums text-[34px] font-semibold leading-none tracking-[-0.02em] text-inverted">
                     {m.value}
@@ -167,20 +167,68 @@ export function CaseView({ item, others }: { item: CaseItem; others: CaseItem[] 
           </section>
 
           {/* NARRATIVE SECTIONS */}
-          {(caseCopy[item.id]?.sections ?? item.story.sections).map((s) => (
-            <div key={s.title}>
+          {(caseCopy[item.id]?.sections ?? []).map((s) => {
+            // Long-form cases carry several paragraphs per section, and the ones
+            // without artwork opt out of the screenshot placeholder.
+            const paragraphs = Array.isArray(s.body) ? s.body : [s.body];
+            const withMedia = 'media' in s ? s.media !== false : true;
+            return (
+              <div key={s.title}>
+                <div className="mb-12 h-px w-full max-w-[820px] bg-white/10" />
+                <section className="mb-12">
+                  <h2 className="mb-5 text-[clamp(24px,3vw,34px)] font-semibold leading-[1.1] tracking-[-0.02em]">
+                    {s.title}
+                  </h2>
+                  {paragraphs.map((text) => (
+                    <p
+                      key={text}
+                      className="mb-6 max-w-[680px] text-[clamp(17px,1.3vw,20px)] leading-[1.6] text-inverted/70 last:mb-9"
+                    >
+                      {text}
+                    </p>
+                  ))}
+                  {withMedia && <ImgPlaceholder minH={300} />}
+                </section>
+              </div>
+            );
+          })}
+
+          {/* PRESS — outbound coverage, only for cases that have any */}
+          {caseCopy[item.id]?.press && (
+            <div>
               <div className="mb-12 h-px w-full max-w-[820px] bg-white/10" />
               <section className="mb-12">
                 <h2 className="mb-5 text-[clamp(24px,3vw,34px)] font-semibold leading-[1.1] tracking-[-0.02em]">
-                  {s.title}
+                  О проекте пишут
                 </h2>
-                <p className="mb-9 max-w-[680px] text-[clamp(17px,1.3vw,20px)] leading-[1.6] text-inverted/70">
-                  {s.body}
-                </p>
-                <ImgPlaceholder minH={300} />
+                <ul className="max-w-[680px]">
+                  {caseCopy[item.id]?.press?.map((link) => (
+                    <li key={link.href} className="border-t border-white/10 first:border-t-0">
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex items-start gap-[16px] py-[16px] transition-colors hover:text-inverted"
+                      >
+                        <span className="min-w-[104px] shrink-0 pt-[2px] text-[15px] font-medium text-accent-warm">
+                          {link.source}
+                        </span>
+                        <span className="text-[17px] leading-[1.4] text-inverted/70 transition-colors group-hover:text-inverted">
+                          {link.title}
+                        </span>
+                        <span
+                          aria-hidden
+                          className="ml-auto shrink-0 pt-[2px] text-[16px] leading-none text-inverted/30 transition-colors group-hover:text-accent-bright"
+                        >
+                          ↗
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
               </section>
             </div>
-          ))}
+          )}
 
           {/* CTA — no id="contacts" here: the footer already owns that id, and a
               duplicate made FloatingCompose hide mid-page instead of at the footer */}

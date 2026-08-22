@@ -179,7 +179,7 @@ export function Founder() {
     if (!btn) return;
     const s = stRef.current;
     const W = 52; // dot diameter
-    const M = 20; // edge margin
+    const M = 40; // edge margin
     const TOP = 88; // keep top corners below the fixed nav
     const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
     const reduce = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;

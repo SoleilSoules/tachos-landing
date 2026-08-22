@@ -163,7 +163,7 @@ export function Blog() {
   if (!lead || !side1 || !side2) return null;
 
   return (
-    <section id="blog" className="bg-white pb-[56px] pt-[48px] lg:pb-[140px] lg:pt-[120px]">
+    <section id="blog" className="bg-white pb-[56px] pt-[24px] lg:pb-[140px] lg:pt-[60px]">
       <style>{`
         .blog-arrow svg { transition: transform .3s cubic-bezier(.16,1,.3,1); }
         .group:hover .blog-arrow svg, .group:focus-visible .blog-arrow svg { transform: translate(2px,-2px); }

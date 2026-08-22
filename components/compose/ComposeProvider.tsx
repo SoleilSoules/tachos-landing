@@ -28,6 +28,10 @@ type ComposeCtx = {
   setField: <K extends keyof ComposeState>(key: K, value: ComposeState[K]) => void;
   submitLetter: (contact: string) => Promise<void>;
   resetSend: () => void;
+  // Wipe every answer and the saved draft. `resetToken` ticks with each reset so
+  // both letter instances (modal + footer) know to retype from a blank sheet.
+  resetLetter: () => void;
+  resetToken: number;
 };
 
 const Ctx = createContext<ComposeCtx | null>(null);
@@ -80,14 +84,21 @@ export function ComposeProvider({ children }: { children: React.ReactNode }) {
   const open = useCallback((opts?: OpenOpts) => {
     // Don't overwrite the letter if the form is already open (re-clicking a CTA).
     if (!isOpenRef.current && opts) {
-      if (opts.type || opts.freeText !== undefined) {
+      // 'unset' is the "nothing picked yet" state, not an answer — a CTA that
+      // passes it (the hero button on an empty field) must not wipe a type the
+      // visitor chose earlier. Same for an empty freeText.
+      const type = opts.type && opts.type !== 'unset' ? opts.type : undefined;
+      const freeText = opts.freeText ? opts.freeText : undefined;
+      if (type || freeText) {
         setState((s) => ({
           ...s,
-          ...(opts.type ? { type: opts.type } : {}),
-          ...(opts.freeText !== undefined ? { freeText: opts.freeText } : {}),
+          ...(type ? { type } : {}),
+          ...(freeText ? { freeText } : {}),
         }));
+        // A pre-picked type IS an answer, so the draft is now worth saving —
+        // otherwise picking a chip and reloading the page lost the choice.
+        setTouched(true);
       }
-      if (opts.freeText) setTouched(true);
     }
     setIsOpen(true);
   }, []);
@@ -121,6 +132,16 @@ export function ComposeProvider({ children }: { children: React.ReactNode }) {
   );
 
   const resetSend = useCallback(() => setSendStatus('idle'), []);
+
+  const [resetToken, setResetToken] = useState(0);
+  const resetLetter = useCallback(() => {
+    setState(initialCompose);
+    setTouched(false);
+    setSent(false);
+    setSendStatus('idle');
+    clearDraft();
+    setResetToken((t) => t + 1);
+  }, []);
 
   // Lock page scroll while the letter modal is open. With Lenis (desktop) we
   // stop()/start() it — the `.lenis-stopped` class locks scroll natively, no
@@ -183,6 +204,8 @@ export function ComposeProvider({ children }: { children: React.ReactNode }) {
         setField,
         submitLetter,
         resetSend,
+        resetLetter,
+        resetToken,
       }}
     >
       {children}
