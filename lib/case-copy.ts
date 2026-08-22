@@ -248,7 +248,7 @@ export const caseCopy: Record<string, CaseCopy> = deepNbsp({
     notes: {
       client: 'Maginary',
       direction: 'Интерактивные медиа, mobile',
-      did: 'Анимированная книга-игра под iOS. Тех-лид + разработка',
+      did: 'Иммерсивная книга-игра под iOS. Тех-лид + разработка',
       links: [{ label: 'App Store', href: 'https://apps.apple.com/app/id1291905541' }],
     },
   },

@@ -31,8 +31,10 @@ export function Hero() {
 
       {/* left: sub-head + prompt (the CTA lives inside the hero itself, not in a
           separate band) · right: the client logos */}
-      <div className="mt-[18px] flex flex-col gap-[26px] [animation:fade-up_0.55s_ease-out_0.12s_both] motion-reduce:[animation:none] lg:mt-[36px] lg:flex-row lg:items-start lg:justify-between lg:gap-[24px]">
-        <div className="w-full lg:max-w-[554px]">
+      {/* Desktop: the logo wall takes every pixel the prompt column leaves, starts
+          right beside it, and `items-end` lands its bottom edge on the chips row. */}
+      <div className="mt-[18px] flex flex-col gap-[26px] [animation:fade-up_0.55s_ease-out_0.12s_both] motion-reduce:[animation:none] lg:mt-[36px] lg:flex-row lg:items-end lg:gap-[56px]">
+        <div className="w-full lg:w-[554px] lg:shrink-0">
           <p className="max-w-[520px] select-none text-[17px] font-medium leading-[1.35] text-inverted [text-shadow:0_1px_16px_rgba(0,0,0,0.55)] sm:text-[20px]">
             {hero.subhead.lead}
           </p>
@@ -44,8 +46,8 @@ export function Hero() {
           <HeroPrompt />
         </div>
 
-        <div className="w-full lg:w-[660px] lg:shrink-0 lg:pt-[108px]">
-          <p className="text-[10.5px] font-medium uppercase tracking-[0.14em] text-inverted/45 sm:text-[12px]">
+        <div className="w-full lg:min-w-0 lg:flex-1">
+          <p className="text-[12px] font-medium uppercase tracking-[0.14em] text-inverted/80 sm:text-[13.5px]">
             {trustLabel}
           </p>
           <div className="mt-[16px]">

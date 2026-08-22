@@ -22,7 +22,7 @@ export function HeroLogos() {
             draggable={false}
             loading="eager"
             style={{ height: client.height * 1.18, width: 'auto' }}
-            className="max-w-none shrink-0 object-contain opacity-85 brightness-0 invert"
+            className="max-w-none shrink-0 object-contain brightness-0 invert"
           />
         ))}
       </div>

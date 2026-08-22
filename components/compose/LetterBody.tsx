@@ -528,11 +528,6 @@ export function LetterBody({
             Нужно согласие
           </p>
         )}
-
-        {/* The doc's postscript — the form itself is a work sample. */}
-        <p className="mt-[14px] text-[12.5px] leading-[1.4] text-inverted/35">
-          P. S. Нравится эта форма? Можем сделать похожую для вашего продукта.
-        </p>
       </div>
 
       {toast && (

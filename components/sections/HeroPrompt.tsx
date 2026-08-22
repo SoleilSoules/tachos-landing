@@ -7,14 +7,14 @@ import { useCompose } from '@/components/compose/ComposeProvider';
 import { keyBump } from '@/components/compose/LetterBody';
 import { AiIcon } from '@/components/AiIcon';
 
-// The doc's seven quick-choice chips fold onto the five letter types.
+// The quick-choice chips fold onto the five letter types.
 const chipType: Record<string, LetterType> = {
   'Мобильное приложение': 'app',
   Сайт: 'web',
-  Маркетплейс: 'web',
   CRM: 'internal',
-  'Интеграцию с другими системами': 'backend',
-  Геймификацию: 'other',
+  'Настроить интеграцию': 'backend',
+  'Геймификационная механика': 'other',
+  'Backend и API': 'backend',
   Другое: 'other',
 };
 
@@ -45,6 +45,7 @@ export function HeroPrompt({ chips = true }: { chips?: boolean } = {}) {
   const { open } = useCompose();
   const [value, setValue] = useState('');
   const hint = guessType(value);
+  const hintChip = hint == null ? null : (hero.chips.find((c) => chipType[c] === hint) ?? null);
 
   // Placeholder differs by viewport: short on mobile (night change), the original
   // longer copy on desktop (pre-night) — restored per Гоша.
@@ -163,7 +164,7 @@ export function HeroPrompt({ chips = true }: { chips?: boolean } = {}) {
             {hero.needLabel}
           </span>
           {hero.chips.map((chip, i) => {
-            const active = hint != null && chipType[chip] === hint;
+            const active = chip === hintChip;
             return (
               <button
                 key={chip}

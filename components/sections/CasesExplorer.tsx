@@ -10,10 +10,10 @@ import { CaseCard } from './CaseCard';
 // its own highlight). Cases declare which tabs they belong to via `item.tabs`;
 // counts are derived from the data here, not hardcoded.
 
-const INITIAL = 4; // first batch shown
+const INITIAL = 6; // first batch shown
 // One click now reveals the whole second batch (Добрый / Anomalia / IMAST / Alma)
 // instead of dribbling them out two at a time.
-const STEP = 4; // "Показать еще" increment
+const STEP = 4; // "Еще проекты" increment
 const ALL = 'Все';
 
 export function CasesExplorer({ cases }: { cases: CaseItem[] }) {
@@ -108,7 +108,7 @@ export function CasesExplorer({ cases }: { cases: CaseItem[] }) {
         </div>
       </div>
 
-      {/* key on `active` remounts the grid per tab → reveal replays + "Показать еще"
+      {/* key on `active` remounts the grid per tab → reveal replays + "Еще проекты"
           resets to the first batch for the new filter. */}
       <CaseGrid key={active} cases={filtered} />
     </>
@@ -160,7 +160,7 @@ function CaseGrid({ cases }: { cases: CaseItem[] }) {
             data-hint="more-cases"
             className="w-full max-w-[820px] rounded-[24px] bg-[#141416] px-[64px] py-[26px] text-[17px] font-medium text-white transition hover:bg-black"
           >
-            Показать еще
+            Еще проекты
           </button>
         </div>
       )}

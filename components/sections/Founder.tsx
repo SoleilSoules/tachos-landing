@@ -25,14 +25,25 @@ function CloseIcon() {
   );
 }
 
-function MagneticButton({ children, className }: { children: React.ReactNode; className: string }) {
-  const ref = useRef<HTMLButtonElement>(null);
+// The magnetic CTA is a link to Vadim's Telegram, so it must NOT carry
+// `data-compose` — that attribute makes ComposeProvider swallow the click.
+function MagneticButton({
+  children,
+  className,
+  href,
+}: {
+  children: React.ReactNode;
+  className: string;
+  href: string;
+}) {
+  const ref = useRef<HTMLAnchorElement>(null);
   return (
-    <button
+    <a
       ref={ref}
-      type="button"
-      data-compose
-      className={`${className} transition-transform duration-300 ease-out`}
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`${className} grid place-items-center transition-transform duration-300 ease-out`}
       onMouseMove={(e) => {
         const el = ref.current;
         if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -46,7 +57,7 @@ function MagneticButton({ children, className }: { children: React.ReactNode; cl
       }}
     >
       {children}
-    </button>
+    </a>
   );
 }
 
@@ -87,9 +98,7 @@ function FounderCardContent() {
       </div>
 
       <div className="relative flex flex-col gap-[16px] p-[20px]">
-        <p className="text-[15.5px] leading-[1.35] text-inverted/70">
-          {founder.heading.join(' ')}
-        </p>
+        <p className="text-[15.5px] leading-[1.35] text-inverted/70">{founder.heading.join(' ')}</p>
 
         <ul className="flex flex-col gap-[9px] text-[14.5px] leading-[1.3] text-inverted/85">
           {founder.facts.map((fact) => (
@@ -101,7 +110,10 @@ function FounderCardContent() {
         </ul>
 
         <div className="border-t border-white/10 pt-[16px]">
-          <MagneticButton className="h-[50px] w-full rounded-[50px] bg-white text-[15px] font-medium text-black hover:brightness-95">
+          <MagneticButton
+            href={founder.contactHref}
+            className="h-[50px] w-full rounded-[50px] bg-white text-[15px] font-medium text-black hover:brightness-95"
+          >
             {founder.contactCta}
           </MagneticButton>
         </div>

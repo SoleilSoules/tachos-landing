@@ -29,8 +29,7 @@ function ArrowIcon() {
 }
 
 export function CaseCard({ item }: { item: CaseItem }) {
-  // Tags arrive as [domain, method]; the method pill gets the sparkle prefix.
-  const [domainTag, methodTag] = item.tags;
+  // Tag count varies by case (Monte carries four), so the pills are mapped.
   // Frosted chips invert to the cover's tone: a dark cover photo (e.g. Monte) gets
   // light white/10 chips + white text; light covers (device mockups, brand plate)
   // get dark black/6 chips + dark text — legible either way.
@@ -86,16 +85,14 @@ export function CaseCard({ item }: { item: CaseItem }) {
               )}
             </span>
             <div className="flex max-w-[80%] flex-wrap justify-end gap-[10px]">
-              <span
-                className={`rounded-[10px] ${frost} px-[13px] py-[8px] text-[13px] font-medium tracking-[0.01em] backdrop-blur-md`}
-              >
-                {domainTag}
-              </span>
-              <span
-                className={`rounded-[10px] ${frost} px-[13px] py-[8px] text-[13px] font-medium tracking-[0.01em] backdrop-blur-md`}
-              >
-                {methodTag}
-              </span>
+              {item.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className={`rounded-[10px] ${frost} px-[13px] py-[8px] text-[13px] font-medium tracking-[0.01em] backdrop-blur-md`}
+                >
+                  {tag}
+                </span>
+              ))}
             </div>
           </div>
 

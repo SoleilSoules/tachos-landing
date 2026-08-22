@@ -46,7 +46,8 @@ function NotesPanel({ item }: { item: CaseItem }) {
   // step aside once the footer arrives — otherwise both occupy that corner.
   const [atFooter, setAtFooter] = useState(false);
   useEffect(() => {
-    const perch = document.querySelector('[data-mascot-perch]') ?? document.querySelector('#contacts');
+    const perch =
+      document.querySelector('[data-mascot-perch]') ?? document.querySelector('#contacts');
     if (!perch || !('IntersectionObserver' in window)) return;
     const io = new IntersectionObserver(([e]) => setAtFooter(!!e?.isIntersecting), {
       threshold: 0.05,
@@ -102,8 +103,6 @@ function NotesPanel({ item }: { item: CaseItem }) {
 // Case page — Onest + max-w-page grid (the same grid as the footer), with the
 // side "Заметки" panel pinned to the right edge.
 export function CaseView({ item, others }: { item: CaseItem; others: CaseItem[] }) {
-  const [domainTag, methodTag] = item.tags;
-
   return (
     <main className="min-h-screen bg-bg text-inverted [animation:fade-in_0.4s_ease-out]">
       <Nav />
@@ -136,7 +135,7 @@ export function CaseView({ item, others }: { item: CaseItem; others: CaseItem[] 
           {/* HERO */}
           <section className="mb-14 pt-8">
             <p className="mb-3 text-[15px] font-medium tracking-[0.02em] text-accent-warm">
-              {domainTag} · {methodTag}
+              {item.tags.join(' · ')}
             </p>
             <h1 className="mb-5 text-[clamp(34px,5.5vw,64px)] font-semibold leading-[0.98] tracking-[-0.02em]">
               {item.client}

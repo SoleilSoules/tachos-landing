@@ -37,14 +37,14 @@ export const hero = deepNbsp({
     { accent: '2+ года', tail: 'с командами' },
   ],
   inputPlaceholder: 'Опишите задачу — мы поможем ее решить',
-  needLabel: 'Мне нужно сделать:',
+  needLabel: 'Мне нужно:',
   chips: [
-    'Мобильное приложение',
     'Сайт',
+    'Мобильное приложение',
     'CRM',
-    'Интеграцию с другими системами',
-    'Маркетплейс',
-    'Геймификацию',
+    'Настроить интеграцию',
+    'Геймификационная механика',
+    'Backend и API',
     'Другое',
   ],
 } as const);
@@ -55,13 +55,20 @@ export type Client = { name: string; logo: string; height: number };
 // Heights tuned to a shared optical baseline so the row reads as one weight.
 export const clients: Client[] = [
   { name: 'Admitad', logo: '/logos/admitad.svg', height: 26 },
-  { name: 'Лукойл', logo: '/logos/lukoil.svg', height: 23 },
-  { name: 'Monte', logo: '/logos/monte.svg', height: 24 },
-  { name: 'Добрый', logo: '/logos/dobry-color.svg', height: 28 },
-  { name: 'Складно', logo: '/logos/skladno.svg', height: 26 },
+  { name: 'Лукойл', logo: '/logos/lukoil.png', height: 20 },
+  { name: 'Monte', logo: '/logos/monte.svg', height: 19 },
+  { name: 'Добрый', logo: '/logos/dobry-color.svg', height: 24 },
+  { name: 'Складно', logo: '/logos/skladno.svg', height: 36 },
   { name: 'Хайс', logo: '/logos/hais-mono.svg', height: 25 },
-  { name: 'ГАЗ', logo: '/logos/gaz.svg', height: 24 },
-  { name: 'Maginary', logo: '/logos/maginary-grunge.svg', height: 24 },
+  { name: 'Модульбанк', logo: '/logos/modulbank.svg', height: 28 },
+  // Two-line lockup, so it carries a taller box than the wordmark-only logos.
+  { name: 'АльфаСтрахование', logo: '/logos/alfastrah.png', height: 26 },
+  { name: 'Maginary', logo: '/logos/maginary-grunge.svg', height: 40 },
+  { name: 'StarHub', logo: '/logos/starhub.png', height: 34 },
+  { name: 'Ooredoo', logo: '/logos/ooredoo.png', height: 22 },
+  { name: 'Idea', logo: '/logos/idea.png', height: 22 },
+  // Official lockup is stacked; laid out side-by-side so it fits the single row.
+  { name: 'Unilever', logo: '/logos/unilever.png', height: 26 },
 ];
 
 // Label above the hero logo grid (bottom-right, filter.im-style composition).
@@ -71,6 +78,8 @@ export const founder = deepNbsp({
   heading: ['Для экстренных вопросов', 'вы можете связаться', 'с основателем студии'],
   facts: ['Тех лид во всех проектах — сам пишу код', 'На связи напрямую, без аккаунт-менеджеров'],
   contactCta: 'Написать Вадиму',
+  // The CTA goes straight to his Telegram, not to the studio letter.
+  contactHref: 'https://t.me/vvadik',
   presentation: { label: 'Презентация Вадима', duration: '0:34' },
   person: { name: 'Вадим Витехновский', role: 'Основатель, тех-лид' },
 } as const);
@@ -106,7 +115,7 @@ export type CaseItem = {
   // `highlight` = accent underlay on the card. Only for a real figure or a
   // strong fact (Гоша) — plain description sentences carry no highlight.
   desc: { lead: string; highlight?: string; tail: string };
-  tags: [string, string];
+  tags: string[];
   shot?: string; // real product screenshot, shown in a device mockup on the cover
   shotKind?: 'phone' | 'desktop' | 'cover'; // device frame for `shot`, or 'cover' = full-bleed photo
   coverDark?: boolean; // cover photo is dark → invert overlay chips to light
@@ -245,36 +254,38 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     verified: true,
   },
   {
-    id: 'monte',
-    client: 'Monte',
-    category: 'автотюнинг',
-    tabs: ['IoT'],
-    desc: { lead: 'Сайт и сервисы для студии автотюнинга', tail: '' },
-    tags: ['Автотюнинг', 'Web'],
-    shot: '/figma/monte-cover.webp',
-    coverVideo: '/covers/monte-cover.mp4',
+    id: 'alfastrah',
+    client: 'АльфаСтрахование',
+    category: 'страхование',
+    tabs: ['Финтех'],
+    desc: {
+      lead: 'Приложение для клиентов страховой —',
+      highlight: '800 000+ пользователей в месяц',
+      tail: '',
+    },
+    tags: ['Страхование', 'Android + PWA'],
+    shot: '/figma/alfastrah-cover.webp',
     shotKind: 'cover',
-    coverDark: true,
     story: {
       summary:
-        'Собственный продукт: устройство, меняющее характеристики автомобиля, и приложение, которое управляет им по Bluetooth',
+        'Приложение для клиентов страховой компании: управление полисами, заявление убытков, поддержка и программа лояльности',
       metrics: [
-        { value: 'США и Европа', label: 'своя сеть продаж' },
-        { value: 'Web + iOS + Android', label: 'платформы' },
-        { value: 'Bluetooth', label: 'связь с устройством' },
+        { value: '800 000+', label: 'пользователей в месяц' },
+        { value: 'Android + PWA', label: 'платформы' },
+        { value: 'Backend Driven UI', label: 'релизы без обновления' },
       ],
       sections: [
         {
           title: 'Контекст',
-          body: 'Своя разработка студии: коробка, которая меняет мощность и отклик мотора. Владельцу нужен способ переключать режимы с телефона, а самому продукту — витрина и продажи за рубежом',
+          body: 'У клиентов страховой полисы, убытки и обращения в поддержку жили в разных каналах — приложению нужна была продуктовая команда и темп выпуска функций',
         },
         {
           title: 'Что сделали',
-          body: 'Сделали цифровую часть продукта: приложения под iOS и Android, которые связываются с устройством по Bluetooth и переключают режимы, плюс сайт и сервисы вокруг продаж',
+          body: 'Построили продуктовую команду мобильного приложения и внедрили Backend Driven UI: интерфейс нативных приложений собирается на сервере, поэтому новые функции выходят без релиза в сторах',
         },
         {
           title: 'Результат',
-          body: 'Устройство производится в США и продается через eBay и Amazon: под продукт построена собственная сеть продаж в США и Европе',
+          body: 'Приложением пользуются больше 800 000 человек в месяц: полисы, заявление убытков, поддержка и программа лояльности в одном интерфейсе',
         },
       ],
     },
@@ -285,17 +296,17 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     category: 'приложение-книга',
     tabs: ['Геймдев'],
     desc: {
-      lead: 'Анимированная книга-игра, где читатель становится героем —',
+      lead: 'Иммерсивная книга-игра, где читатель становится героем —',
       highlight: '3 млн+ установок',
       tail: 'и Game of the Day в App Store',
     },
-    tags: ['Приложение-книга', 'iOS'],
+    tags: ['Game of the Day в App Store', 'iOS'],
     shot: '/figma/maginary-cover.webp',
     coverVideo: '/covers/maginary-cover.mp4',
     shotKind: 'cover',
     coverDark: true,
     story: {
-      summary: 'Анимированная книга-игра, где читатель становится героем истории',
+      summary: 'Иммерсивная книга-игра, где читатель становится героем истории',
       metrics: [
         { value: '3 млн+', label: 'установок в App Store' },
         { value: '40 000', label: 'отзывов' },
@@ -328,7 +339,7 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
       highlight: '95+ точек, 8 000 пользователей',
       tail: '',
     },
-    tags: ['Сервис хранения', 'Mobile + бэкенд'],
+    tags: ['IoT', 'iOS + Android'],
     shot: '/figma/skladno-cover.webp',
     shotKind: 'cover',
     coverDark: true,
@@ -356,43 +367,6 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
       ],
     },
     verified: true,
-  },
-  {
-    id: 'dobry',
-    client: 'Добрый',
-    category: 'FMCG',
-    tabs: ['Геймдев'],
-    desc: {
-      lead: '',
-      highlight: 'Игра за месяц: от идеи до прода',
-      tail: 'для бренда №1 на рынке соков России',
-    },
-    tags: ['Web-игра', '4 недели'],
-    shot: '/figma/dobry-cover.webp',
-    shotKind: 'cover',
-    coverDark: true,
-    story: {
-      summary: 'Промо-игра для бренда №1 на рынке соков России — от идеи до прода за месяц',
-      metrics: [
-        { value: '4 недели', label: 'от идеи до релиза' },
-        { value: 'Web-игра', label: 'формат' },
-        { value: '№1', label: 'бренд соков в РФ' },
-      ],
-      sections: [
-        {
-          title: 'Контекст',
-          body: 'Бренду нужна была промо-механика к кампании: легкая веб-игра, в которую можно играть прямо из браузера, без установки',
-        },
-        {
-          title: 'Что сделали',
-          body: 'За четыре недели прошли весь путь — идея, прототип, продакшн и релиз веб-игры, готовой к промо-трафику',
-        },
-        {
-          title: 'Результат',
-          body: 'Игра вышла в срок к запуску кампании бренда №1 на рынке соков России',
-        },
-      ],
-    },
   },
   {
     id: 'anomalia',
@@ -432,38 +406,38 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     },
   },
   {
-    id: 'imast',
-    client: 'IMAST',
-    category: 'благотворительность',
-    tabs: ['E-commerce'],
+    id: 'dobry',
+    client: 'Добрый',
+    category: 'FMCG',
+    tabs: ['Геймдев'],
     desc: {
-      lead: 'Сервис микродонатов — помощь людям через фонды Армении',
-      tail: '',
+      lead: '',
+      highlight: 'Игра за месяц: от идеи до прода',
+      tail: 'для бренда №1 на рынке соков России',
     },
-    tags: ['Благотворительность', 'iOS + Android'],
-    shot: '/figma/imast-cover.webp',
+    tags: ['Геймификация', 'Web', 'Backend и API'],
+    shot: '/figma/dobry-cover.webp',
     shotKind: 'cover',
-    // цветная обложка: темный текст в чипах тонул в градиенте — берем светлый вариант
     coverDark: true,
     story: {
-      summary: 'Сервис микродонатов: помощь людям через благотворительные фонды Армении',
+      summary: 'Промо-игра для бренда №1 на рынке соков России — от идеи до прода за месяц',
       metrics: [
-        { value: '10 000+', label: 'платящих пользователей в месяц' },
-        { value: 'iOS + Android', label: 'нативные приложения' },
-        { value: 'микродонаты', label: 'модель сервиса' },
+        { value: '4 недели', label: 'от идеи до релиза' },
+        { value: 'Web-игра', label: 'формат' },
+        { value: '№1', label: 'бренд соков в РФ' },
       ],
       sections: [
         {
           title: 'Контекст',
-          body: 'Фондам нужен был канал, где помочь можно небольшой суммой и за пару касаний — с проверенными проектами и понятным прогрессом сбора',
+          body: 'Бренду нужна была промо-механика к кампании: легкая веб-игра, в которую можно играть прямо из браузера, без установки',
         },
         {
           title: 'Что сделали',
-          body: 'Собрали приложения под iOS и Android: каталог проверенных проектов по категориям, карточка сбора с целью и прогрессом, оплата в пару шагов',
+          body: 'За четыре недели прошли весь путь — идея, прототип, продакшн и релиз веб-игры, готовой к промо-трафику',
         },
         {
           title: 'Результат',
-          body: 'Сервисом пользуются больше 10 000 платящих пользователей в месяц',
+          body: 'Игра вышла в срок к запуску кампании бренда №1 на рынке соков России',
         },
       ],
     },
@@ -505,6 +479,78 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
     },
   },
   {
+    id: 'imast',
+    client: 'IMAST',
+    category: 'благотворительность',
+    tabs: ['E-commerce'],
+    desc: {
+      lead: 'Сервис микродонатов — помощь людям через фонды Армении',
+      tail: '',
+    },
+    tags: ['Web', 'Backend и API', 'iOS + Android'],
+    shot: '/figma/imast-cover.webp',
+    shotKind: 'cover',
+    // цветная обложка: темный текст в чипах тонул в градиенте — берем светлый вариант
+    coverDark: true,
+    story: {
+      summary: 'Сервис микродонатов: помощь людям через благотворительные фонды Армении',
+      metrics: [
+        { value: '10 000+', label: 'платящих пользователей в месяц' },
+        { value: 'iOS + Android', label: 'нативные приложения' },
+        { value: 'микродонаты', label: 'модель сервиса' },
+      ],
+      sections: [
+        {
+          title: 'Контекст',
+          body: 'Фондам нужен был канал, где помочь можно небольшой суммой и за пару касаний — с проверенными проектами и понятным прогрессом сбора',
+        },
+        {
+          title: 'Что сделали',
+          body: 'Собрали приложения под iOS и Android: каталог проверенных проектов по категориям, карточка сбора с целью и прогрессом, оплата в пару шагов',
+        },
+        {
+          title: 'Результат',
+          body: 'Сервисом пользуются больше 10 000 платящих пользователей в месяц',
+        },
+      ],
+    },
+  },
+  {
+    id: 'monte',
+    client: 'Monte',
+    category: 'автотюнинг',
+    tabs: ['IoT'],
+    desc: { lead: 'Сайт и сервисы для студии автотюнинга', tail: '' },
+    tags: ['IoT', 'Web', 'iOS + Android', 'Backend и API'],
+    shot: '/figma/monte-cover.webp',
+    coverVideo: '/covers/monte-cover.mp4',
+    shotKind: 'cover',
+    coverDark: true,
+    story: {
+      summary:
+        'Собственный продукт: устройство, меняющее характеристики автомобиля, и приложение, которое управляет им по Bluetooth',
+      metrics: [
+        { value: 'США и Европа', label: 'своя сеть продаж' },
+        { value: 'Web + iOS + Android', label: 'платформы' },
+        { value: 'Bluetooth', label: 'связь с устройством' },
+      ],
+      sections: [
+        {
+          title: 'Контекст',
+          body: 'Своя разработка студии: коробка, которая меняет мощность и отклик мотора. Владельцу нужен способ переключать режимы с телефона, а самому продукту — витрина и продажи за рубежом',
+        },
+        {
+          title: 'Что сделали',
+          body: 'Сделали цифровую часть продукта: приложения под iOS и Android, которые связываются с устройством по Bluetooth и переключают режимы, плюс сайт и сервисы вокруг продаж',
+        },
+        {
+          title: 'Результат',
+          body: 'Устройство производится в США и продается через eBay и Amazon: под продукт построена собственная сеть продаж в США и Европе',
+        },
+      ],
+    },
+  },
+  {
     id: 'docmed',
     client: 'Docmed и Docdeti',
     category: 'медтех',
@@ -535,43 +581,6 @@ export const cases: CaseItem[] = deepNbsp<CaseItem[]>([
         {
           title: 'Результат',
           body: 'Пациент ведет лечение в одном приложении: записывается, забирает результаты и выходит на связь с врачом онлайн',
-        },
-      ],
-    },
-  },
-  {
-    id: 'alfastrah',
-    client: 'АльфаСтрахование',
-    category: 'страхование',
-    tabs: ['Финтех'],
-    desc: {
-      lead: 'Приложение для клиентов страховой —',
-      highlight: '800 000+ пользователей в месяц',
-      tail: '',
-    },
-    tags: ['Страхование', 'Android + PWA'],
-    shot: '/figma/alfastrah-cover.webp',
-    shotKind: 'cover',
-    story: {
-      summary:
-        'Приложение для клиентов страховой компании: управление полисами, заявление убытков, поддержка и программа лояльности',
-      metrics: [
-        { value: '800 000+', label: 'пользователей в месяц' },
-        { value: 'Android + PWA', label: 'платформы' },
-        { value: 'Backend Driven UI', label: 'релизы без обновления' },
-      ],
-      sections: [
-        {
-          title: 'Контекст',
-          body: 'У клиентов страховой полисы, убытки и обращения в поддержку жили в разных каналах — приложению нужна была продуктовая команда и темп выпуска функций',
-        },
-        {
-          title: 'Что сделали',
-          body: 'Построили продуктовую команду мобильного приложения и внедрили Backend Driven UI: интерфейс нативных приложений собирается на сервере, поэтому новые функции выходят без релиза в сторах',
-        },
-        {
-          title: 'Результат',
-          body: 'Приложением пользуются больше 800 000 человек в месяц: полисы, заявление убытков, поддержка и программа лояльности в одном интерфейсе',
         },
       ],
     },
