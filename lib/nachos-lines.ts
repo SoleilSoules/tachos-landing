@@ -17,6 +17,7 @@ export type NachosCategory =
   | 'review'
   | 'player'
   | 'role'
+  | 'service'
   | 'blog'
   | 'hero'
   | 'send'
@@ -122,6 +123,21 @@ const PRODUCT_LINES: Record<string, string[]> = {
   ],
 };
 
+// Each service card gets a line that names the project proving it — the card
+// itself already says what the service is.
+const SERVICE_LINES: Record<string, string[]> = {
+  'Мобильные приложения для iOS и Android': [
+    'Нативные iOS и Android — так собраны Хайс, Складно и Maginary',
+  ],
+  'Веб-приложения': ['Промо-игра для Доброго тоже отсюда — открывается прямо в браузере'],
+  'Backend и API': ['Серверную часть пишем сами и поддерживаем после релиза'],
+  'Админ-панели и внутренние системы': [
+    'Из таких инструментов выросли наши собственные продукты — doki и MonteHub',
+  ],
+  Интеграции: ['Мобильный банк Хайс — это в том числе платежи и антифрод внутри приложения'],
+  'IoT и Bluetooth': ['Ячейка Складно открывается телефоном по Bluetooth — это как раз сюда'],
+};
+
 // What each role actually does on a project.
 const ROLE_LINES: Record<string, string[]> = {
   'продуктовый ux/ui дизайнер': ['Собирает интерфейс: от логики экранов до макета'],
@@ -145,12 +161,13 @@ const NAV_LINES: Record<string, string[]> = {
   Кейсы: ['Проекты, которые довели до прода'],
   Отзывы: ['Говорят сами клиенты — аудио, видео и текст'],
   Контакты: ['Письмо собирается само: выбираете ответы, текст пишется за вас'],
-  Медиа: ['Статьи о процессе и жизни студии'],
+  Услуги: ['Направления, которые закрываем своей командой'],
+  'Блог Tachos': ['Статьи о процессе и жизни студии'],
 };
 
 // Flat pools for everything that isn't per-entity.
 const LINES: Record<
-  Exclude<NachosCategory, 'case' | 'product' | 'role' | 'blog' | 'nav' | 'generic'>,
+  Exclude<NachosCategory, 'case' | 'product' | 'role' | 'service' | 'blog' | 'nav' | 'generic'>,
   string[]
 > = {
   switcher: ['Переключает между нашими собственными продуктами'],
@@ -193,6 +210,8 @@ function pool(category: NachosCategory, name: string): string[] | null {
       return PRODUCT_LINES[name] ?? null;
     case 'role':
       return ROLE_LINES[name] ?? null;
+    case 'service':
+      return SERVICE_LINES[name] ?? null;
     case 'blog':
       return BLOG_LINES[name] ?? null;
     case 'nav':

@@ -214,6 +214,10 @@ export function Products() {
         </WordsReveal>
       </h2>
 
+      <p className="mx-auto mt-[22px] max-w-[720px] px-6 text-center text-[16px] leading-[1.45] text-white/45 sm:text-[18px]">
+        {productsIntro.body}
+      </p>
+
       <div
         ref={ref}
         className="mx-auto mt-[68px] max-w-[1080px] px-5 sm:mt-[80px] sm:px-6 lg:mt-[120px]"

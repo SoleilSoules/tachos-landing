@@ -80,8 +80,11 @@ export function Footer() {
         <div className="relative grid grid-cols-1 gap-[40px] lg:grid-cols-[minmax(0,1fr)_460px]">
           {/* left — the smart letter, the very same composer as the modal (synced) */}
           <div>
-            {/* No heading here: the letter itself opens the block, sized up so it
-                carries the footer the way «Отправьте нам письмо» used to. */}
+            {/* Heading restored from the copy doc («Расскажите нам о задаче») —
+                the letter had been carrying the block on its own. */}
+            <h2 className="mb-[26px] max-w-[720px] text-[clamp(28px,7vw,46px)] font-semibold leading-[1.02] tracking-[-0.02em]">
+              {footer.formTitle.join(' ')}
+            </h2>
             <div className="max-w-[720px]">
               {isSuccess ? (
                 <ComposeSent />

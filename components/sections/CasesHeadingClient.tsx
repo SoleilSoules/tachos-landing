@@ -25,7 +25,9 @@ export function CasesHeadingClient() {
           {casesIntro.titleAccent.suffix}
         </span>
       </h2>
-      {/* sub-head under the heading removed per Гоша — the tabs follow directly */}
+      <p className="reveal-hidden mx-auto mt-[18px] max-w-[560px] text-[16px] leading-[1.4] text-black/45 sm:text-[18px]">
+        {casesIntro.subtitle}
+      </p>
     </div>
   );
 }

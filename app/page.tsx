@@ -4,6 +4,7 @@ import { Founder } from '@/components/sections/Founder';
 import { Cases } from '@/components/sections/Cases';
 import { Reviews } from '@/components/sections/Reviews';
 import { Products } from '@/components/sections/Products';
+import { Team } from '@/components/sections/Team';
 import { Blog } from '@/components/sections/Blog';
 import { Footer } from '@/components/sections/Footer';
 import { Services } from '@/components/sections/Services';
@@ -46,6 +47,8 @@ export default function Home() {
       {/* «Студия изнутри» — back on, now playing our own studio footage */}
       <VideoBlock />
       <Products />
+      {/* team composition sits below the offer, per the copy doc */}
+      <Team />
       <Blog />
       <Footer />
     </main>

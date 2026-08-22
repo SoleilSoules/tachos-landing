@@ -12,11 +12,12 @@ import { footer } from '@/lib/content';
 import { useCompose } from './ComposeProvider';
 
 const typeWord: Record<LetterType, string> = {
-  site: 'сайт',
-  app: 'приложение',
-  shop: 'магазин',
-  game: 'игру',
-  idk: '',
+  app: 'мобильное приложение',
+  web: 'веб-сервис',
+  backend: 'backend',
+  internal: 'внутреннюю систему',
+  other: 'что-то другое',
+  unset: '',
 };
 
 type SlotKey = 'type' | 'have' | 'when' | 'budget';
@@ -185,7 +186,7 @@ export function LetterBody({
 
   const segments = useMemo<Segment[]>(
     () => [
-      { text: 'Здравствуйте! У меня запрос на ' },
+      { text: 'Здравствуйте! Нам нужно сделать ' },
       { slot: 'type' },
       { text: state.freeText ? `. Своими словами: «${state.freeText}». Сейчас ` : '. Сейчас ' },
       { slot: 'have' },
@@ -222,7 +223,7 @@ export function LetterBody({
       segRef.current = 0;
       charRef.current = 0;
       // a pre-picked type (hero chip) counts as the first slot already answered.
-      if (state.type !== 'idk') setDone((d) => (d.includes('type') ? d : ['type']));
+      if (state.type !== 'unset') setDone((d) => (d.includes('type') ? d : ['type']));
       rerender();
     }
     if (reducedMotion()) {
@@ -348,7 +349,7 @@ export function LetterBody({
   };
 
   const slotValue = (key: SlotKey): string =>
-    key === 'type' ? (state.type !== 'idk' ? typeWord[state.type] : '') : state[key];
+    key === 'type' ? (state.type !== 'unset' ? typeWord[state.type] : '') : state[key];
   const slotOptions = (key: SlotKey) =>
     key === 'type'
       ? typeChips.map((c) => ({ v: c.type, label: c.label }))
@@ -436,7 +437,9 @@ export function LetterBody({
 
       {/* Mobile: trim the gap above the reply block — 48px reads as a dead zone on small screens */}
       <div className="mt-[28px] border-t border-white/10 pt-[18px] sm:mt-[48px] sm:pt-[22px]">
-        <div className="mb-[12px] text-[14px] font-medium text-inverted/90">Куда вам ответить</div>
+        <div className="mb-[12px] text-[14px] font-medium text-inverted/90">
+          Куда прислать ответ
+        </div>
 
         {isError && (
           <div
@@ -460,7 +463,7 @@ export function LetterBody({
                 setContact(e.target.value);
                 setContactError(null);
               }}
-              placeholder="Телефон, почта или @telegram"
+              placeholder="Телефон, почта или Telegram"
               autoComplete="off"
               aria-invalid={contactError !== null}
               aria-describedby={contactError ? contactErrId : undefined}
@@ -499,7 +502,7 @@ export function LetterBody({
             ) : isError ? (
               'Повторить'
             ) : (
-              'Отправить'
+              'Обсудить задачу'
             )}
           </button>
         </div>
@@ -518,13 +521,18 @@ export function LetterBody({
             aria-describedby={agreeError ? agreeErrId : undefined}
             className="accent-accent"
           />
-          <span>Согласие на обработку персональных данных</span>
+          <span>Согласен на обработку персональных данных. Ответим по делу, без рассылок</span>
         </label>
         {agreeError && (
           <p id={agreeErrId} role="alert" className="mt-[6px] text-[12px] text-accent">
             Нужно согласие
           </p>
         )}
+
+        {/* The doc's postscript — the form itself is a work sample. */}
+        <p className="mt-[14px] text-[12.5px] leading-[1.4] text-inverted/35">
+          P. S. Нравится эта форма? Можем сделать похожую для вашего продукта.
+        </p>
       </div>
 
       {toast && (

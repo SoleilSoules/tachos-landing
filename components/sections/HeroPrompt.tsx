@@ -7,11 +7,15 @@ import { useCompose } from '@/components/compose/ComposeProvider';
 import { keyBump } from '@/components/compose/LetterBody';
 import { AiIcon } from '@/components/AiIcon';
 
+// The doc's seven quick-choice chips fold onto the five letter types.
 const chipType: Record<string, LetterType> = {
-  Сайт: 'site',
-  Приложение: 'app',
-  Магазин: 'shop',
-  Игра: 'game',
+  'Мобильное приложение': 'app',
+  Сайт: 'web',
+  Маркетплейс: 'web',
+  CRM: 'internal',
+  'Интеграцию с другими системами': 'backend',
+  Геймификацию: 'other',
+  Другое: 'other',
 };
 
 function EnterIcon() {
@@ -53,7 +57,7 @@ export function HeroPrompt({ chips = true }: { chips?: boolean } = {}) {
     return () => mq.removeEventListener('change', upd);
   }, []);
 
-  const submit = () => open({ type: guessType(value) ?? 'idk', freeText: value.trim() });
+  const submit = () => open({ type: guessType(value) ?? 'unset', freeText: value.trim() });
 
   const inputRef = useRef<HTMLInputElement>(null);
   const mirrorRef = useRef<HTMLSpanElement>(null);
@@ -158,14 +162,16 @@ export function HeroPrompt({ chips = true }: { chips?: boolean } = {}) {
           <span className="px-[2px] text-[13px] text-inverted/60 sm:text-[15px]">
             {hero.needLabel}
           </span>
-          {hero.chips.map((chip) => {
+          {hero.chips.map((chip, i) => {
             const active = hint != null && chipType[chip] === hint;
             return (
               <button
                 key={chip}
                 type="button"
-                onClick={() => open({ type: chipType[chip] ?? 'idk', freeText: value.trim() })}
-                className={`${chip === 'Приложение' ? 'hidden sm:inline-flex' : 'inline-flex'} h-[31px] items-center rounded-chip px-[12px] text-[13px] font-semibold leading-none transition sm:px-[16px] sm:text-[15px] ${
+                onClick={() => open({ type: chipType[chip] ?? 'unset', freeText: value.trim() })}
+                // Seven chips don't fit a phone row — keep the first three there
+                // (Гоша's «3 тега на мобилке»), the rest appear from sm up.
+                className={`${i > 2 ? 'hidden sm:inline-flex' : 'inline-flex'} h-[31px] items-center rounded-chip px-[12px] text-[13px] font-semibold leading-none transition sm:px-[16px] sm:text-[15px] ${
                   active
                     ? 'bg-accent text-inverted'
                     : 'bg-surface2 text-black hover:bg-accent hover:text-inverted'

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { companyDescription } from '@/lib/content';
 import { Onest, PT_Mono } from 'next/font/google';
 import './globals.css';
 import { SmoothScroll } from '@/components/SmoothScroll';
@@ -23,9 +24,9 @@ const ptMono = PT_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Tachos — технологический партнер',
+  title: 'Разработка сложных цифровых продуктов — Tachos',
   description:
-    'Проектируем, собираем и развиваем веб- и мобильные продукты для фаундеров и компаний — от идеи до релиза в проде.',
+    'Tachos — технологический партнер по разработке мобильных и веб-приложений, backend, интеграций и внутренних систем. Создаем продукты с нуля и развиваем существующие.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -35,6 +36,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ru" className={`${onest.variable} ${ptMono.variable}`}>
       <body>
+        {/* One machine-readable company description, identical to the sentence the
+            copy doc asks us to reuse in catalogues and press profiles. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'Tachos',
+              foundingDate: '2012',
+              description: companyDescription,
+            }),
+          }}
+        />
         <SmoothScroll>
           <ComposeProvider>{children}</ComposeProvider>
           <FeedbackWidget />

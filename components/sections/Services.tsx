@@ -2,22 +2,7 @@
 
 import { useReveal } from '@/hooks/useReveal';
 import { WordsReveal } from '@/components/WordsReveal';
-import { servicesIntro } from '@/lib/content';
-
-// ─── Time & material roles (issue #41) ──────────────────────────────
-// Roles available under the T&M model. NO rates and NO grades (Middle/Senior)
-// by design — Gosha asked to drop ₽/час and grades, just "we have these specs".
-const tmRoles = [
-  'Продуктовый UX/UI дизайнер',
-  'Арт-директор',
-  'Дизайн-директор',
-  'Frontend-разработчик',
-  'Backend-разработчик',
-  'Системный аналитик',
-  'Продуктовый аналитик',
-  'QA-специалист',
-  'DevOps-инженер',
-] as const;
+import { services, servicesIntro } from '@/lib/content';
 
 export function Services() {
   const ref = useReveal<HTMLDivElement>({ threshold: 0.08 });
@@ -28,7 +13,6 @@ export function Services() {
       className="bg-white pb-[40px] pt-[48px] sm:pb-[48px] sm:pt-[64px] lg:pb-[56px] lg:pt-[96px]"
     >
       <div ref={ref} className="mx-auto max-w-page px-5 sm:px-8 lg:px-[80px]">
-        {/* Keep: "под ключ" framing, but WITHOUT concrete prices (issue #41) */}
         <WordsReveal
           as="h2"
           stagger={48}
@@ -41,29 +25,35 @@ export function Services() {
           as="p"
           stagger={20}
           start={260}
-          className="mt-[16px] block max-w-[520px] text-[16px] leading-[1.45] text-black/50 sm:mt-[20px] sm:text-[19px] sm:leading-[1.4]"
+          className="mt-[16px] block max-w-[560px] text-[16px] leading-[1.45] text-black/50 sm:mt-[20px] sm:text-[19px] sm:leading-[1.4]"
         >
-          Не знаете, как назвать задачу, — поможем сформулировать и подберем состав работ. Ниже —
-          направления, с которыми работаем.
+          {servicesIntro.body}
         </WordsReveal>
+        {/* the "own staff" promise rides right under the offer, quieter than it */}
+        <p className="mt-[10px] text-[15px] font-medium leading-[1.4] text-accent sm:text-[16px]">
+          {servicesIntro.note}
+        </p>
 
-        {/* Role cards (issue #41): one section heading only (the "под ключ" offer);
-            no T&M label. Compact, less-rounded cards, no grades. */}
-        <div className="mt-[32px] grid grid-cols-2 gap-[10px] sm:mt-[44px] sm:grid-cols-3 sm:gap-[14px] lg:grid-cols-4">
-          {tmRoles.map((role, i) => (
+        {/* Six service cards, numbered 01–06 as in the copy doc. Same card
+            language as the team block below, one step roomier for the body copy. */}
+        <div className="mt-[32px] grid grid-cols-1 gap-[10px] sm:mt-[44px] sm:grid-cols-2 sm:gap-[14px] lg:grid-cols-3">
+          {services.map((service, i) => (
             <div
-              key={role}
-              data-hint="role"
-              data-hint-sub={role}
-              className="reveal-hidden group relative flex min-h-[96px] flex-col justify-between rounded-[14px] bg-[#f3f4f6] px-[14px] py-[14px] transition duration-200 hover:bg-[#eceef0] sm:min-h-[112px] sm:rounded-[20px] sm:px-[22px] sm:py-[18px]"
+              key={service.title}
+              data-hint="service"
+              data-hint-sub={service.title}
+              className="reveal-hidden group relative flex min-h-[170px] flex-col rounded-[14px] bg-[#f3f4f6] px-[18px] py-[16px] transition duration-200 hover:bg-[#eceef0] sm:min-h-[210px] sm:rounded-[20px] sm:px-[22px] sm:py-[20px]"
             >
               <span className="text-[13px] font-medium tabular-nums text-black/30">
                 {String(i + 1).padStart(2, '0')}
               </span>
-              <div className="flex items-end justify-between gap-[6px] sm:gap-[10px]">
-                <span className="text-[15px] font-medium leading-[1.25] tracking-[-0.01em] text-fg sm:text-[18px] sm:leading-[1.2]">
-                  {role}
-                </span>
+              <h3 className="mt-[14px] text-[17px] font-medium leading-[1.2] tracking-[-0.01em] text-fg sm:mt-[18px] sm:text-[20px]">
+                {service.title}
+              </h3>
+              <p className="mt-[8px] text-[14px] leading-[1.4] text-black/50 sm:text-[15px]">
+                {service.body}
+              </p>
+              <div className="mt-auto flex justify-end pt-[12px]">
                 {/* arrow slides in on hover — one transient accent, not a baked-in one */}
                 <span
                   aria-hidden

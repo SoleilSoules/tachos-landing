@@ -109,7 +109,10 @@ function LeadCard({ post }: { post: Post }) {
         <p className="text-[15px] leading-[1.45] text-black/50">{post.excerpt}</p>
         <div className="mt-auto flex items-end justify-between gap-[16px] pt-[12px]">
           <Author post={post} />
-          <ArrowSquare />
+          <span className="flex items-center gap-[12px]">
+            <span className="text-[15px] font-medium text-black/55">{blogIntro.readCta}</span>
+            <ArrowSquare />
+          </span>
         </div>
       </div>
     </Link>
